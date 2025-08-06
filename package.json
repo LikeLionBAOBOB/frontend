@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
@@ -36,5 +37,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+=======
+  "dependencies": {
+    "styled-components": "^6.1.19"
+>>>>>>> 90017ac727d12cabc0137f3b54c311028690a0dc
   }
 }

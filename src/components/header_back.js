@@ -1,8 +1,14 @@
 import React from 'react';
 import styled from 'styled-components';
+<<<<<<< HEAD
 import backIcon from '../assets/icon/back.png';
 import logoIcon from '../assets/icon/logo.png';
 import menuIcon from '../assets/icon/menu.png';
+=======
+import backIcon from '../assets/back.png';
+import logoIcon from '../assets/logo.png';
+import menuIcon from '../assets/menu.png';
+>>>>>>> 90017ac727d12cabc0137f3b54c311028690a0dc
 
 const HeaderWrapper = styled.header`
   display: flex;
@@ -34,4 +40,8 @@ export default function Header() {
       <Icon src={menuIcon} alt="메뉴" />
     </HeaderWrapper>
   );
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 90017ac727d12cabc0137f3b54c311028690a0dc

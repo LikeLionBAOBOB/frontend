@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+<<<<<<< HEAD
 import Header from '../components/header_back';
+=======
+import Header from '../components/header_back';  // ✅ import!
+>>>>>>> 90017ac727d12cabc0137f3b54c311028690a0dc
 
 export default function LoginPage() {
   const [phone, setPhone] = useState('');
@@ -81,4 +85,8 @@ const Button = styled.button`
   color: #212121;
   font-weight: bold;
   cursor: pointer;
+<<<<<<< HEAD
 `;
+=======
+`;
+>>>>>>> 90017ac727d12cabc0137f3b54c311028690a0dc
