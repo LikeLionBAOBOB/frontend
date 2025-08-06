@@ -1,10 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-<<<<<<< HEAD
 import Header from '../components/header_back';
-=======
-import Header from '../components/header_back';  // ✅ import!
->>>>>>> 90017ac727d12cabc0137f3b54c311028690a0dc
 
 export default function LoginPage() {
   const [phone, setPhone] = useState('');
@@ -31,11 +27,10 @@ export default function LoginPage() {
     </Wrapper>
   );
 }
-
 const Wrapper = styled.div`
   width: 100vw;
   height: 100vh;
-  background-color: #f0f0f0;
+  background-color: #ffffff;
 
   display: flex;
   justify-content: center;
@@ -43,11 +38,11 @@ const Wrapper = styled.div`
 
 const Container = styled.div`
   width: 393px;
-  margin-top: 100px;
-  padding: 0 32px;
+  padding: 80px 32px 0; /* 상단 헤더 간격 고려 */
   display: flex;
   flex-direction: column;
-  background-color: white;
+  align-items: stretch;
+  background-color: #ffffff;
 `;
 
 const Title = styled.h2`
@@ -69,7 +64,7 @@ const Input = styled.input`
   border-radius: 8px;
   font-size: 16px;
   margin-bottom: 24px;
-  background-color: #f0f0f0;
+  background-color: #ffffff;
 
   &::placeholder {
     color: #8e8e8e;
@@ -85,8 +80,4 @@ const Button = styled.button`
   color: #212121;
   font-weight: bold;
   cursor: pointer;
-<<<<<<< HEAD
 `;
-=======
-`;
->>>>>>> 90017ac727d12cabc0137f3b54c311028690a0dc
