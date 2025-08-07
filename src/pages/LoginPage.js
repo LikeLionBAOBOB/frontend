@@ -1,8 +1,9 @@
+
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import Header from '../components/header_back';
+import HeaderBack from '../components/header_back';
 
-export default function LoginPage() {
+const LoginPage = () => {
   const [phone, setPhone] = useState('');
 
   const handleLogin = () => {
@@ -11,7 +12,7 @@ export default function LoginPage() {
 
   return (
     <Wrapper>
-      <Header /> 
+      <HeaderBack /> 
       <Container>
         <Title>일반 로그인</Title>
         <Label htmlFor="phone">전화번호</Label>
@@ -26,7 +27,12 @@ export default function LoginPage() {
       </Container>
     </Wrapper>
   );
-}
+};
+
+export default LoginPage;
+
+// ===== styled-components =====
+
 const Wrapper = styled.div`
   width: 100vw;
   height: 100vh;
@@ -38,7 +44,7 @@ const Wrapper = styled.div`
 
 const Container = styled.div`
   width: 393px;
-  padding: 80px 32px 0; /* 상단 헤더 간격 고려 */
+  padding: 80px 32px 0; /* 헤더 공간 확보 */
   display: flex;
   flex-direction: column;
   align-items: stretch;
