@@ -1,63 +1,72 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import Header from '../components/header_back';
+import HeaderBack from '../components/header_back';
 
-export default function LoginPage() {
-  const [phone, setPhone] = useState('');
+const LibrarianLoginPage = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const handleLogin = () => {
-    alert(`입력된 번호: ${phone}`);
+    alert(`입력된 이메일: ${email}\n입력된 비밀번호: ${password}`);
   };
 
   return (
     <Wrapper>
-      <Header /> 
+      <HeaderBack />
       <Container>
         <Title>사서 로그인</Title>
-        <Label htmlFor="phone">이메일</Label>
+
+        <Label htmlFor="email">이메일</Label>
         <Input
-          id="e-mail"
-          type="text"
+          id="email"
+          type="email"
           placeholder="abc@lib.or.kr"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
-        <Label htmlFor="phone">전화번호</Label>
+
+        <Label htmlFor="password">비밀번호</Label>
         <Input
-          id="phone"
-          type="text"
-          placeholder="000-0000-0000"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
+          id="password"
+          type="password"
+          placeholder="8자 이상의 비밀번호"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
+
         <Button onClick={handleLogin}>로그인</Button>
+        <Notice>권한을 가진 공공도서관 직원만 로그인 가능합니다.</Notice>
       </Container>
     </Wrapper>
   );
-}
+};
+
+export default LibrarianLoginPage;
+
 const Wrapper = styled.div`
   width: 100vw;
   height: 100vh;
   background-color: #ffffff;
-
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
 `;
 
 const Container = styled.div`
   width: 393px;
-  padding: 80px 32px 0; /* 상단 헤더 간격 고려 */
+  padding: 20px 24px 0;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  background-color: #ffffff;
 `;
 
 const Title = styled.h2`
-  font-size: 20px;
-  color: #1d1d1d;
+  font-size: 24px;
+  font-weight: 600;
+  color: #1D1D1D;
   text-align: center;
-  margin-bottom: 32px;
+  margin: 64px 0;
+  margin-bottom: 56px;
 `;
 
 const Label = styled.label`
@@ -71,7 +80,7 @@ const Input = styled.input`
   border: 1px solid #c6c6c6;
   border-radius: 8px;
   font-size: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
   background-color: #ffffff;
 
   &::placeholder {
@@ -88,4 +97,11 @@ const Button = styled.button`
   color: #212121;
   font-weight: bold;
   cursor: pointer;
+`;
+
+const Notice = styled.p`
+  font-size: 12px;
+  color: #8e8e8e;
+  margin-top: 20px;
+  text-align: center;
 `;

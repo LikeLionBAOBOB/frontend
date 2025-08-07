@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import HeaderBack from '../components/header_back';
+import HeaderBack from '../components/header_back'; // 헤더 컴포넌트
 
 const LoginPage = () => {
   const [phone, setPhone] = useState('');
@@ -12,7 +11,7 @@ const LoginPage = () => {
 
   return (
     <Wrapper>
-      <HeaderBack /> 
+      <HeaderBack />
       <Container>
         <Title>일반 로그인</Title>
         <Label htmlFor="phone">전화번호</Label>
@@ -31,31 +30,30 @@ const LoginPage = () => {
 
 export default LoginPage;
 
-// ===== styled-components =====
-
 const Wrapper = styled.div`
   width: 100vw;
   height: 100vh;
   background-color: #ffffff;
-
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
 `;
 
 const Container = styled.div`
   width: 393px;
-  padding: 80px 32px 0; /* 헤더 공간 확보 */
+  padding: 20px 24px 0;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  background-color: #ffffff;
 `;
 
 const Title = styled.h2`
-  font-size: 20px;
-  color: #1d1d1d;
+  font-size: 24px;
+  font-weight: 600;
+  color: #1D1D1D;
   text-align: center;
-  margin-bottom: 32px;
+  margin: 64px 0;
+  margin-bottom: 56px;
 `;
 
 const Label = styled.label`
