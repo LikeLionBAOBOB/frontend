@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import HeaderBack from '../components/header_back.js'; // 헤더 컴포넌트
+import statusBar from '../assets/images/StatusBar.png';
 
 const LoginPage = () => {
   const [phone, setPhone] = useState('');
@@ -11,6 +12,7 @@ const LoginPage = () => {
 
   return (
     <Wrapper>
+      <img src={statusBar} alt="상태바"/>
       <HeaderBack />
       <Container>
         <Title>일반 로그인</Title>

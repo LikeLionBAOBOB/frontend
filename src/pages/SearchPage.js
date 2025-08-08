@@ -2,9 +2,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { createGlobalStyle } from 'styled-components';
-import logoIcon from '../assets/icons/logo.png';
-import hamburgerIcon from '../assets/icons/hamburger.png';
-import backIcon from '../assets/icons/back.png';
+import HeaderBack from '../components/header_back.js'; // 헤더 컴포넌트
 import homebackground from '../assets/images/home_background.png';
 import statusBar from '../assets/images/StatusBar.png';
 import searchIcon from '../assets/icons/search.png';
@@ -67,30 +65,25 @@ const SearchPage = () => {
     };
 
     return(
-        <FullscreenWrapper>
+        <Wrapper>
             <img src={statusBar} alt="상태바"/>
-            <Header>
-                <HeaderIcon>
-                    <img src={backIcon} alt="뒤로가기" />
-                    <img src={logoIcon} alt="로고"/>
-                    <img src={hamburgerIcon} alt="햄버거로고" />
-                </HeaderIcon>
-            </Header>
-            <Main>
-                <SearchBox>
-                    <SearchInput 
-                        type="text" 
-                        placeholder="공공도서관 이름, 지역 검색"
-                        value={keyword}
-                        onChange={(e) => setKeyword(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                    />
-                    <Icon src={searchIcon} alt="검색아이콘" onClick={handleSearch}/>
-                </SearchBox>
-                <GuideText>공공도서관의 이름이나 지역을 검색해보세요!</GuideText>
-                
-            </Main>
-        </FullscreenWrapper>
+            <HeaderBack/>
+            <Container>
+                <Main>
+                    <SearchBox>
+                        <SearchInput 
+                            type="text" 
+                            placeholder="공공도서관 이름, 지역 검색"
+                            value={keyword}
+                            onChange={(e) => setKeyword(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                        />
+                        <Icon src={searchIcon} alt="검색아이콘" onClick={handleSearch}/>
+                    </SearchBox>
+                    <GuideText>공공도서관의 이름이나 지역을 검색해보세요!</GuideText>
+                </Main>
+            </Container>
+        </Wrapper>
 
     );
 };
@@ -102,19 +95,18 @@ export default SearchPage;
 
 //상단 헤더 부분
 //상단바 
-const FullscreenWrapper = styled.div`
-    width: 393px;
-    height: 793px;
-`;
-const Header = styled.header`
-    width: 393px;   
-    height: 36px;
-`;
-const HeaderIcon = styled.div`
-    padding: 0 20px;
+const Wrapper = styled.div`
+    width: 100vw;
+    height: 100vh;
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
+`;
+const Container = styled.div`
+    width: 393px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
 `;
 
 //메인

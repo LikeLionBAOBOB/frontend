@@ -2,13 +2,7 @@
 import React from "react";
 import styled from "styled-components";
 import { createGlobalStyle } from 'styled-components';
-import logoIcon from '../assets/icons/logo.png';
-import hamburgerIcon from '../assets/icons/hamburger.png';
-import backIcon from '../assets/icons/back.png';
-import homebackground from '../assets/images/home_background.png';
-import bookIcon from '../assets/icons/book.png';
-import starIcon from '../assets/icons/star.png';
-import leftIcon from '../assets/icons/left.png';
+import HeaderBack from '../components/header_back.js'; // 헤더 컴포넌트
 import statusBar from '../assets/images/StatusBar.png';
 import mapoIcon from '../assets/images/mapo_logo.png';
 import seodaemunIcon from '../assets/images/seodaemun_logo.png';
@@ -17,61 +11,59 @@ import goIcon from '../assets/icons/go.png';
 
 const SitesPage = () => {
     return(
-        <FullscreenWrapper>
+        <Wrapper>
             <img src={statusBar} alt="상태바"/>
             <Header>
-                <HeaderIcon>
-                    <img src={backIcon} alt="뒤로가기" />
-                    <img src={logoIcon} alt="로고"/>
-                    <img src={hamburgerIcon} alt="햄버거로고" />
-                </HeaderIcon>
+                <HeaderBack/>
                 <TitleText>사이트 바로가기</TitleText>
                 <SubText>공식 도서관 사이트 모음입니다.</SubText>
             </Header>
-            <Main>
-                <CardLink href="https://mplib.mapo.go.kr/intro/index.do" target="_blank">
-                    <Card>
-                        <Logo src={mapoIcon} alt="마포구립도서관 로고" />
-                        <Info>
-                            <LibName>
-                                <Name>마포구립도서관</Name>
-                                <GoBtn src={goIcon} alt="바로가기아이콘"/>
-                            </LibName>
-                            <Desc>마포구에서 운영하는 구립도서관 정보를 ㅤ한데 모아 제공하는 통합 사이트입니다.</Desc>
-                            <LinkText>https://mplib.mapo.go.kr/intro/index.do</LinkText>
-                        </Info>
-                    </Card>
-                </CardLink>
+            <Container>
+                <Main>
+                    <CardLink href="https://mplib.mapo.go.kr/intro/index.do" target="_blank">
+                        <Card>
+                            <Logo src={mapoIcon} alt="마포구립도서관 로고" />
+                            <Info>
+                                <LibName>
+                                    <Name>마포구립도서관</Name>
+                                    <GoBtn src={goIcon} alt="바로가기아이콘"/>
+                                </LibName>
+                                <Desc>마포구에서 운영하는 구립도서관 정보를 ㅤ한데 모아 제공하는 통합 사이트입니다.</Desc>
+                                <LinkText>https://mplib.mapo.go.kr/intro/index.do</LinkText>
+                            </Info>
+                        </Card>
+                    </CardLink>
 
-                <CardLink href="https://lib.sdm.or.kr/sdmlib/index.do" target="_blank">
-                    <Card>
-                        <Logo src={seodaemunIcon} alt="서대문구립도서관 로고" />
-                        <Info>
-                            <LibName>
-                                <Name>서대문구립도서관</Name>
-                                <GoBtn src={goIcon} alt="바로가기아이콘"/>
-                            </LibName>
-                            <Desc>서대문구에서 운영하는 구립도서관 정보를 한데 모아 제공하는 통합 사이트입니다.</Desc>
-                            <LinkText>https://lib.sdm.or.kr/sdmlib/index.do</LinkText>
-                        </Info>
-                    </Card>
-                </CardLink>
+                    <CardLink href="https://lib.sdm.or.kr/sdmlib/index.do" target="_blank">
+                        <Card>
+                            <Logo src={seodaemunIcon} alt="서대문구립도서관 로고" />
+                            <Info>
+                                <LibName>
+                                    <Name>서대문구립도서관</Name>
+                                    <GoBtn src={goIcon} alt="바로가기아이콘"/>
+                                </LibName>
+                                <Desc>서대문구에서 운영하는 구립도서관 정보를 한데 모아 제공하는 통합 사이트입니다.</Desc>
+                                <LinkText>https://lib.sdm.or.kr/sdmlib/index.do</LinkText>
+                            </Info>
+                        </Card>
+                    </CardLink>
 
-                <CardLink href="https://books.nl.go.kr/PU/main/index.do" target="_blank">
-                    <Card>
-                        <Logo src={nationalIcon}alt="국립중앙도서관 로고" />
-                        <Info>
-                            <LibName>
-                                <Name>국립중앙도서관</Name>
-                                <GoBtn src={goIcon} alt="바로가기아이콘"/>
-                            </LibName>
-                            <Desc>한국 도서관의 중심 기관으로, 다양한 자료와 서비스를 제공합니다.</Desc>
-                            <LinkText>https://books.nl.go.kr/PU/main/index.do</LinkText>
-                        </Info>
-                    </Card>
-                </CardLink>
-            </Main>
-        </FullscreenWrapper>
+                    <CardLink href="https://books.nl.go.kr/PU/main/index.do" target="_blank">
+                        <Card>
+                            <Logo src={nationalIcon}alt="국립중앙도서관 로고" />
+                            <Info>
+                                <LibName>
+                                    <Name>국립중앙도서관</Name>
+                                    <GoBtn src={goIcon} alt="바로가기아이콘"/>
+                                </LibName>
+                                <Desc>한국 도서관의 중심 기관으로, 다양한 자료와 서비스를 제공합니다.</Desc>
+                                <LinkText>https://books.nl.go.kr/PU/main/index.do</LinkText>
+                            </Info>
+                        </Card>
+                    </CardLink>
+                </Main>
+            </Container>
+        </Wrapper>
 
     );
 };
@@ -83,20 +75,24 @@ export default SitesPage;
 
 //상단 헤더 부분
 //상단바 
-const FullscreenWrapper = styled.div`
+const Wrapper = styled.div`
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+`;
+const Container = styled.div`
     width: 393px;
-    height: 793px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
 `;
 const Header = styled.header`
     width: 393px;   
     height: 147px;
 `;
-const HeaderIcon = styled.div`
-    padding: 0 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-`;
+
 //텍스트
 const TitleText = styled.h1`
     text-align: center;
@@ -119,7 +115,6 @@ const SubText = styled.p`
     margin: 0px;
     justify-content: center;
     align-items: center;
-    padding-bottom: 28px;
 `;
 
 //메인 부분

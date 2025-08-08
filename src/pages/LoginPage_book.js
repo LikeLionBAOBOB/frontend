@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import HeaderBack from '../components/header_back';
+import statusBar from '../assets/images/StatusBar.png';
 
 const LibrarianLoginPage = () => {
   const [email, setEmail] = useState('');
@@ -12,6 +13,7 @@ const LibrarianLoginPage = () => {
 
   return (
     <Wrapper>
+      <img src={statusBar} alt="상태바"/>
       <HeaderBack />
       <Container>
         <Title>사서 로그인</Title>

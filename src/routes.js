@@ -3,6 +3,7 @@ import SitesPage from './pages/SitesPage';
 import SearchPage from './pages/SearchPage';
 import LoginPage from './pages/LoginPage';
 import LoginPagead from './pages/LoginPage_book';
+import HomePageAdmin from './pages/HomePage_admin';
 
 const routes = [
     {
@@ -19,10 +20,15 @@ const routes = [
     },
     {   path: '/login',
         element: <LoginPage />,
-    },{
-            path: '/login-ad',
+    },
+    {
+        path: '/login-ad',
         element: <LoginPagead />,
-    }
+    },
+    {
+        path: '/admin-home',
+        element: <HomePageAdmin />,
+    },
 ];
 
 export default routes;
