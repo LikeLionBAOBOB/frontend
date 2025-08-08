@@ -1,6 +1,8 @@
 import HomePage from './pages/HomePage';
 import SitesPage from './pages/SitesPage';
 import SearchPage from './pages/SearchPage';
+import LoginPage from './pages/LoginPage';
+import LoginPagead from './pages/LoginPage_book';
 
 const routes = [
     {
@@ -15,6 +17,12 @@ const routes = [
         path: '/search',
         element: <SearchPage />,
     },
+    {   path: '/login',
+        element: <LoginPage />,
+    },{
+            path: '/login-ad',
+        element: <LoginPagead />,
+    }
 ];
 
 export default routes;
