@@ -6,17 +6,27 @@ import HeaderBack from '../components/header_back.js'; // 헤더 컴포넌트
 import homebackground from '../assets/images/home_background.png';
 import statusBar from '../assets/images/StatusBar.png';
 import searchIcon from '../assets/icons/search.png';
+import goIcon from '../assets/icons/go.png';
+import clockIcon from '../assets/icons/clock.png';
 
 
 const SearchPage = () => {
     //검색 기능 구현
     const [keyword, setKeyword] = useState('');
     const [results, setResults] = useState([]);
+    const [searched, setSearched] = useState(false); //검색 시도 여부 
 
     const accessToken = localStorage.getItem('accessToken');
 
     const handleSearch = async() => {
-        if (!keyword.trim()) return; //검색어 없을 경우 리턴x
+        if (!keyword.trim()){ //검색어 비어있는 경우
+            setSearched(true);
+            setResults([]);
+            return; //api 호출 없이 함수 종료 
+        }  
+
+        //검색어 비어있지 않은 경우
+        setSearched(true); 
         
         try {
             const response = await fetch('/admin_panel/myLibrary/info/', {
@@ -26,9 +36,17 @@ const SearchPage = () => {
                 }
             });
 
-            if (!response.ok) throw new Error('API 요청 실패');
+            if (response.status == 404){
+                setResults([]);
+                return;
+            }
+            if (!response.ok) throw new Error('API 요청 실패'); // 그 외 오류 
 
-            const data = await response.json();
+            const data = await response.json(); // 상태 체크 위에서 한 후, API 응답을 JSON으로 변환하여 data에 담기
+            if (!data || (Array.isArray(data) && data.length === 0)){
+                setResults([]);
+                return;
+            }
             
             // 혼잡도에 따라 tag, tagColor 결정
             let tag = '';
@@ -61,6 +79,7 @@ const SearchPage = () => {
             setResults([transformedData]);
         } catch (error) {
             console.error("도서관 정보 조회 실패:", error);
+            setResults([]);
         }
     };
 
@@ -80,7 +99,42 @@ const SearchPage = () => {
                         />
                         <Icon src={searchIcon} alt="검색아이콘" onClick={handleSearch}/>
                     </SearchBox>
+                    {!searched && ( // 아직 검색 시도 전 -> 가이드 문구 표시
                     <GuideText>공공도서관의 이름이나 지역을 검색해보세요!</GuideText>
+                    )}
+                    {searched && results.length === 0 && ( // 검색했는데 결과가 없는 경우
+                    <EmptyText>검색 결과가 존재하지 않습니다.</EmptyText>
+                    )}
+                    {results.length > 0 && ( // 검색 결과 있는 경우
+                        // 결과 리스트 렌더링 (results 배열의 원소를 순회하며 ResyltsCard로 렌더링)
+                        <ResultsList>
+                            {results.map((item, idx) => (
+                                <ResultCard key={idx}>
+                                    {/* 도서관 사진 썸네일 */}
+                                    <img src={item.imageUrl} alt={item.libraryName} />
+
+                                    {/* 상단 (이름,혼잡도,아이콘) */}
+                                    <Name>{item.LibName}</Name>
+                                    <Tag style={{ backgroundColor: item.tagcolor }}>
+                                        {item.tag}
+                                    </Tag>
+                                    <GoIcon src={goIcon} alt="정보이동아이콘"/>
+
+                                    {/* 도서관 정보 */}
+                                    <Detail>
+                                        <SeatsInfo>
+                                            <SeatsNum>{item.currentSeats}/{item.totalSeats}}</SeatsNum>
+                                            <Info>(현재 좌석 수 / 전체 좌석 수)</Info>
+                                        </SeatsInfo>
+                                        <OpenTime>
+                                            운영중 {item.openTime}~{item.closeTime}
+                                            <ClockIcon src={clockIcon} alt="시계아이콘"/>
+                                        </OpenTime>
+                                    </Detail>
+                                </ResultCard>
+                            ))}
+                        </ResultsList>
+                    )}
                 </Main>
             </Container>
         </Wrapper>
@@ -127,13 +181,16 @@ const SearchBox = styled.div`
     margin: 12px 19.5px 0px 20.5px;
 `;
 const SearchInput = styled.input`
-    color: #8E8E8E;
+    color: #1D1D1D;
     font-family: "Pretendard GOV Variable";
     font-size: 16px;
     font-weight: 400;
     letter-spacing: 0.5px;
     border: none;
     outline: none;
+    &::placeholder {
+        color: #8E8E8E; /
+    }
 `;
 const GuideText = styled.h3`
     margin: 0px;
@@ -144,9 +201,85 @@ const GuideText = styled.h3`
     line-height: 125%;
     padding: 120px 56px 549px 56px;
 `;
+const EmptyText = styled.h3`
+    margin: 0px;
+    color: #8E8E8E;
+    font-family: "Pretendard GOV Variable";
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 125%;
+    padding: 120px 97px 549px 97px;
+`;
 const Icon = styled.img`
     width: 24px;
     height: 24px;
     justify-content: center;
     align-items: center;
+`;
+
+//도서관 카드
+const ResultsList = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+`;
+const ResultCard = styled.div`
+    width: 353px;
+    height: 122px;
+    border-radius: 10px;
+    border: 1px solid #C6C6C6;
+    background: #FFF;
+`;
+const Name = styled.h3`
+    color:  #383838;
+    font-family: "Pretendard GOV Variable";
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 150%; 
+    margin: 0px;
+`;
+const Tag = styled.div`
+    display: flex;
+    width: 48px;
+    padding: 4px 16px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+`;
+const GoIcon = styled.img`
+    width: 24px;
+    height: 24px;
+`;
+const Detail = styled.div`
+    display: flex;
+    flex-direction: column;
+`;
+const SeatsInfo = styled.div`
+    display: flex;
+    flex-direction: column;
+`;
+const SeatsNum = styled.span`
+    color: #0F0F0F; 
+    font-family: "Pretendard GOV Variable";
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 140%; 
+`;
+const Info = styled.div`
+    color: #8E8E8E;
+    font-family: "Pretendard GOV Variable";
+    font-size: 8px;
+    font-weight: 300;
+    line-height: 140%;
+`;
+const OpenTime = styled.div`
+    color: #555;
+    font-family: "Pretendard GOV Variable";
+    font-size: 10px;
+    font-weight: 400;
+    line-height: 150%; 
+`;
+const ClockIcon = styled.img`
+    width: 16px;
+    height: 16px;
 `;
