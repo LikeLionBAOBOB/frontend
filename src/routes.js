@@ -1,5 +1,6 @@
 import HomePage from './pages/HomePage';
 import SitesPage from './pages/SitesPage';
+import SearchPage from './pages/SearchPage';
 
 const routes = [
     {
@@ -9,6 +10,10 @@ const routes = [
     {
         path: '/sites',
         element: <SitesPage />,
+    },
+    {
+        path: '/search',
+        element: <SearchPage />,
     },
 ];
 
