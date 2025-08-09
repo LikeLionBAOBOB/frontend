@@ -1,8 +1,9 @@
 import HomePage from './pages/HomePage';
 import SitesPage from './pages/SitesPage';
+import SearchPage from './pages/SearchPage';
 import LoginPage from './pages/LoginPage';
 import LoginPagead from './pages/LoginPage_book';
-import Seatmappage from './pages/seatmap';
+import HomePageAdmin from './pages/HomePage_admin';
 
 const routes = [
     {
@@ -13,15 +14,20 @@ const routes = [
         path: '/sites',
         element: <SitesPage />,
     },
+    {
+        path: '/search',
+        element: <SearchPage />,
+    },
     {   path: '/login',
         element: <LoginPage />,
-    },{
-            path: '/login-ad',
+    },
+    {
+        path: '/login-ad',
         element: <LoginPagead />,
     },
     {
-            path: '/seatmap',
-        element: <Seatmappage />,
+        path: '/admin-home',
+        element: <HomePageAdmin />,
     },
 ];
 

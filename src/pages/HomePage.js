@@ -2,48 +2,47 @@
 import React from "react";
 import styled from "styled-components";
 import { createGlobalStyle } from 'styled-components';
+import HeaderProfile from '../components/header_profile.js'; //프로필있는 헤더 컴포넌트 
 import homelogoIcon from '../assets/icons/home_logo.png';
-import hamburgerIcon from '../assets/icons/hamburger.png';
-import profileIcon from '../assets/icons/profile.png';
 import homebackground from '../assets/images/home_background.png';
 import bookIcon from '../assets/icons/book.png';
 import starIcon from '../assets/icons/star.png';
 import leftIcon from '../assets/icons/left.png';
 import statusBar from '../assets/images/StatusBar.png';
 
+
 const HomePage = () => {
     return(
-        <FullscreenWrapper>
+        <Wrapper>
             <img src={statusBar} alt="상태바"/>
-            <Header>
-                <img src={profileIcon} alt="프로필로고" />
-                <img src={hamburgerIcon} alt="햄버거로고" />
-            </Header>
-            <Main>
-                {/* 상단 */}
-                <LogoImage src={homelogoIcon} alt="홈로고"/>
-                <LogoText>열람:뜰</LogoText>
-                <SubText>공공도서관 좌석 확인 · 관리 서비스</SubText>
-                {/*하단 버튼 */}
-                <ButtonsContainer>
-                    <ActionButton>
-                        <Left>
-                            <Icon src={bookIcon} alt="책아이콘" />
-                            <BtnText>도서관 검색</BtnText>
-                        </Left>
-                        <ArrowIcon src={leftIcon} alt="우화살표" />
-                    </ActionButton>
+            <HeaderProfile/>
+            <Container>
+                <Main>
+                    {/* 상단 */}
+                    <LogoImage src={homelogoIcon} alt="홈로고"/>
+                    <LogoText>열람:뜰</LogoText>
+                    <SubText>공공도서관 좌석 확인 · 관리 서비스</SubText>
+                    {/*하단 버튼 */}
+                    <ButtonsContainer>
+                        <ActionButton>
+                            <Left>
+                                <Icon src={bookIcon} alt="책아이콘" />
+                                <BtnText>도서관 검색</BtnText>
+                            </Left>
+                            <ArrowIcon src={leftIcon} alt="우화살표" />
+                        </ActionButton>
 
-                    <ActionButton>
-                        <Left>
-                            <Icon src={starIcon} alt="별아이콘" />
-                            <BtnText>나의 도서관</BtnText>
-                        </Left>
-                        <ArrowIcon src={leftIcon} alt="우화살표" />
-                    </ActionButton>
-                </ButtonsContainer>
-            </Main>
-        </FullscreenWrapper>
+                        <ActionButton>
+                            <Left>
+                                <Icon src={starIcon} alt="별아이콘" />
+                                <BtnText>나의 도서관</BtnText>
+                            </Left>
+                            <ArrowIcon src={leftIcon} alt="우화살표" />
+                        </ActionButton>
+                    </ButtonsContainer>
+                </Main>
+            </Container>
+        </Wrapper>
 
     );
 };
@@ -51,26 +50,26 @@ const HomePage = () => {
 export default HomePage;
 
 //styled-components 스타일 정의
-
-
-//상단 헤더 부분
-const FullscreenWrapper = styled.div`
-    width: 393px;
-    height: 793px;
-`;
-const Header = styled.header`
-    width: 353px;   
-    height: 44px;
-    padding: 0 20px;
+const Wrapper = styled.div`
+    width: 100vw;
+    height: 100vh;
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
+`;
+const Container = styled.div`
+    width: 393px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    background: url(${homebackground}) no-repeat center;
+    background-size: 393px 793px;;
 `;
 //메인 부분
 const Main = styled.div`
     width: 100%;
     height: 749px;
-    background-image: url(${homebackground});
+
     position: relative;
 
 `;
