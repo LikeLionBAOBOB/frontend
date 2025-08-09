@@ -4,6 +4,7 @@ import SearchPage from './pages/SearchPage';
 import LoginPage from './pages/LoginPage';
 import LoginPagead from './pages/LoginPage_book';
 import HomePageAdmin from './pages/HomePage_admin';
+import SeatPage from './pages/seatmap';
 
 const routes = [
     {
@@ -28,6 +29,10 @@ const routes = [
     {
         path: '/admin-home',
         element: <HomePageAdmin />,
+    },
+        {
+        path: '/admin-seat',
+        element: <SeatPage />,
     },
 ];
 

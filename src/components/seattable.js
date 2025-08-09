@@ -1,46 +1,117 @@
-import React from 'react';
-import styled from 'styled-components';
-import Seat from './seat';
+import React from "react";
+import styled from "styled-components";
 
-const SeatTable = ({ onSeatClick }) => {
-  const seatLayout = [
-    [1, 2],
-    [3, 4],
-    [5, 6],
-  ];
+/* 치수 */
+const TABLE_W = 49.678;   // 회전 전 폭
+const TABLE_H = 114.074;  // 회전 전 높이
+const SEAT = 20;
+const GAP_TABLE_SEAT = 13;   // ■ 사각 좌석 ↔ 사각 책상
+const SEAT_GAP = 24;         // 좌석끼리 간격
+const CIRCLE = 60;
+const GAP_CIRCLE_SEAT = 11;  // ● 좌/우 좌석 ↔ 원형
 
-  const seatStatus = {
-    1: 'available',
-    2: 'reserved',
-    3: 'occupied',
-    4: 'available',
-    5: 'reserved',
-    6: 'occupied',
-  };
+const CANVAS_W = 353;
+const CANVAS_H = 439;
+
+const SeatTable = ({ seats = [], selectedSeatId, onSeatClick }) => {
+  const get = id => seats.find(s => s.id === id) || { id, status:"free" };
+  const Seat = (s) => (
+    <SeatDot
+      key={s.id}
+      $status={s.status}
+      $selected={selectedSeatId===s.id}
+      onClick={() => onSeatClick?.(s.id, s.status)}
+    />
+  );
+
+  // 중심/가드라인 계산
+  const cx = CANVAS_W / 2;         // 176.5
+  const cy = CANVAS_H / 2;         // 219.5
+
+  // 상단 테두리와 책상 간격 53px → 책상 중심 y
+  const topY = 53 + TABLE_W / 2;                 // ≈ 77.84
+  // 하단 대칭(53px)
+  const botY = CANVAS_H - (53 + TABLE_W / 2);    // ≈ 361.16
+
+  // 좌/우 책상 중심 x(좌우 균형)
+  const leftX  = CANVAS_W * 0.28;  // ≈ 98.84
+  const rightX = CANVAS_W * 0.72;  // ≈ 254.16
 
   return (
-    <TableWrapper>
-      {seatLayout.map((row, i) => (
-        <Row key={i}>
-          {row.map((id) => (
-            <Seat key={id} status={seatStatus[id]} onClick={() => onSeatClick(id)} />
-          ))}
-        </Row>
-      ))}
-    </TableWrapper>
+    <Stage style={{ width: CANVAS_W, height: CANVAS_H }}>
+      {/* 상단 좌/우 책상 + 아래 좌석 2개 (13px) */}
+      <RectTable style={{ left:leftX,  top:topY }} />
+      <SeatRow style={{ left:leftX,  top: topY + (TABLE_W/2 + GAP_TABLE_SEAT) }}>
+        {Seat(get(1))}<Spacer style={{ width: SEAT_GAP }} />{Seat(get(2))}
+      </SeatRow>
+
+      <RectTable style={{ left:rightX, top:topY }} />
+      <SeatRow style={{ left:rightX, top: topY + (TABLE_W/2 + GAP_TABLE_SEAT) }}>
+        {Seat(get(3))}<Spacer style={{ width: SEAT_GAP }} />{Seat(get(4))}
+      </SeatRow>
+
+      {/* 중앙 원 + 좌/우 좌석 (11px) → 위/아래 대칭은 seat-row와 cy의 거리로 자동 일치 */}
+      <Circle style={{ left:cx, top:cy }} />
+      <SeatRow style={{ left: cx - (CIRCLE/2 + GAP_CIRCLE_SEAT + SEAT/2), top: cy }}>
+        {Seat(get(5))}
+      </SeatRow>
+      <SeatRow style={{ left: cx + (CIRCLE/2 + GAP_CIRCLE_SEAT + SEAT/2), top: cy }}>
+        {Seat(get(6))}
+      </SeatRow>
+
+      {/* 하단 좌/우 책상 + 위 좌석 2개 (13px) */}
+      <RectTable style={{ left:leftX,  top:botY }} />
+      <SeatRow style={{ left:leftX,  top: botY - (TABLE_W/2 + GAP_TABLE_SEAT) }}>
+        {Seat(get(7))}<Spacer style={{ width: SEAT_GAP }} />{Seat(get(8))}
+      </SeatRow>
+
+      <RectTable style={{ left:rightX, top:botY }} />
+      <SeatRow style={{ left:rightX, top: botY - (TABLE_W/2 + GAP_TABLE_SEAT) }}>
+        {Seat(get(12))}<Spacer style={{ width: SEAT_GAP }} />{Seat(get(13))}
+      </SeatRow>
+    </Stage>
   );
 };
 
 export default SeatTable;
 
-const TableWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+/* styles */
+const Stage = styled.div`
+  position: relative;
 `;
 
-const Row = styled.div`
-  display: flex;
-  gap: 20px;
-  justify-content: center;
+const RectTable = styled.div`
+  position: absolute;
+  transform: translate(-50%, -50%) rotate(90deg);
+  width: ${TABLE_W}px;
+  height: ${TABLE_H}px;
+  background: var(--border, #C6C6C6);
+  border-radius: 0;
+`;
+
+const SeatRow = styled.div`
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex; align-items: center;
+`;
+
+const Spacer = styled.div``;
+
+const SeatDot = styled.button`
+  width: ${SEAT}px; height: ${SEAT}px;
+  transform: rotate(90deg);
+  border: none; border-radius: 0;
+  background: #C6C6C6;
+  ${p => p.$status==="occupied" && `background:#A8A8A8;`}
+  ${p => p.$status==="hogged_30" && `background:rgba(239,62,94,.25);`}
+  ${p => p.$status==="hogged_60" && `background:rgba(239,62,94,1);`}
+  cursor: ${p => p.$status==="hogged_60" ? "pointer" : "default"};
+  box-shadow: ${p => p.$selected ? "0 0 0 2px rgba(239,62,94,.32)" : "none"};
+`;
+
+const Circle = styled.div`
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: ${CIRCLE}px; height: ${CIRCLE}px;
+  background: #C6C6C6; border-radius: 50%;
 `;
