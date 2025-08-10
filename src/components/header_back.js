@@ -1,4 +1,3 @@
-// components/header_back.js
 
 import React from 'react';
 import { useNavigate } from "react-router-dom";
@@ -23,12 +22,18 @@ const HeaderBack = () => {
 
 export default HeaderBack;
 
-// 스타일 컴포넌트
 const HeaderWrapper = styled.header`
   width: 393px;   
   height: 44px;
   background: rgba(255, 255, 255, 0.80);
   backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+`;
+
+const StatusBarImage = styled.img`
+  width: 100%;
+  height: auto;
 `;
 
 const Icons = styled.div`
@@ -36,4 +41,5 @@ const Icons = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  height: 64px;
 `;

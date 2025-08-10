@@ -9,6 +9,7 @@ import searchIcon from '../assets/icons/search.png';
 import goIcon from '../assets/icons/go.png';
 import clockIcon from '../assets/icons/clock.png';
 
+const API_BASE = process.env.REACT_APP_API_BASE || 'http://127.0.0.1:8000';
 
 const SearchPage = () => {
     //검색 기능 구현
@@ -29,12 +30,21 @@ const SearchPage = () => {
         setSearched(true); 
         
         try {
-            const response = await fetch('/admin_panel/myLibrary/info/', {
+            const url = `${API_BASE}/libraries/search?search_word=${encodeURIComponent(keyword)}`;
+
+            const response = await fetch(url, {
                 method: 'GET',
                 headers: {
-                    Authorization: `Bearer ${accessToken}`
-                }
+                    Authorization: `Bearer ${accessToken}`,
+                },
             });
+
+            if (response.status === 400) {
+                const err = await response.json().catch(() => ({}));
+                console.warn(err?.message || '요청 오류');
+                setResults([]);
+                return;
+            }
 
             if (response.status == 404){
                 setResults([]);
@@ -43,40 +53,33 @@ const SearchPage = () => {
             if (!response.ok) throw new Error('API 요청 실패'); // 그 외 오류 
 
             const data = await response.json(); // 상태 체크 위에서 한 후, API 응답을 JSON으로 변환하여 data에 담기
-            if (!data || (Array.isArray(data) && data.length === 0)){
-                setResults([]);
-                return;
-            }
+            const list = Array.isArray(data?.results) ? data.results : [];
             
             // 혼잡도에 따라 tag, tagColor 결정
-            let tag = '';
-            let tagColor = '';
-
-            if (data.congestion === '여유') {
-            tag = '여유';
-            tagColor = '#33A14B'; 
-            } else if (data.congestion === '보통') {
-            tag = '보통';
-            tagColor = '#FFB724'; 
-            } else if (data.congestion === '혼잡') {
-            tag = '혼잡';
-            tagColor = '#FF474D'; 
-            }
-
-            const transformedData = {
-                libraryName: data.name,
-                imageUrl: '/images/library_example.jpg', // 명세서에 아직 없음 
-                currentSeats: data.current_seats,
-                totalSeats: data.total_seats,
-                libCongestion: data.congestion,
-                openTime: data.open_time,
-                closeTime: data.close_time,
-                isOpen: data.is_open,
-                tag: tag,
-                tagColor: tagColor
+            const toTag = (cong) => {
+                if (cong === '여유') return { tag: '여유', tagColor: '#33A14B' };
+                if (cong === '보통') return { tag: '보통', tagColor: '#FFB724' };
+                if (cong === '혼잡') return { tag: '혼잡', tagColor: '#FF474D' };
+                return { tag: cong || '', tagColor: '#C6C6C6' };
             };
 
-            setResults([transformedData]);
+            const mapped = list.map((it) => {
+                const { tag, tagColor } = toTag(it.congestion);
+                return {
+                    libraryName: it.name,
+                    imageUrl: '/images/library_example.jpg', // 임시
+                    currentSeats: it.current_seats,
+                    totalSeats: it.total_seats,
+                    libCongestion: it.congestion,
+                    openTime: it.open_time,
+                    closeTime: it.close_time,
+                    isOpen: it.is_open,
+                    tag,
+                    tagColor,
+                };
+            });
+
+            setResults(mapped);
         } catch (error) {
             console.error("도서관 정보 조회 실패:", error);
             setResults([]);
@@ -114,8 +117,8 @@ const SearchPage = () => {
                                     <img src={item.imageUrl} alt={item.libraryName} />
 
                                     {/* 상단 (이름,혼잡도,아이콘) */}
-                                    <Name>{item.LibName}</Name>
-                                    <Tag style={{ backgroundColor: item.tagcolor }}>
+                                    <Name>{item.libraryName}</Name>
+                                    <Tag style={{ backgroundColor: item.tagColor }}>
                                         {item.tag}
                                     </Tag>
                                     <GoIcon src={goIcon} alt="정보이동아이콘"/>
@@ -123,7 +126,7 @@ const SearchPage = () => {
                                     {/* 도서관 정보 */}
                                     <Detail>
                                         <SeatsInfo>
-                                            <SeatsNum>{item.currentSeats}/{item.totalSeats}}</SeatsNum>
+                                            <SeatsNum>{item.currentSeats}/{item.totalSeats}</SeatsNum>
                                             <Info>(현재 좌석 수 / 전체 좌석 수)</Info>
                                         </SeatsInfo>
                                         <OpenTime>
@@ -189,7 +192,7 @@ const SearchInput = styled.input`
     border: none;
     outline: none;
     &::placeholder {
-        color: #8E8E8E; /
+        color: #8E8E8E;
     }
 `;
 const GuideText = styled.h3`
