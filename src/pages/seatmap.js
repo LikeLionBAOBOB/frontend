@@ -67,7 +67,7 @@ const SeatMapPage = () => {
           <SeatTable seats={SEATS} selectedSeatId={selectedSeatId} onSeatClick={onSeatClick} />
         </Board>
 
-        {/* ▼ 좌석 배치도 아래 로그 패널 */}
+        {/* ▼ 좌석 배치도 아래 로그 패널 (내용 길이에 맞게 자동 높이) */}
         {selectedSeatId && (
           <LogCard>
             <LogTitle>{selectedSeatId}번 좌석 로그</LogTitle>
@@ -88,7 +88,7 @@ const SeatMapPage = () => {
 
 export default SeatMapPage;
 
-/* styles (기존 유지 + 로그 카드 추가) */
+/* styles */
 const Page = styled.div` width:393px; margin:0 auto; `;
 const Main = styled.div` padding: 0 12px 16px; `;
 const SectionTitle = styled.h3`
@@ -126,6 +126,7 @@ const Board = styled.div`
   margin-top: 28px;
   width: 353px;
   height: 439px;
+  box-sizing: border-box;            /* 보더 포함 폭 고정 */
   border-radius: 15px;
   border: 1px solid var(--Disabled, #E4E4E4);
   background: var(--Background-1, #F8F8F8);
@@ -133,25 +134,28 @@ const Board = styled.div`
   margin-left:auto; margin-right:auto;
 `;
 
-/* ▼ 로그 카드 (배치도 아래 등장) */
+/* ▼ 로그 카드 — 내용 길이에 맞게 자동 높이, 마지막 줄 아래 여백 24px */
 const LogCard = styled.div`
   margin: 12px auto 0;
   width: 353px;
-  background: #FFECEE;             /* 연한 핑크 */
+  box-sizing: border-box;             /* 보더 포함 폭 고정 */
+  background: #FFE3E6;                /* 피그마 배경 */
   border: 1px solid #FFD6DB;
-  border-radius: 12px;
-  padding: 14px 14px 12px;
+  border-radius: 15px;
+  padding: 20px 20px 24px;            /* 마지막 로그 아래 24px 확보 */
 `;
 const LogTitle = styled.div`
   font-weight: 700;
   margin-bottom: 8px;
 `;
 const LogList = styled.div`
-  display: grid; gap: 6px;
+  display: grid;
+  gap: 6px;                           /* 로그 줄 간격 */
 `;
 const LogRow = styled.div`
   display: flex; gap: 10px; align-items: baseline;
-  opacity: ${p => (p.$ended ? .45 : 1)};        /* ③ 종료 세션 투명도 */
-  color: ${p => (p.$over60 ? "#C41E3A" : "#333")}; /* ④ 60분 경과 빨강 */
+  line-height: 1.45;                  /* 가독성 */
+  opacity: ${p => (p.$ended ? .45 : 1)};           /* 종료 세션 투명도 */
+  color: ${p => (p.$over60 ? "#C41E3A" : "#333")}; /* 60분 경과 빨강 */
   time { width: 44px; font-variant-numeric: tabular-nums; }
 `;
