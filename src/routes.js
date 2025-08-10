@@ -26,7 +26,7 @@ const routes = [
         element: <LoginPagead />,
     },
     {
-        path: '/admin-home',
+        path: '/home-ad',
         element: <HomePageAdmin />,
     },
 ];
