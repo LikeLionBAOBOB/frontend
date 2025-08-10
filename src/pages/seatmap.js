@@ -1,4 +1,4 @@
-// pages/seatmap.js
+
 import React, { useState, useCallback } from "react";
 import styled from "styled-components";
 import HeaderBackHero from "../components/header_ad";
@@ -9,10 +9,10 @@ const SEATS = [
   { id: 3, status: "free" }, { id: 4, status: "free" },
   { id: 5, status: "free" }, { id: 6, status: "free" },
   { id: 7, status: "free" }, { id: 8, status: "free" },
-  { id:12, status: "free" }, { id:13, status: "hogged_60" }, // 🔴 예시
+  { id:12, status: "free" }, { id:13, status: "hogged_60" },
 ];
 
-/* ▼ 로그 목데이터 */
+/* 로그 목데이터 */
 const LOGS = {
   13: [
     { time: "14:00", text: "사석화가 시작되었습니다.", ended: true },
@@ -29,7 +29,6 @@ const SeatMapPage = () => {
   const [selectedSeatId, setSelectedSeatId] = useState(null);
   const usingCount = 3, totalCount = 10;
 
-  // 🔴 1시간 이상 사석화 좌석만 열람 가능 + 토글
   const onSeatClick = useCallback((id, status) => {
     if (status !== "hogged_60") return;
     setSelectedSeatId(prev => (prev === id ? null : id));
@@ -121,12 +120,12 @@ const Dot = styled.span`
                     : "var(--red-soft, rgba(239,62,94,.5))"};
 `;
 
-/* 회색 감싸는 사각형 */
+
 const Board = styled.div`
   margin-top: 28px;
   width: 353px;
   height: 439px;
-  box-sizing: border-box;            /* 보더 포함 폭 고정 */
+  box-sizing: border-box;           
   border-radius: 15px;
   border: 1px solid var(--Disabled, #E4E4E4);
   background: var(--Background-1, #F8F8F8);
@@ -134,15 +133,15 @@ const Board = styled.div`
   margin-left:auto; margin-right:auto;
 `;
 
-/* ▼ 로그 카드 — 내용 길이에 맞게 자동 높이, 마지막 줄 아래 여백 24px */
+
 const LogCard = styled.div`
   margin: 12px auto 0;
   width: 353px;
-  box-sizing: border-box;             /* 보더 포함 폭 고정 */
-  background: #FFE3E6;                /* 피그마 배경 */
+  box-sizing: border-box;            
+  background: #FFE3E6;               
   border: 1px solid #FFD6DB;
   border-radius: 15px;
-  padding: 20px 20px 24px;            /* 마지막 로그 아래 24px 확보 */
+  padding: 20px 20px 24px;            
 `;
 const LogTitle = styled.div`
   font-weight: 700;
@@ -150,12 +149,12 @@ const LogTitle = styled.div`
 `;
 const LogList = styled.div`
   display: grid;
-  gap: 6px;                           /* 로그 줄 간격 */
+  gap: 6px;                         
 `;
 const LogRow = styled.div`
   display: flex; gap: 10px; align-items: baseline;
-  line-height: 1.45;                  /* 가독성 */
-  opacity: ${p => (p.$ended ? .45 : 1)};           /* 종료 세션 투명도 */
-  color: ${p => (p.$over60 ? "#C41E3A" : "#333")}; /* 60분 경과 빨강 */
+  line-height: 1.45;                 
+  opacity: ${p => (p.$ended ? .45 : 1)};           
+  color: ${p => (p.$over60 ? "#C41E3A" : "#333")}; 
   time { width: 44px; font-variant-numeric: tabular-nums; }
 `;

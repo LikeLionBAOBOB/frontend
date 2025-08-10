@@ -1,14 +1,13 @@
 import React from "react";
 import styled from "styled-components";
 
-/* 치수 */
-const TABLE_W = 49.678;   // 회전 전 폭
-const TABLE_H = 114.074;  // 회전 전 높이
+const TABLE_W = 49.678; 
+const TABLE_H = 114.074;
 const SEAT = 20;
-const GAP_TABLE_SEAT = 13;   // ■ 사각 좌석 ↔ 사각 책상
-const SEAT_GAP = 24;         // 좌석끼리 간격
+const GAP_TABLE_SEAT = 13;  
+const SEAT_GAP = 24;        
 const CIRCLE = 60;
-const GAP_CIRCLE_SEAT = 11;  // ● 좌/우 좌석 ↔ 원형
+const GAP_CIRCLE_SEAT = 11; 
 
 const CANVAS_W = 353;
 const CANVAS_H = 439;
@@ -24,22 +23,19 @@ const SeatTable = ({ seats = [], selectedSeatId, onSeatClick }) => {
     />
   );
 
-  // 중심/가드라인 계산
-  const cx = CANVAS_W / 2;         // 176.5
-  const cy = CANVAS_H / 2;         // 219.5
 
-  // 상단 테두리와 책상 간격 53px → 책상 중심 y
-  const topY = 53 + TABLE_W / 2;                 // ≈ 77.84
-  // 하단 대칭(53px)
-  const botY = CANVAS_H - (53 + TABLE_W / 2);    // ≈ 361.16
+  const cx = CANVAS_W / 2;        
+  const cy = CANVAS_H / 2;        
 
-  // 좌/우 책상 중심 x(좌우 균형)
-  const leftX  = CANVAS_W * 0.28;  // ≈ 98.84
-  const rightX = CANVAS_W * 0.72;  // ≈ 254.16
+
+  const topY = 53 + TABLE_W / 2;               
+  const botY = CANVAS_H - (53 + TABLE_W / 2);   
+
+  const leftX  = CANVAS_W * 0.28;  
+  const rightX = CANVAS_W * 0.72;  
 
   return (
     <Stage style={{ width: CANVAS_W, height: CANVAS_H }}>
-      {/* 상단 좌/우 책상 + 아래 좌석 2개 (13px) */}
       <RectTable style={{ left:leftX,  top:topY }} />
       <SeatRow style={{ left:leftX,  top: topY + (TABLE_W/2 + GAP_TABLE_SEAT) }}>
         {Seat(get(1))}<Spacer style={{ width: SEAT_GAP }} />{Seat(get(2))}
@@ -50,7 +46,6 @@ const SeatTable = ({ seats = [], selectedSeatId, onSeatClick }) => {
         {Seat(get(3))}<Spacer style={{ width: SEAT_GAP }} />{Seat(get(4))}
       </SeatRow>
 
-      {/* 중앙 원 + 좌/우 좌석 (11px) → 위/아래 대칭은 seat-row와 cy의 거리로 자동 일치 */}
       <Circle style={{ left:cx, top:cy }} />
       <SeatRow style={{ left: cx - (CIRCLE/2 + GAP_CIRCLE_SEAT + SEAT/2), top: cy }}>
         {Seat(get(5))}
@@ -59,7 +54,6 @@ const SeatTable = ({ seats = [], selectedSeatId, onSeatClick }) => {
         {Seat(get(6))}
       </SeatRow>
 
-      {/* 하단 좌/우 책상 + 위 좌석 2개 (13px) */}
       <RectTable style={{ left:leftX,  top:botY }} />
       <SeatRow style={{ left:leftX,  top: botY - (TABLE_W/2 + GAP_TABLE_SEAT) }}>
         {Seat(get(7))}<Spacer style={{ width: SEAT_GAP }} />{Seat(get(8))}
@@ -75,7 +69,7 @@ const SeatTable = ({ seats = [], selectedSeatId, onSeatClick }) => {
 
 export default SeatTable;
 
-/* styles */
+
 const Stage = styled.div`
   position: relative;
 `;
