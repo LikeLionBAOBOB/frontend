@@ -1,4 +1,4 @@
-// src/pages/mylib.js
+
 import React, { useMemo } from "react";
 import styled from "styled-components";
 
@@ -40,10 +40,9 @@ const MyLibraries = () => {
         <ListWrap>
           {libraries.map((lib) => (
             <Card key={lib.name}>
-              {/* 왼쪽 썸네일: 100x122 고정 */}
+
               <Thumb style={{ backgroundImage: `url(${lib.image})` }} />
 
-              {/* 우측 정보 */}
               <Info>
                 <TopLine>
                   <LibName>{lib.name}</LibName>
@@ -70,9 +69,8 @@ const MyLibraries = () => {
 
 export default MyLibraries;
 
-/* =============== styled-components =============== */
 
-/* 배경 흰색, 중앙 정렬 */
+
 const Outer = styled.div`
   min-height: 100dvh;
   background: #fff;
@@ -80,7 +78,7 @@ const Outer = styled.div`
   justify-content: center;
 `;
 
-/* 프레임 393x852, 가로 오버플로우 차단 */
+
 const PhoneFrame = styled.div`
   width: 393px;
   height: 852px;
@@ -88,8 +86,8 @@ const PhoneFrame = styled.div`
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  overflow-x: hidden;              /* ✅ 가로 스크롤 방지 */
-  box-sizing: border-box;          /* 내부 폭 계산 안정화 */
+  overflow-x: hidden;              
+  box-sizing: border-box;          
 `;
 
 const StatusImg = styled.img`
@@ -98,7 +96,7 @@ const StatusImg = styled.img`
   display: block;
 `;
 
-/* 타이틀 */
+
 const TitleBox = styled.div`
   width: 100%;
   margin-top: 20px;
@@ -119,26 +117,25 @@ const Subtitle = styled.p`
   margin: 0;
 `;
 
-/* 타이틀 아래 미색 바(문장↔바 간격 28px) */
 const BeigeBand = styled.div`
   width: 100%;
   height: 12px;
   background: #efefef;
-  margin-top: 28px;                /* ✅ */
+  margin-top: 28px;                
 `;
 
-/* 리스트 컨테이너: 좌우 20px(시안) */
+
 const ListWrap = styled.div`
   width: 100%;
   background: #efefef;
-  padding: 12px 20px 24px 20px;    /* ✅ 양쪽 20px */
+  padding: 12px 20px 24px 20px;    
   display: flex;
   flex-direction: column;
   gap: 12px;
   box-sizing: border-box;
 `;
 
-/* 카드: 컨테이너 안에서 100% = 353px, 높이 122 */
+
 const Card = styled.div`
   width: 100%;
   height: 122px;
@@ -146,38 +143,38 @@ const Card = styled.div`
   background: #fff;
   box-shadow: 0 4px 16px rgba(0,0,0,0.08);
   display: grid;
-  grid-template-columns: 100px 1fr;      /* ✅ 썸네일 100px + 내용 */
+  grid-template-columns: 100px 1fr;       
   column-gap: 12px;
-  overflow: hidden;                       /* 라운드 안 벗어나게 */
+  overflow: hidden;                      
 `;
 
-/* 왼쪽 이미지 */
+
 const Thumb = styled.div`
-  width: 100px;                            /* ✅ */
-  height: 122px;                           /* ✅ */
-  flex-shrink: 0;                          /* ✅ */
+  width: 100px;                            
+  height: 122px;                           
+  flex-shrink: 0;                          
   background: #ddd center/cover no-repeat;
 `;
 
-/* 내용 */
+
 const Info = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 10px 8px 10px 0;                /* 우측 여백만 살짝 */
-  min-width: 0;                             /* 텍스트 줄바꿈 제어 */
+  padding: 10px 8px 10px 0;               
+  min-width: 0;                             
   gap: 6px;
   box-sizing: border-box;
 `;
 
-/* 상단 한 줄: 이름 - Pill - 화살표 */
+
 const TopLine = styled.div`
   display: grid;
-  grid-template-columns: 1fr auto 24px;    /* 이름 · Pill · 화살표 */
+  grid-template-columns: 1fr auto 24px;    
   align-items: center;
   column-gap: 8px;
 `;
 
-/* 도서관 이름 타이포 */
+
 const LibName = styled.div`
   color: var(--Tect--Lighter, #383838);
   font-family: "Pretendard GOV Variable", system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", sans-serif;
@@ -188,19 +185,18 @@ const LibName = styled.div`
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  min-width: 0;                             /* ✅ grid 내 축약 허용 */
+  min-width: 0;                             
 `;
 
-/* 혼잡/보통/여유 Pill — 지시값 그대로 + border-box로 총폭 48px 유지 */
 const Pill = styled.span`
   display: flex;
-  width: 48px;                              /* ✅ */
-  padding: 4px 16px;                        /* ✅ */
-  justify-content: center;                  /* ✅ */
-  align-items: center;                      /* ✅ */
-  gap: 10px;                                /* ✅ */
-  border-radius: 20px;                      /* ✅ */
-  box-sizing: border-box;                   /* ✅ 총폭 48px 유지 */
+  width: 48px;                              
+  padding: 4px 16px;                        
+  justify-content: center;                  
+  align-items: center;                   
+  gap: 10px;                                
+  border-radius: 20px;                     
+  box-sizing: border-box;                   
   background: ${({ $level }) => PILL_COLOR[$level]?.bg || "#ccc"};
   color: ${({ $level }) => PILL_COLOR[$level]?.color || "#222"};
   font-size: 12px;
@@ -210,14 +206,13 @@ const Pill = styled.span`
   white-space: nowrap;
 `;
 
-/* 화살표 24x24 */
 const Arrow = styled.img`
   width: 24px; height: 24px; aspect-ratio: 1 / 1;
   object-fit: contain;
   justify-self: end;
 `;
 
-/* 좌석/운영 텍스트 */
+
 const Seats = styled.div`
   font-size: 14px;
   color: #111;
