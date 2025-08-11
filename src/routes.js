@@ -5,6 +5,7 @@ import LoginPage from './pages/LoginPage';
 import LoginPagead from './pages/LoginPage_book';
 import HomePageAdmin from './pages/HomePage_admin';
 import SeatPage from './pages/seatmap';
+import Mylib from './pages/mylib';
 
 const routes = [
     {
@@ -33,6 +34,10 @@ const routes = [
         {
         path: '/admin-seat',
         element: <SeatPage />,
+    },
+            {
+        path: '/mylib',
+        element: <Mylib />,
     },
 ];
 
