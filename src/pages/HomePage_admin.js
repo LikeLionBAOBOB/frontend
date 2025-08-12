@@ -12,8 +12,14 @@ import bookIcon from '../assets/icons/book.png';
 import returnIcon from '../assets/icons/return.png'; 
 
 
+import { keyframes } from "styled-components";
+const slideInRight = keyframes`
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+`;
+
 const HomePageAdmin = () => {
-    const [ open, setOpen ] = useState(false); //드로어 열림,닫힘 상태 관리
+    const [ open, setOpen ] = useState(false);
 
     return(
         <Wrapper>
@@ -23,7 +29,7 @@ const HomePageAdmin = () => {
                     <Profileimg src={profileimageIcon} alt="프로필이미지" />
                     <Name>닉네임</Name>
                 </Nickname>
-                <img src={hamburgerIcon} alt="햄버거로고" />
+                <img src={hamburgerIcon} alt="햄버거로고" onClick={() => setOpen(true)} style={{cursor:'pointer'}} />
             </Header>
             <Container>
                 <Main>
@@ -44,13 +50,11 @@ const HomePageAdmin = () => {
                 </Main>
             </Container>
 
-            {/* 드로어: setOpen이 true일 때에만 보이도록 */}
             {open && (
                 <DrawerWrapper>
                     <img src={statusBar} alt="상태바"/>
                     <Drawer>
                         <DrawerHeader>
-                            {/* 뒤로가기 버튼 클릭 시, 드로어 닫기 */}
                             <BackBtn onClick={() => setOpen(false)}>
                                 <img src={returnIcon} alt="뒤로가기" />
                             </BackBtn>
@@ -113,7 +117,7 @@ const Container = styled.div`
     background: url(${homebackground}) no-repeat center;
     background-size: 393px 793px;;
 `;
-//메인 부분
+
 const Main = styled.div`
     width: 100%;
     height: 749px;
@@ -144,7 +148,7 @@ const SubText = styled.p`
     margin-bottom: 0px;
 `;
 
-//하단 버튼
+
 const ButtonsContainer = styled.div`
     display: flex;
     flex-direction: column;
@@ -188,7 +192,7 @@ const Icon = styled.img`
     height: 24px;
 `;
 
-//드로어
+
 
 const DrawerWrapper = styled.div`
     position: fixed;  
@@ -197,22 +201,29 @@ const DrawerWrapper = styled.div`
     width: 100vw;
     height: 100vh;
     display: flex;
-    align-items: center;
+    justify-content: flex-end;
+    align-items: flex-start;
     z-index: 999; 
 `;
+
 const Drawer = styled.div`
     width: 294px;
     height: 793px;
     background: rgba(255,255,255,0.8);
     display: flex;
     flex-direction: column;
+    animation: ${slideInRight} 0.25s ease forwards;
+    transform: translateX(0);
 `;
+
 const DrawerHeader = styled.div`
     display: flex;
     width: 294px;
     height: 44px;
-    padding: 4px 0px 4px 20px;
+    justify-content: flex-end;
+    padding: 4px 20px 4px 0px;
 `;
+
 const BackBtn = styled.button`
     width: 36px;
     height: 36px;
@@ -220,13 +231,13 @@ const BackBtn = styled.button`
     background: transparent;
     border: none;
 `;
-//드로어 닉네임
+
 const DrawerNickname = styled.div`
     display: flex;
     flex-direction: row;
     align-items: center;
 `;
-//로그아웃 버튼
+
 const Logout = styled.span`
     color: #0F0F0F;
     font-family: "Pretendard GOV Variable";
