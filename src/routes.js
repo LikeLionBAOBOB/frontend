@@ -6,6 +6,8 @@ import LoginPagead from './pages/LoginPage_book';
 import HomePageAdmin from './pages/HomePage_admin';
 import SeatPage from './pages/seatmap';
 import Mylib from './pages/mylib';
+import DetailLib from './pages/detaillib';
+import { Navigate } from "react-router-dom";
 
 const routes = [
     {
@@ -38,7 +40,14 @@ const routes = [
             {
         path: '/mylib',
         element: <Mylib />,
-    },
+    }, { path: '/detaillib/:libraryId',
+        element: <DetailLib /> },
+        { path: '/detaillib/:libraryId', 
+            element: <DetailLib /> },
+            { path: '/detaillib', 
+                element: <Navigate to="/detaillib/111179" replace /> },
+                { path: '*', 
+                    element: <div>404</div> },
 ];
 
 export default routes;
