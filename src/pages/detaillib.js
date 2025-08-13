@@ -2,143 +2,194 @@
 import React, { useEffect, useMemo, useState, Suspense } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import HeaderBackHero from "../components/header_ad";
+import HeaderBackHero from "../components/header_detail";
 import { seatMapById } from "../components/seatmaps";
 import { GALLERY } from "../assets/libraryimages";
-import clockIcon from "../assets/icons/clock.png";  
-import pinIcon from "../assets/icons/location.png";      
-import linkIcon from "../assets/icons/link.png";  
-
+import clockIcon from "../assets/icons/clock.png";
+import pinIcon from "../assets/icons/location.png";
+import linkIcon from "../assets/icons/link.png";
 
 // 배포 시 절대경로, 개발 중 프록시 쓰면 ""로도 가능
 const BASE_URL = "https://baobob.pythonanywhere.com";
 
 const MOCK_BY_ID = {
-  "111179": { // 남가좌새롬
-    total_seats: 12, current_seats: 6, congestion: "보통",
-    is_open: "운영 중", operating_time: "09:00-18:00",
+  "111179": {
+    // 남가좌새롬
+    total_seats: 12,
+    current_seats: 6,
+    congestion: "보통",
+    is_open: "운영 중",
+    operating_time: "09:00-18:00",
     detail_time: {
-      "월": ["정기휴무(매주 월요일)"],
-      "화": ["09:00-18:00"],
-      "수": ["09:00-18:00"],
-      "목": ["09:00-18:00"],
-      "금": ["09:00-18:00"],
-      "토": ["09:00-17:00"],
-      "일": ["09:00-17:00"],
+      월: ["정기휴무(매주 월요일)"],
+      화: ["09:00-18:00"],
+      수: ["09:00-18:00"],
+      목: ["09:00-18:00"],
+      금: ["09:00-18:00"],
+      토: ["09:00-17:00"],
+      일: ["09:00-17:00"],
     },
     naver_map: "https://www.naver.com/?lib=111179",
     site: "https://www.naver.com/?site=111179",
   },
 
-  "111086": { // 마포구립 서강
-    total_seats: 30, current_seats: 24, congestion: "혼잡",
-    is_open: "운영 중", operating_time: "09:00-22:00",
+  "111086": {
+    // 마포구립 서강
+    total_seats: 30,
+    current_seats: 24,
+    congestion: "혼잡",
+    is_open: "운영 중",
+    operating_time: "09:00-22:00",
     detail_time: {
-      "월": ["어린이자료실 09:00-18:00", "종합/디지털자료실 09:00-22:00"],
-      "화": ["어린이자료실 정기휴무(매주 화요일)", "종합/디지털자료실 정기휴무(매주 화요일)"],
-      "수": ["어린이자료실 09:00-18:00", "종합/디지털자료실 09:00-22:00"],
-      "목": ["어린이자료실 09:00-18:00", "종합/디지털자료실 09:00-22:00"],
-      "금": ["어린이자료실 09:00-18:00", "종합/디지털자료실 09:00-22:00"],
-      "토": ["어린이자료실 09:00-18:00", "종합/디지털자료실 09:00-20:00"],
-      "일": ["어린이자료실 09:00-18:00", "종합/디지털자료실 09:00-20:00"],
+      월: ["어린이자료실 09:00-18:00", "종합/디지털자료실 09:00-22:00"],
+      화: ["어린이자료실 정기휴무(매주 화요일)", "종합/디지털자료실 정기휴무(매주 화요일)"],
+      수: ["어린이자료실 09:00-18:00", "종합/디지털자료실 09:00-22:00"],
+      목: ["어린이자료실 09:00-18:00", "종합/디지털자료실 09:00-22:00"],
+      금: ["어린이자료실 09:00-18:00", "종합/디지털자료실 09:00-22:00"],
+      토: ["어린이자료실 09:00-18:00", "종합/디지털자료실 09:00-20:00"],
+      일: ["어린이자료실 09:00-18:00", "종합/디지털자료실 09:00-20:00"],
     },
     naver_map: "https://www.naver.com/?lib=111086",
     site: "https://www.naver.com/?site=111086",
   },
 
-  "711596": { // 마포나루 스페이스
-    total_seats: 36, current_seats: 31, congestion: "혼잡",
-    is_open: "운영 중", operating_time: "09:00-22:00",
+  "711596": {
+    // 마포나루 스페이스
+    total_seats: 36,
+    current_seats: 31,
+    congestion: "혼잡",
+    is_open: "운영 중",
+    operating_time: "09:00-22:00",
     detail_time: {
-      "월": ["자율학습공간/북카페 09:00-22:00", "메타버스도서관자료실 09:00-18:00"],
-      "화": ["자율학습공간/북카페 09:00-22:00", "메타버스도서관자료실 09:00-18:00"],
-      "수": ["자율학습공간/북카페 09:00-22:00", "메타버스도서관자료실 09:00-18:00"],
-      "목": ["자율학습공간/북카페 09:00-22:00", "메타버스도서관자료실 09:00-18:00"],
-      "금": ["자율학습공간/북카페 09:00-22:00", "메타버스도서관자료실 09:00-18:00"],
-      "토": ["자율학습공간/북카페 09:00-22:00", "메타버스도서관자료실 09:00-18:00"],
-      "일": ["자율학습공간/북카페 09:00-22:00", "메타버스도서관자료실 09:00-18:00"],
+      월: ["자율학습공간/북카페 09:00-22:00", "메타버스도서관자료실 09:00-18:00"],
+      화: ["자율학습공간/북카페 09:00-22:00", "메타버스도서관자료실 09:00-18:00"],
+      수: ["자율학습공간/북카페 09:00-22:00", "메타버스도서관자료실 09:00-18:00"],
+      목: ["자율학습공간/북카페 09:00-22:00", "메타버스도서관자료실 09:00-18:00"],
+      금: ["자율학습공간/북카페 09:00-22:00", "메타버스도서관자료실 09:00-18:00"],
+      토: ["자율학습공간/북카페 09:00-22:00", "메타버스도서관자료실 09:00-18:00"],
+      일: ["자율학습공간/북카페 09:00-22:00", "메타버스도서관자료실 09:00-18:00"],
     },
     naver_map: "https://www.naver.com/?lib=711596",
     site: "https://www.naver.com/?site=711596",
   },
 
-  "111514": { // 마포소금나루
-    total_seats: 20, current_seats: 6, congestion: "여유",
-    is_open: "운영 중", operating_time: "09:00-22:00",
+  "111514": {
+    // 마포소금나루
+    total_seats: 20,
+    current_seats: 6,
+    congestion: "여유",
+    is_open: "운영 중",
+    operating_time: "09:00-22:00",
     detail_time: {
-      "월": ["종합자료실/디지털실 09:00-22:00", "어린이자료실 09:00-18:00", "상상나루 09:00-17:00", "휴게시간 12:00-14:00"],
-      "화": ["종합자료실/디지털실 09:00-22:00", "어린이자료실 09:00-18:00", "상상나루 09:00-17:00", "휴게시간 12:00-14:00"],
-      "수": ["종합자료실/디지털실 09:00-22:00", "어린이자료실 09:00-18:00", "상상나루 09:00-17:00", "휴게시간 12:00-14:00"],
-      "목": ["종합자료실/디지털실 09:00-22:00", "어린이자료실 09:00-18:00", "상상나루 09:00-17:00", "휴게시간 12:00-14:00"],
-      "금": ["종합자료실 정기휴무(매주 금요일)", "어린이자료실 정기휴무(매주 금요일)", "상상나루 정기휴무(매주 금요일)"],
-      "토": ["종합자료실/디지털실 09:00-20:00", "어린이자료실 09:00-18:00", "상상나루 09:00-17:00", "휴게시간 12:00-14:00"],
-      "일": ["종합자료실/디지털실 09:00-20:00", "어린이자료실 09:00-18:00", "상상나루 정기휴무(매주 일요일)"],
+      월: [
+        "종합자료실/디지털실 09:00-22:00",
+        "어린이자료실 09:00-18:00",
+        "상상나루 09:00-17:00",
+        "휴게시간 12:00-14:00",
+      ],
+      화: [
+        "종합자료실/디지털실 09:00-22:00",
+        "어린이자료실 09:00-18:00",
+        "상상나루 09:00-17:00",
+        "휴게시간 12:00-14:00",
+      ],
+      수: [
+        "종합자료실/디지털실 09:00-22:00",
+        "어린이자료실 09:00-18:00",
+        "상상나루 09:00-17:00",
+        "휴게시간 12:00-14:00",
+      ],
+      목: [
+        "종합자료실/디지털실 09:00-22:00",
+        "어린이자료실 09:00-18:00",
+        "상상나루 09:00-17:00",
+        "휴게시간 12:00-14:00",
+      ],
+      금: ["종합자료실 정기휴무(매주 금요일)", "어린이자료실 정기휴무(매주 금요일)", "상상나루 정기휴무(매주 금요일)"],
+      토: ["종합자료실/디지털실 09:00-20:00", "어린이자료실 09:00-18:00", "상상나루 09:00-17:00", "휴게시간 12:00-14:00"],
+      일: ["종합자료실/디지털실 09:00-20:00", "어린이자료실 09:00-18:00", "상상나루 정기휴무(매주 일요일)"],
     },
     naver_map: "https://www.naver.com/?lib=111514",
     site: "https://www.naver.com/?site=111514",
   },
 
-  "111467": { // 마포중앙
-    total_seats: 30, current_seats: 21, congestion: "보통",
-    is_open: "운영 중", operating_time: "09:00-22:00",
+  "111467": {
+    // 마포중앙
+    total_seats: 30,
+    current_seats: 21,
+    congestion: "보통",
+    is_open: "운영 중",
+    operating_time: "09:00-22:00",
     detail_time: {
-      "월": ["자료열람실 정기휴무(매주 월요일)", "어린이/유아자료실 정기휴무(매주 월요일)"],
-      "화": ["자료열람실 09:00-22:00", "어린이/유아자료실 09:00-18:00"],
-      "수": ["자료열람실 09:00-22:00", "어린이/유아자료실 09:00-18:00"],
-      "목": ["자료열람실 09:00-22:00", "어린이/유아자료실 09:00-18:00"],
-      "금": ["자료열람실 09:00-22:00", "어린이/유아자료실 09:00-18:00"],
-      "토": ["자료열람실 09:00-20:00", "어린이/유아자료실 09:00-18:00"],
-      "일": ["자료열람실 09:00-20:00", "어린이/유아자료실 09:00-18:00"],
-      "_비고": ["자료열람실·어린이/유아자료실 — 법정 공휴일 휴관"],
+      월: ["자료열람실 정기휴무(매주 월요일)", "어린이/유아자료실 정기휴무(매주 월요일)"],
+      화: ["자료열람실 09:00-22:00", "어린이/유아자료실 09:00-18:00"],
+      수: ["자료열람실 09:00-22:00", "어린이/유아자료실 09:00-18:00"],
+      목: ["자료열람실 09:00-22:00", "어린이/유아자료실 09:00-18:00"],
+      금: ["자료열람실 09:00-22:00", "어린이/유아자료실 09:00-18:00"],
+      토: ["자료열람실 09:00-20:00", "어린이/유아자료실 09:00-18:00"],
+      일: ["자료열람실 09:00-20:00", "어린이/유아자료실 09:00-18:00"],
+      _비고: ["자료열람실·어린이/유아자료실 — 법정 공휴일 휴관"],
     },
     naver_map: "https://www.naver.com/?lib=111467",
     site: "https://www.naver.com/?site=111467",
   },
 
-  "111051": { // 이진아기념
-    total_seats: 24, current_seats: 7, congestion: "여유",
-    is_open: "운영 중", operating_time: "09:00-18:00",
+  "111051": {
+    // 이진아기념
+    total_seats: 24,
+    current_seats: 7,
+    congestion: "여유",
+    is_open: "운영 중",
+    operating_time: "09:00-18:00",
     detail_time: {
-      "월": ["정기휴무(매주 월요일)"],
-      "화": ["09:00-18:00"],
-      "수": ["09:00-18:00"],
-      "목": ["09:00-18:00"],
-      "금": ["09:00-18:00"],
-      "토": ["09:00-17:00"],
-      "일": ["09:00-17:00"],
-      "_비고": ["평일 종합자료실 20시까지"],
+      월: ["정기휴무(매주 월요일)"],
+      화: ["09:00-18:00"],
+      수: ["09:00-18:00"],
+      목: ["09:00-18:00"],
+      금: ["09:00-18:00"],
+      토: ["09:00-17:00"],
+      일: ["09:00-17:00"],
+      _비고: ["평일 종합자료실 20시까지"],
     },
     naver_map: "https://www.naver.com/?lib=111051",
     site: "https://www.naver.com/?site=111051",
   },
 
-  "111252": { // 홍은도담
-    total_seats: 15, current_seats: 7, congestion: "보통",
-    is_open: "운영 중", operating_time: "09:00-20:00",
+  "111252": {
+    // 홍은도담
+    total_seats: 15,
+    current_seats: 7,
+    congestion: "보통",
+    is_open: "운영 중",
+    operating_time: "09:00-20:00",
     detail_time: {
-      "월": ["09:00-20:00"],
-      "화": ["09:00-20:00"],
-      "수": ["09:00-20:00"],
-      "목": ["09:00-20:00"],
-      "금": ["정기휴무(매주 금요일)"],
-      "토": ["09:00-17:00"],
-      "일": ["09:00-17:00"],
+      월: ["09:00-20:00"],
+      화: ["09:00-20:00"],
+      수: ["09:00-20:00"],
+      목: ["09:00-20:00"],
+      금: ["정기휴무(매주 금요일)"],
+      토: ["09:00-17:00"],
+      일: ["09:00-17:00"],
     },
     naver_map: "https://www.naver.com/?lib=111252",
     site: "https://www.naver.com/?site=111252",
   },
 
-  "111257": { // 해오름 작은도서관
-    total_seats: 10, current_seats: 3, congestion: "여유",
-    is_open: "운영 중", operating_time: "09:00-22:00",
+  "111257": {
+    // 해오름 작은도서관
+    total_seats: 10,
+    current_seats: 3,
+    congestion: "여유",
+    is_open: "운영 중",
+    operating_time: "09:00-22:00",
     detail_time: {
-      "월": ["09:00-18:00", "휴게시간 13:00-14:00"],
-      "화": ["09:00-18:00", "휴게시간 13:00-14:00"],
-      "수": ["09:00-18:00", "휴게시간 13:00-14:00"],
-      "목": ["09:00-18:00", "휴게시간 13:00-14:00"],
-      "금": ["09:00-18:00", "휴게시간 13:00-14:00"],
-      "토": ["정기휴무(매주 토요일)"],
-      "일": ["정기휴무(매주 일요일)"],
+      월: ["09:00-18:00", "휴게시간 13:00-14:00"],
+      화: ["09:00-18:00", "휴게시간 13:00-14:00"],
+      수: ["09:00-18:00", "휴게시간 13:00-14:00"],
+      목: ["09:00-18:00", "휴게시간 13:00-14:00"],
+      금: ["09:00-18:00", "휴게시간 13:00-14:00"],
+      토: ["정기휴무(매주 토요일)"],
+      일: ["정기휴무(매주 일요일)"],
     },
     naver_map: "https://www.naver.com/?lib=111257",
     site: "https://www.naver.com/?site=111257",
@@ -165,83 +216,98 @@ const LibraryDetail = () => {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
 
+  const displayOperatingTime = useMemo(() => {
+    const src = data?.operating_time || "";
+    return src.replace(/(\d{2}:\d{2})-(\d{2}:\d{2})/g, "$1 - $2"); // - 양옆 공백
+  }, [data]);
+
+  // 요일 상세 문자열 포맷터
+  const formatDetail = (s) => {
+    if (!s) return "";
+    let out = String(s);
+    // '정기휴무(매주 금요일)' → '정기휴무 (매주 금요일)'
+    out = out.replace(/정기휴무\(/g, "정기휴무 (");
+    // '09:00-18:00' → '09:00 - 18:00'
+    out = out.replace(/(\d{2}:\d{2})-(\d{2}:\d{2})/g, "$1 - $2");
+    return out;
+  };
+
   // /detaillib 로 들어올 때 기본 id로 리다이렉트
   useEffect(() => {
     if (!libraryId) navigate("/detaillib/111179", { replace: true });
   }, [libraryId, navigate]);
 
-// API fetch
-useEffect(() => {
-  if (!libraryId) return;
-  let alive = true;
-  setLoading(true);
-  setErr("");
+  // API fetch
+  useEffect(() => {
+    if (!libraryId) return;
+    let alive = true;
+    setLoading(true);
+    setErr("");
 
-  fetch(`${BASE_URL}/libraries/${libraryId}/detail/`)
-    .then(async (r) => {
-      if (!r.ok) {
-        const text = await r.text().catch(() => "");
-        throw new Error(`HTTP ${r.status} ${r.statusText} :: ${text?.slice(0, 200)}`);
-      }
-      return r.json();
-    })
-    .then((json) => {
-      if (!alive) return;
+    fetch(`${BASE_URL}/libraries/${libraryId}/detail/`)
+      .then(async (r) => {
+        if (!r.ok) {
+          const text = await r.text().catch(() => "");
+          throw new Error(`HTTP ${r.status} ${r.statusText} :: ${text?.slice(0, 200)}`);
+        }
+        return r.json();
+      })
+      .then((json) => {
+        if (!alive) return;
 
-      // 모킹과 API를 합성한다.
-      // ▶ 총 좌석(total_seats)은 항상 하드코딩(MOCK_BY_ID) 우선
-      const mock = MOCK_BY_ID[String(libraryId)] || {};
-      const merged = {
-        ...json,
-        total_seats: mock.total_seats ?? json.total_seats ?? 0,
-        current_seats: json.current_seats ?? mock.current_seats ?? 0,
-        congestion: json.congestion ?? mock.congestion ?? "-",
-        is_open: json.is_open ?? mock.is_open ?? "",
-        operating_time: json.operating_time ?? mock.operating_time ?? "",
-        detail_time: json.detail_time ?? null, // 필요 시 mock.detail_time으로 보강 가능
-        naver_map: json.naver_map ?? mock.naver_map ?? "",
-        site: json.site ?? mock.site ?? "",
-      };
-      setData(merged);
-      setLoading(false);
-    })
-    .catch(() => {
-      if (!alive) return;
+        // 모킹과 API를 합성한다.
+        // ▶ 총 좌석(total_seats)은 항상 하드코딩(MOCK_BY_ID) 우선
+        const mock = MOCK_BY_ID[String(libraryId)] || {};
+        const merged = {
+          ...json,
+          total_seats: mock.total_seats ?? json.total_seats ?? 0,
+          current_seats: json.current_seats ?? mock.current_seats ?? 0,
+          congestion: json.congestion ?? mock.congestion ?? "-",
+          is_open: json.is_open ?? mock.is_open ?? "",
+          operating_time: json.operating_time ?? mock.operating_time ?? "",
+          detail_time: json.detail_time ?? null, // 필요 시 mock.detail_time으로 보강 가능
+          naver_map: json.naver_map ?? mock.naver_map ?? "",
+          site: json.site ?? mock.site ?? "",
+        };
+        setData(merged);
+        setLoading(false);
+      })
+      .catch(() => {
+        if (!alive) return;
 
-      // API 실패 시에도 화면이 꽉 차도록 모킹만으로 구성
-      const meta = LIB_META[libraryId] || {};
-      const mock = MOCK_BY_ID[String(libraryId)] || {};
-      setData({
-        name: meta.name || "도서관",
-        address: meta.address || "",
-        images: [],
-        total_seats: mock.total_seats ?? 0,
-        current_seats: mock.current_seats ?? 0,
-        congestion: mock.congestion ?? "-",
-        is_open: mock.is_open ?? "",
-        operating_time: mock.operating_time ?? "",
-        detail_time: mock.detail_time ?? null,
-        naver_map: mock.naver_map ?? "",
-        site: mock.site ?? "",
+        // API 실패 시에도 화면이 꽉 차도록 모킹만으로 구성
+        const meta = LIB_META[libraryId] || {};
+        const mock = MOCK_BY_ID[String(libraryId)] || {};
+        setData({
+          name: meta.name || "도서관",
+          address: meta.address || "",
+          images: [],
+          total_seats: mock.total_seats ?? 0,
+          current_seats: mock.current_seats ?? 0,
+          congestion: mock.congestion ?? "-",
+          is_open: mock.is_open ?? "",
+          operating_time: mock.operating_time ?? "",
+          detail_time: mock.detail_time ?? null,
+          naver_map: mock.naver_map ?? "",
+          site: mock.site ?? "",
+        });
+        setErr("");
+        setLoading(false);
       });
-      setErr("");
-      setLoading(false);
-    });
 
-  return () => { alive = false; };
-}, [libraryId]);
-
+    return () => {
+      alive = false;
+    };
+  }, [libraryId]);
 
   // 갤러리: 로컬 매핑 우선 → 없으면 API images
   const gallery = useMemo(() => {
     const local = GALLERY[String(libraryId)] || [];
-    const apiList = (data?.images || []).map((p) =>
-      p.startsWith("http") ? p : `${BASE_URL}${p}`
-    );
+    const apiList = (data?.images || []).map((p) => (p.startsWith("http") ? p : `${BASE_URL}${p}`));
     return local.length ? local : apiList;
   }, [libraryId, data]);
 
-  // 좌석 수 (가정: current_seats = 이용 가능 좌석 수)
+  // 좌석 수
   const total = data?.total_seats ?? 0;
   const available = data?.current_seats ?? 0;
 
@@ -259,11 +325,7 @@ useEffect(() => {
   return (
     <PageWrap>
       {/* 헤더: 이름 + 주소(API) */}
-      <HeaderBackHero
-        title={data?.name || "도서관"}
-        address={data?.address || ""}
-        libraryId={libraryId}
-      />
+      <HeaderBackHero title={data?.name || "도서관"} address={data?.address || ""} libraryId={libraryId} />
 
       <Inner>
         {/* 탭: 정확히 좌/우 1/2 위치 */}
@@ -288,7 +350,7 @@ useEffect(() => {
           <>
             {tab === "info" ? (
               <InfoView>
-                {/* 1) 갤러리: 사각형, 간격 0, 스크롤바 숨김 */}
+                {/* 갤러리 */}
                 {gallery.length > 0 && (
                   <PhotoStrip>
                     {gallery.map((src, i) => (
@@ -299,37 +361,35 @@ useEffect(() => {
                   </PhotoStrip>
                 )}
 
-                {/* 5) 좌측: 좌석 지표 / 우측: 혼잡도 배지 */}
-                <KPIRow>
-                  <Left>
-                    <Big>{available} / {total}</Big>
-                    <Small>현재 좌석 수 / 전체 좌석 수</Small>
-                  </Left>
-                  <Right>
+                {/* 좌석 KPI */}
+                <KPIBlock>
+                  <KPIHeading>실시간 혼잡도</KPIHeading>
+                  <KPIInline>
+                    <Big>
+                      {available} / {total}
+                    </Big>
                     <Badge $level={data.congestion}>{data.congestion || "-"}</Badge>
-                  </Right>
-                </KPIRow>
+                  </KPIInline>
+                  <Small>(현재 좌석 수 / 전체 좌석 수)</Small>
+                </KPIBlock>
 
-                {/* 4) 좌석지표 바로 아래 '운영중 + 운영시간' */}
-                {(data.is_open || data.operating_time) && (
-                  <Card>
-                    <Opener>
-                      <img className="icon" src={clockIcon} alt="운영시간" /> {/* >>> 변경 */}
-                      <div className="texts">                                {/* >>> 변경 */}
-                        {data.is_open && <strong>{data.is_open}</strong>}
-                        {data.operating_time && <span>{data.operating_time}</span>}
-                      </div>
-                    </Opener>
-                  </Card>
-                )}
+                {/* 시설 정보 */}
+                <Card>
+                  <SectionTitle>시설 정보</SectionTitle>
 
+                  {/* 타이틀 10px 아래: 시계 + 운영 중 + 시간 */}
+                  <Opener style={{ marginTop: 10 }}>
+                    <img className="icon" src={clockIcon} alt="운영시간" />
+                    <div className="texts">
+                      <strong>운영 중</strong>
+                      {displayOperatingTime && <span>{displayOperatingTime}</span>}
+                    </div>
+                  </Opener>
 
-                {/* (선택) 요일별 시간표 */}
-                {data.detail_time && (
-                  <Card>
-                    <SectionTitle>시설 정보</SectionTitle>
-                    <TimeTable>
-                      {["월","화","수","목","금","토","일"].map((d) => {
+                  {/* '운영 중' 8px 아래: 요일표 (운영중 텍스트와 왼쪽 정렬 맞춤) */}
+                  {data.detail_time && (
+                    <TimeTable style={{ marginTop: 8 }}>
+                      {["월", "화", "수", "목", "금", "토", "일"].map((d) => {
                         const v = data.detail_time[d];
                         if (!v) return null;
                         const lines = Array.isArray(v) ? v : [String(v)];
@@ -338,62 +398,59 @@ useEffect(() => {
                             <span>{d}</span>
                             <div className="lines">
                               {lines.map((t, i) => (
-                                <em key={i}>• {t}</em>
+                                <em key={i}>
+                                  {"\u00A0\u00A0\u00A0"}
+                                  {formatDetail(t)}
+                                </em>
                               ))}
                             </div>
                           </li>
                         );
                       })}
                     </TimeTable>
-                    {data.detail_time._비고 && (
-                      <Note>
-                        {(Array.isArray(data.detail_time._비고) ? data.detail_time._비고 : [data.detail_time._비고])
-                          .map((t, i) => <div key={i}>※ {t}</div>)}
-                      </Note>
-                    )}
-                  </Card>
-                )}
+                  )}
+                </Card>
 
-                {/* +) 운영 시간 아래 링크 2개 (네이버 지도 / 도서관 사이트) */}
+                {/* 링크들 */}
                 {(data.naver_map || data.site) && (
                   <LinkList>
                     {data.naver_map && (
                       <li>
-                        <img className="icon" src={pinIcon} alt="지도" />   {/* >>> 변경 */}
+                        <img className="icon" src={pinIcon} alt="지도" />
                         <div className="texts">
                           <a href={data.naver_map} target="_blank" rel="noreferrer">
                             네이버 지도 — {data.name || ""}
                           </a>
-                          <small>{shortUrl(data.naver_map)}</small>
+                          
                         </div>
                       </li>
                     )}
                     {data.site && (
                       <li>
-                        <img className="icon" src={linkIcon} alt="링크" />  {/* >>> 변경 */}
+                        <img className="icon" src={linkIcon} alt="링크" />
                         <div className="texts">
                           <a href={data.site} target="_blank" rel="noreferrer">
                             도서관 사이트 — {data.name || ""}
                           </a>
-                          <small>{shortUrl(data.site)}</small>
+
                         </div>
                       </li>
                     )}
                   </LinkList>
                 )}
-
               </InfoView>
             ) : (
               <SeatView>
-                <KPIRow>
-                  <Left>
-                    <Big>{available} / {total}</Big>
-                    <Small>이용 가능 좌석 / 전체 좌석 수</Small>
-                  </Left>
-                  <Right>
+                <KPIBlock>
+                  <KPIHeading>실시간 혼잡도</KPIHeading>
+                  <KPIInline>
+                    <Big>
+                      {available} / {total}
+                    </Big>
                     <Badge $level={data.congestion}>{data.congestion || "-"}</Badge>
-                  </Right>
-                </KPIRow>
+                  </KPIInline>
+                  <Small>(현재 좌석 수 / 전체 좌석 수)</Small>
+                </KPIBlock>
 
                 {/* 좌석 전용 컴포넌트 스왑 */}
                 <Suspense fallback={<Loading>좌석 불러오는 중…</Loading>}>
@@ -425,128 +482,285 @@ const Inner = styled.main`
 /* 2) 탭을 화면 폭 기준 정확히 반반 */
 const Tabs = styled.div`
   display: flex;
-  width: calc(100% + 32px);   /* 좌우 패딩을 무시하고 화면 전체 폭 사용 */
-  margin: 8px -16px 16px;     /* 패딩 상쇄 → 시각적 중앙선(196.5px) 일치 */
+  width: calc(100% + 32px);
+  margin: 8px -16px 16px;
   border-bottom: 1px solid #eee;
 `;
 const TabBtn = styled.button`
   all: unset;
-  flex: 1;                    /* 반반 */
+  flex: 1;
   text-align: center;
   cursor: pointer;
   padding: 12px 0;
   position: relative;
   color: ${(p) => (p.$active ? "#000" : "#8a8a8a")};
   font-weight: ${(p) => (p.$active ? 700 : 500)};
-  &:after{
-    content:"";
-    position:absolute; left:0; right:0; bottom:-1px; height:2px;
+  &:after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 2px;
     background: ${(p) => (p.$active ? "#000" : "transparent")};
   }
 `;
 
-const Loading = styled.div` padding: 24px 0; color: #666; `;
-const ErrorBox = styled.div` padding: 16px; background:#fff3f3; color:#c00; border-radius:12px; `;
+const Loading = styled.div`
+  padding: 24px 0;
+  color: #666;
+`;
+const ErrorBox = styled.div`
+  padding: 16px;
+  background: #fff3f3;
+  color: #c00;
+  border-radius: 12px;
+`;
 const InfoView = styled.section``;
 const SeatView = styled.section``;
 
-/* 1) 갤러리: 사각형, 간격 0, 스크롤바 숨김 */
-
+/* 갤러리 */
 const Photo = styled.div`
   flex: 0 0 auto;
-  width: 184px;               
+  width: 184px;
   height: 112px;
   border-radius: 0px;
   overflow: hidden;
-  background:#f2f2f2;
-  img { width:100%; height:100%; object-fit: cover; display:block; }
+  background: #f2f2f2;
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
 `;
 
-const KPIRow = styled.div`
-  display: flex; justify-content: space-between; align-items: center;
+/* 좌석 KPI 레이아웃 */
+const KPIBlock = styled.div`
+  display: flex;
+  flex-direction: column;
   margin: 8px 0 12px;
 `;
-const Left = styled.div``;
-const Right = styled.div``;
-const Big = styled.div` font-size: 20px; font-weight: 800; `;
-const Small = styled.div` font-size: 11px; color: #8a8a8a; margin-top: 2px; `;
+const KPIHeading = styled.div`
+  color: #1d1d1d;
+  font-family: "Pretendard GOV Variable";
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 150%; /* 21px */
+  margin-bottom: 8px;
+`;
+const KPIInline = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px; /* 숫자-배지 간 12px */
+`;
 
-/* 혼잡도 배지 (요청 스펙) */
+/* 좌석 수 숫자 타이포 */
+const Big = styled.div`
+  color: #555;
+  font-family: "Pretendard GOV Variable";
+  font-size: 20px;
+  font-weight: 400;
+  line-height: normal;
+`;
+
+/* (현재 좌석 수 / 전체 좌석 수) 가이드 텍스트 */
+const Small = styled.div`
+  color: #8e8e8e;
+  font-family: "Pretendard GOV Variable";
+  font-size: 10px;
+  font-weight: 300;
+  line-height: normal;
+  margin-top: 4px;
+`;
+
+/* 혼잡도 배지 */
 const Badge = styled.span`
-  display: inline-flex;
+  /* 텍스트 타이포 */
+  font-family: "Pretendard GOV Variable";
+  font-size: 14px; /* ↓ 요구대로 14 */
+  font-weight: 400;
+  line-height: normal;
+
+  /* 배지 박스 */
+  display: flex;
+  width: 30px;
+  padding: 3px 16px;
   justify-content: center;
   align-items: center;
-  width: 48px;                 /* >>> 변경 */
-  padding: 3px 16px;           /* >>> 변경 */
-  border-radius: 20px;         /* >>> 변경 */
-  font-size: 12px;
-  font-weight: 700;
+  gap: 10px;
+
+  border-radius: 20px;
   color: #fff;
   background: ${({ $level }) => {
-    if ($level === "여유") return "#33A14B";  // >>> 변경
-    if ($level === "보통") return "#FFB724";  // >>> 변경
-    if ($level === "혼잡") return "#FF474D";  // >>> 변경
+    if ($level === "여유") return "#33A14B";
+    if ($level === "보통") return "#FFB724";
+    if ($level === "혼잡") return "#FF474D";
     return "#bbb";
   }};
 `;
 
-
-/* 4) 운영중 + 운영시간 한 줄 */
+/* 시설 정보 카드(외곽선 제거) */
 const Card = styled.div`
-  border: 1px solid #eee; border-radius: 16px; padding: 12px 14px; margin-bottom: 12px; background:#fff;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  margin-bottom: 12px;
+  background: transparent;
 `;
 
+/* 요일표 (운영중 텍스트와 좌측 정렬 맞춤) */
 const TimeTable = styled.ul`
-  list-style: none; margin:0; padding:0;
-  li{
-    display:flex; gap:12px; padding:8px 0;
-    align-items: flex-start;                  /* >>> 변경 */
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 30px; /* 아이콘(18) + 간격(12) = 30px 만큼 들여쓰기해 '운영 중'과 정렬 */
+
+  li {
+    display: flex;
+    gap: 0px; /* 요일-내용 간격 좁힘 */
+    padding: 6px 0; /* 행 높이 축소 */
+    align-items: flex-start;
   }
-  li + li { border-top: 1px dashed #eee; }    /* >>> 변경 */
-  span{ font-weight:700; width:32px; line-height: 20px; }
-  .lines{ display:flex; flex-direction:column; gap:4px; } /* >>> 변경 */
-  em{ font-style: normal; color:#333; line-height: 20px; }
+
+  /* 점선(밑줄) 제거 */
+  li + li {
+    border-top: none;
+  }
+
+  /* 요일 칼럼 */
+  span {
+    width: 28px; /* 32 → 28로 */
+    color: #444444;
+    font-family: "Pretendard GOV Variable";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400; /* 볼드 제거 */
+    line-height: 150%; /* 24px */
+  }
+
+  /* 오른쪽 줄 컨테이너 */
+  .lines {
+    display: flex;
+    flex-direction: column;
+    gap: 2px; /* 행간 축소 */
+  }
+
+  /* 실제 시간/문구 라인 */
+  em {
+    font-style: normal;
+    color: #444444;
+    font-family: "Pretendard GOV Variable";
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 150%; /* 24px */
+    white-space: pre-wrap; /* 공백(3칸) 유지 */
+  }
 `;
 
 const Note = styled.div`
-  margin-top: 8px; font-size: 12px; color: #666; /* >>> 추가 */
-  div + div { margin-top: 2px; }
+  margin-top: 8px;
+  font-size: 12px;
+  color: #666;
+  div + div {
+    margin-top: 2px;
+  }
 `;
 
+const SectionTitle = styled.div`
+  color: var(--Text-Basic, #1d1d1d);
+  font-family: "Pretendard GOV Variable";
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 150%; /* 30px */
+  margin-bottom: 10px;
+`;
 
-const SectionTitle = styled.div` font-size: 14px; font-weight: 800; margin-bottom: 8px; `;
-
-
-/* +) 운영 시간 아래 링크 2개 스타일 */
+/* 시계 + '운영 중' + 시간 */
 const Opener = styled.div`
-  display:flex; align-items:center; gap:10px; font-size:13px;    /* >>> 변경 */
-  .icon{ width:18px; height:18px; object-fit:contain; }          /* >>> 추가 */
-  .texts{ display:flex; align-items:center; gap:8px; }           /* >>> 추가 */
-  strong{ font-weight:800; }
-  span{ color:#333; }
+  display: flex;
+  align-items: center;
+  gap: 12px; /* 아이콘-텍스트 12px 로 넓힘 */
+
+  .icon {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+  }
+
+  .texts {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* '운영 중'과 시간 간 4px */
+  }
+
+  .texts strong,
+  .texts span {
+    color: #444;
+    font-family: "Pretendard GOV Variable";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%; /* 24px */
+  }
 `;
 
+/* 링크(회색 + 밑줄) */
 const LinkList = styled.ul`
-  list-style: none; margin: 8px 0 0; padding: 0;
-  li{ display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; }
-  .icon{ width:18px; height:18px; object-fit:contain; margin-top:2px; } /* >>> 변경 */
-  .texts a{ font-size: 13px; color: #1f6feb; text-decoration: none; }
-  .texts small{ display:block; margin-top: 2px; font-size: 10px; color: #9a9a9a; word-break: break-all; }
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 0;
+  }
+  .icon {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    margin-top: 2px;
+  }
+  .texts a {
+    color: var(--Text-Disabled, #8e8e8e);
+    font-family: "Pretendard GOV Variable";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%; /* 24px */
+    text-decoration-line: underline;
+    text-decoration-style: solid;
+    text-decoration-skip-ink: auto;
+    text-decoration-thickness: auto;
+    text-underline-offset: auto;
+    text-underline-position: from-font;
+  }
+  .texts small {
+    display: block;
+    margin-top: 2px;
+    font-size: 10px;
+    color: #9a9a9a;
+    word-break: break-all;
+  }
 `;
 
 /* 갤러리: 좌우 풀블리드 + 간격 7px */
 const PhotoStrip = styled.div`
-  margin: 6px -16px 16px;     /* >>> 변경: Inner 패딩 상쇄로 좌우 딱 붙게 */
-  padding: 0 16px 4px;        /* >>> 변경: 스크롤 여유/시각적 패딩 */
+  margin: 6px -16px 16px;
+  padding: 0 16px 4px;
   display: flex;
-  gap: 7px;                   /* >>> 변경: 요구 간격 고정 */
+  gap: 7px;
   overflow-x: auto;
   -ms-overflow-style: none;
   scrollbar-width: none;
-  &::-webkit-scrollbar { display: none; }
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
-
-
-
-const Empty = styled.div` padding: 24px 0; color:#888; text-align:center; `;
+const Empty = styled.div`
+  padding: 24px 0;
+  color: #888;
+  text-align: center;
+`;
