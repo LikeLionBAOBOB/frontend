@@ -548,7 +548,7 @@ const KPIHeading = styled.div`
   font-style: normal;
   font-weight: 600;
   line-height: 150%; /* 21px */
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 `;
 const KPIInline = styled.div`
   display: flex;
@@ -573,6 +573,7 @@ const Small = styled.div`
   font-weight: 300;
   line-height: normal;
   margin-top: 4px;
+  margin-bottom: 12px;
 `;
 
 /* 혼잡도 배지 */
