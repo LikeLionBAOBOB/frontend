@@ -4,10 +4,146 @@ import { useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import HeaderBackHero from "../components/header_ad";
 import { seatMapById } from "../components/seatmaps";
-import { GALLERY } from "../assets/libraryimages"; // ← 대소문자 주의
+import { GALLERY } from "../assets/libraryimages";
+import clockIcon from "../assets/icons/clock.png";  
+import pinIcon from "../assets/icons/location.png";      
+import linkIcon from "../assets/icons/link.png";  
+
 
 // 배포 시 절대경로, 개발 중 프록시 쓰면 ""로도 가능
 const BASE_URL = "https://baobob.pythonanywhere.com";
+
+const MOCK_BY_ID = {
+  "111179": { // 남가좌새롬
+    total_seats: 12, current_seats: 6, congestion: "보통",
+    is_open: "운영 중", operating_time: "09:00-18:00",
+    detail_time: {
+      "월": ["정기휴무(매주 월요일)"],
+      "화": ["09:00-18:00"],
+      "수": ["09:00-18:00"],
+      "목": ["09:00-18:00"],
+      "금": ["09:00-18:00"],
+      "토": ["09:00-17:00"],
+      "일": ["09:00-17:00"],
+    },
+    naver_map: "https://www.naver.com/?lib=111179",
+    site: "https://www.naver.com/?site=111179",
+  },
+
+  "111086": { // 마포구립 서강
+    total_seats: 30, current_seats: 24, congestion: "혼잡",
+    is_open: "운영 중", operating_time: "09:00-22:00",
+    detail_time: {
+      "월": ["어린이자료실 09:00-18:00", "종합/디지털자료실 09:00-22:00"],
+      "화": ["어린이자료실 정기휴무(매주 화요일)", "종합/디지털자료실 정기휴무(매주 화요일)"],
+      "수": ["어린이자료실 09:00-18:00", "종합/디지털자료실 09:00-22:00"],
+      "목": ["어린이자료실 09:00-18:00", "종합/디지털자료실 09:00-22:00"],
+      "금": ["어린이자료실 09:00-18:00", "종합/디지털자료실 09:00-22:00"],
+      "토": ["어린이자료실 09:00-18:00", "종합/디지털자료실 09:00-20:00"],
+      "일": ["어린이자료실 09:00-18:00", "종합/디지털자료실 09:00-20:00"],
+    },
+    naver_map: "https://www.naver.com/?lib=111086",
+    site: "https://www.naver.com/?site=111086",
+  },
+
+  "711596": { // 마포나루 스페이스
+    total_seats: 36, current_seats: 31, congestion: "혼잡",
+    is_open: "운영 중", operating_time: "09:00-22:00",
+    detail_time: {
+      "월": ["자율학습공간/북카페 09:00-22:00", "메타버스도서관자료실 09:00-18:00"],
+      "화": ["자율학습공간/북카페 09:00-22:00", "메타버스도서관자료실 09:00-18:00"],
+      "수": ["자율학습공간/북카페 09:00-22:00", "메타버스도서관자료실 09:00-18:00"],
+      "목": ["자율학습공간/북카페 09:00-22:00", "메타버스도서관자료실 09:00-18:00"],
+      "금": ["자율학습공간/북카페 09:00-22:00", "메타버스도서관자료실 09:00-18:00"],
+      "토": ["자율학습공간/북카페 09:00-22:00", "메타버스도서관자료실 09:00-18:00"],
+      "일": ["자율학습공간/북카페 09:00-22:00", "메타버스도서관자료실 09:00-18:00"],
+    },
+    naver_map: "https://www.naver.com/?lib=711596",
+    site: "https://www.naver.com/?site=711596",
+  },
+
+  "111514": { // 마포소금나루
+    total_seats: 20, current_seats: 6, congestion: "여유",
+    is_open: "운영 중", operating_time: "09:00-22:00",
+    detail_time: {
+      "월": ["종합자료실/디지털실 09:00-22:00", "어린이자료실 09:00-18:00", "상상나루 09:00-17:00", "휴게시간 12:00-14:00"],
+      "화": ["종합자료실/디지털실 09:00-22:00", "어린이자료실 09:00-18:00", "상상나루 09:00-17:00", "휴게시간 12:00-14:00"],
+      "수": ["종합자료실/디지털실 09:00-22:00", "어린이자료실 09:00-18:00", "상상나루 09:00-17:00", "휴게시간 12:00-14:00"],
+      "목": ["종합자료실/디지털실 09:00-22:00", "어린이자료실 09:00-18:00", "상상나루 09:00-17:00", "휴게시간 12:00-14:00"],
+      "금": ["종합자료실 정기휴무(매주 금요일)", "어린이자료실 정기휴무(매주 금요일)", "상상나루 정기휴무(매주 금요일)"],
+      "토": ["종합자료실/디지털실 09:00-20:00", "어린이자료실 09:00-18:00", "상상나루 09:00-17:00", "휴게시간 12:00-14:00"],
+      "일": ["종합자료실/디지털실 09:00-20:00", "어린이자료실 09:00-18:00", "상상나루 정기휴무(매주 일요일)"],
+    },
+    naver_map: "https://www.naver.com/?lib=111514",
+    site: "https://www.naver.com/?site=111514",
+  },
+
+  "111467": { // 마포중앙
+    total_seats: 30, current_seats: 21, congestion: "보통",
+    is_open: "운영 중", operating_time: "09:00-22:00",
+    detail_time: {
+      "월": ["자료열람실 정기휴무(매주 월요일)", "어린이/유아자료실 정기휴무(매주 월요일)"],
+      "화": ["자료열람실 09:00-22:00", "어린이/유아자료실 09:00-18:00"],
+      "수": ["자료열람실 09:00-22:00", "어린이/유아자료실 09:00-18:00"],
+      "목": ["자료열람실 09:00-22:00", "어린이/유아자료실 09:00-18:00"],
+      "금": ["자료열람실 09:00-22:00", "어린이/유아자료실 09:00-18:00"],
+      "토": ["자료열람실 09:00-20:00", "어린이/유아자료실 09:00-18:00"],
+      "일": ["자료열람실 09:00-20:00", "어린이/유아자료실 09:00-18:00"],
+      "_비고": ["자료열람실·어린이/유아자료실 — 법정 공휴일 휴관"],
+    },
+    naver_map: "https://www.naver.com/?lib=111467",
+    site: "https://www.naver.com/?site=111467",
+  },
+
+  "111051": { // 이진아기념
+    total_seats: 24, current_seats: 7, congestion: "여유",
+    is_open: "운영 중", operating_time: "09:00-18:00",
+    detail_time: {
+      "월": ["정기휴무(매주 월요일)"],
+      "화": ["09:00-18:00"],
+      "수": ["09:00-18:00"],
+      "목": ["09:00-18:00"],
+      "금": ["09:00-18:00"],
+      "토": ["09:00-17:00"],
+      "일": ["09:00-17:00"],
+      "_비고": ["평일 종합자료실 20시까지"],
+    },
+    naver_map: "https://www.naver.com/?lib=111051",
+    site: "https://www.naver.com/?site=111051",
+  },
+
+  "111252": { // 홍은도담
+    total_seats: 15, current_seats: 7, congestion: "보통",
+    is_open: "운영 중", operating_time: "09:00-20:00",
+    detail_time: {
+      "월": ["09:00-20:00"],
+      "화": ["09:00-20:00"],
+      "수": ["09:00-20:00"],
+      "목": ["09:00-20:00"],
+      "금": ["정기휴무(매주 금요일)"],
+      "토": ["09:00-17:00"],
+      "일": ["09:00-17:00"],
+    },
+    naver_map: "https://www.naver.com/?lib=111252",
+    site: "https://www.naver.com/?site=111252",
+  },
+
+  "111257": { // 해오름 작은도서관
+    total_seats: 10, current_seats: 3, congestion: "여유",
+    is_open: "운영 중", operating_time: "09:00-22:00",
+    detail_time: {
+      "월": ["09:00-18:00", "휴게시간 13:00-14:00"],
+      "화": ["09:00-18:00", "휴게시간 13:00-14:00"],
+      "수": ["09:00-18:00", "휴게시간 13:00-14:00"],
+      "목": ["09:00-18:00", "휴게시간 13:00-14:00"],
+      "금": ["09:00-18:00", "휴게시간 13:00-14:00"],
+      "토": ["정기휴무(매주 토요일)"],
+      "일": ["정기휴무(매주 일요일)"],
+    },
+    naver_map: "https://www.naver.com/?lib=111257",
+    site: "https://www.naver.com/?site=111257",
+  },
+};
 
 const LIB_META = {
   "111179": { name: "남가좌새롬도서관", address: "서울 서대문구 증가로10길 16-15" },
@@ -34,49 +170,67 @@ const LibraryDetail = () => {
     if (!libraryId) navigate("/detaillib/111179", { replace: true });
   }, [libraryId, navigate]);
 
-  // API fetch
-  useEffect(() => {
-    if (!libraryId) return;
-    let alive = true;
-    setLoading(true);
-    setErr("");
+// API fetch
+useEffect(() => {
+  if (!libraryId) return;
+  let alive = true;
+  setLoading(true);
+  setErr("");
 
-    fetch(`${BASE_URL}/libraries/${libraryId}/detail/`)
-      .then(async (r) => {
-        if (!r.ok) {
-          const text = await r.text().catch(() => "");
-          throw new Error(`HTTP ${r.status} ${r.statusText} :: ${text?.slice(0, 200)}`);
-        }
-        return r.json();
-      })
-      .then((json) => {
-        if (!alive) return;
-        setData(json);
-        setLoading(false);
-      })
-      .catch(() => {
-        if (!alive) return;
-        // 개발 중 CORS 대비: 최소 폴백
-        const meta = LIB_META[libraryId] || {};
-        setData({
-          name: meta.name || "도서관",
-          address: meta.address || "",
-          images: [],
-          current_seats: 0,
-          total_seats: 0,
-          congestion: "-",
-          is_open: "",
-          operating_time: "",
-          detail_time: null,
-          naver_map: "",
-          site: "",
-        });
-        setErr("");
-        setLoading(false);
+  fetch(`${BASE_URL}/libraries/${libraryId}/detail/`)
+    .then(async (r) => {
+      if (!r.ok) {
+        const text = await r.text().catch(() => "");
+        throw new Error(`HTTP ${r.status} ${r.statusText} :: ${text?.slice(0, 200)}`);
+      }
+      return r.json();
+    })
+    .then((json) => {
+      if (!alive) return;
+
+      // 모킹과 API를 합성한다.
+      // ▶ 총 좌석(total_seats)은 항상 하드코딩(MOCK_BY_ID) 우선
+      const mock = MOCK_BY_ID[String(libraryId)] || {};
+      const merged = {
+        ...json,
+        total_seats: mock.total_seats ?? json.total_seats ?? 0,
+        current_seats: json.current_seats ?? mock.current_seats ?? 0,
+        congestion: json.congestion ?? mock.congestion ?? "-",
+        is_open: json.is_open ?? mock.is_open ?? "",
+        operating_time: json.operating_time ?? mock.operating_time ?? "",
+        detail_time: json.detail_time ?? null, // 필요 시 mock.detail_time으로 보강 가능
+        naver_map: json.naver_map ?? mock.naver_map ?? "",
+        site: json.site ?? mock.site ?? "",
+      };
+      setData(merged);
+      setLoading(false);
+    })
+    .catch(() => {
+      if (!alive) return;
+
+      // API 실패 시에도 화면이 꽉 차도록 모킹만으로 구성
+      const meta = LIB_META[libraryId] || {};
+      const mock = MOCK_BY_ID[String(libraryId)] || {};
+      setData({
+        name: meta.name || "도서관",
+        address: meta.address || "",
+        images: [],
+        total_seats: mock.total_seats ?? 0,
+        current_seats: mock.current_seats ?? 0,
+        congestion: mock.congestion ?? "-",
+        is_open: mock.is_open ?? "",
+        operating_time: mock.operating_time ?? "",
+        detail_time: mock.detail_time ?? null,
+        naver_map: mock.naver_map ?? "",
+        site: mock.site ?? "",
       });
+      setErr("");
+      setLoading(false);
+    });
 
-    return () => { alive = false; };
-  }, [libraryId]);
+  return () => { alive = false; };
+}, [libraryId]);
+
 
   // 갤러리: 로컬 매핑 우선 → 없으면 API images
   const gallery = useMemo(() => {
@@ -160,24 +314,43 @@ const LibraryDetail = () => {
                 {(data.is_open || data.operating_time) && (
                   <Card>
                     <Opener>
-                      {data.is_open && <strong>{data.is_open}</strong>}
-                      {data.operating_time && <span>{data.operating_time}</span>}
+                      <img className="icon" src={clockIcon} alt="운영시간" /> {/* >>> 변경 */}
+                      <div className="texts">                                {/* >>> 변경 */}
+                        {data.is_open && <strong>{data.is_open}</strong>}
+                        {data.operating_time && <span>{data.operating_time}</span>}
+                      </div>
                     </Opener>
                   </Card>
                 )}
+
 
                 {/* (선택) 요일별 시간표 */}
                 {data.detail_time && (
                   <Card>
                     <SectionTitle>시설 정보</SectionTitle>
                     <TimeTable>
-                      {["월","화","수","목","금","토","일"].map((d) => (
-                        <li key={d}>
-                          <span>{d}</span>
-                          <em>{data.detail_time[d] || "-"}</em>
-                        </li>
-                      ))}
+                      {["월","화","수","목","금","토","일"].map((d) => {
+                        const v = data.detail_time[d];
+                        if (!v) return null;
+                        const lines = Array.isArray(v) ? v : [String(v)];
+                        return (
+                          <li key={d}>
+                            <span>{d}</span>
+                            <div className="lines">
+                              {lines.map((t, i) => (
+                                <em key={i}>• {t}</em>
+                              ))}
+                            </div>
+                          </li>
+                        );
+                      })}
                     </TimeTable>
+                    {data.detail_time._비고 && (
+                      <Note>
+                        {(Array.isArray(data.detail_time._비고) ? data.detail_time._비고 : [data.detail_time._비고])
+                          .map((t, i) => <div key={i}>※ {t}</div>)}
+                      </Note>
+                    )}
                   </Card>
                 )}
 
@@ -186,7 +359,7 @@ const LibraryDetail = () => {
                   <LinkList>
                     {data.naver_map && (
                       <li>
-                        <div className="icon">📍</div>
+                        <img className="icon" src={pinIcon} alt="지도" />   {/* >>> 변경 */}
                         <div className="texts">
                           <a href={data.naver_map} target="_blank" rel="noreferrer">
                             네이버 지도 — {data.name || ""}
@@ -197,7 +370,7 @@ const LibraryDetail = () => {
                     )}
                     {data.site && (
                       <li>
-                        <div className="icon">🔗</div>
+                        <img className="icon" src={linkIcon} alt="링크" />  {/* >>> 변경 */}
                         <div className="texts">
                           <a href={data.site} target="_blank" rel="noreferrer">
                             도서관 사이트 — {data.name || ""}
@@ -208,6 +381,7 @@ const LibraryDetail = () => {
                     )}
                   </LinkList>
                 )}
+
               </InfoView>
             ) : (
               <SeatView>
@@ -277,21 +451,12 @@ const InfoView = styled.section``;
 const SeatView = styled.section``;
 
 /* 1) 갤러리: 사각형, 간격 0, 스크롤바 숨김 */
-const PhotoStrip = styled.div`
-  margin: 6px 0 16px;
-  display: flex;
-  gap: 0;                     /* 간격 제거 */
-  overflow-x: auto;
-  padding-bottom: 4px;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  &::-webkit-scrollbar { display: none; }
-`;
+
 const Photo = styled.div`
   flex: 0 0 auto;
-  width: 184px;               /* 딱 붙었을 때 보기 좋은 폭(필요시 조정) */
+  width: 184px;               
   height: 112px;
-  border-radius: 12px;
+  border-radius: 0px;
   overflow: hidden;
   background:#f2f2f2;
   img { width:100%; height:100%; object-fit: cover; display:block; }
@@ -306,61 +471,82 @@ const Right = styled.div``;
 const Big = styled.div` font-size: 20px; font-weight: 800; `;
 const Small = styled.div` font-size: 11px; color: #8a8a8a; margin-top: 2px; `;
 
-/* 5) 혼잡도 배지 */
+/* 혼잡도 배지 (요청 스펙) */
 const Badge = styled.span`
-  display: inline-block; padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 700;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 48px;                 /* >>> 변경 */
+  padding: 3px 16px;           /* >>> 변경 */
+  border-radius: 20px;         /* >>> 변경 */
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
   background: ${({ $level }) => {
-    if ($level === "여유") return "#e7f6ed";
-    if ($level === "보통") return "#fff3d6";
-    if ($level === "혼잡") return "#ffe6e6";
-    return "#eee";
-  }};
-  color: ${({ $level }) => {
-    if ($level === "여유") return "#1e7f4c";
-    if ($level === "보통") return "#a66a00";
-    if ($level === "혼잡") return "#b71c1c";
-    return "#555";
+    if ($level === "여유") return "#33A14B";  // >>> 변경
+    if ($level === "보통") return "#FFB724";  // >>> 변경
+    if ($level === "혼잡") return "#FF474D";  // >>> 변경
+    return "#bbb";
   }};
 `;
+
 
 /* 4) 운영중 + 운영시간 한 줄 */
 const Card = styled.div`
   border: 1px solid #eee; border-radius: 16px; padding: 12px 14px; margin-bottom: 12px; background:#fff;
 `;
+
+const TimeTable = styled.ul`
+  list-style: none; margin:0; padding:0;
+  li{
+    display:flex; gap:12px; padding:8px 0;
+    align-items: flex-start;                  /* >>> 변경 */
+  }
+  li + li { border-top: 1px dashed #eee; }    /* >>> 변경 */
+  span{ font-weight:700; width:32px; line-height: 20px; }
+  .lines{ display:flex; flex-direction:column; gap:4px; } /* >>> 변경 */
+  em{ font-style: normal; color:#333; line-height: 20px; }
+`;
+
+const Note = styled.div`
+  margin-top: 8px; font-size: 12px; color: #666; /* >>> 추가 */
+  div + div { margin-top: 2px; }
+`;
+
+
+const SectionTitle = styled.div` font-size: 14px; font-weight: 800; margin-bottom: 8px; `;
+
+
+/* +) 운영 시간 아래 링크 2개 스타일 */
 const Opener = styled.div`
-  display:flex; align-items:center; gap:8px; font-size:13px;
+  display:flex; align-items:center; gap:10px; font-size:13px;    /* >>> 변경 */
+  .icon{ width:18px; height:18px; object-fit:contain; }          /* >>> 추가 */
+  .texts{ display:flex; align-items:center; gap:8px; }           /* >>> 추가 */
   strong{ font-weight:800; }
   span{ color:#333; }
 `;
 
-const SectionTitle = styled.div` font-size: 14px; font-weight: 800; margin-bottom: 8px; `;
-const TimeTable = styled.ul`
-  list-style: none; margin:0; padding:0;
-  li{
-    display:flex; justify-content: space-between; align-items:center; padding:8px 0;
-    span{ font-weight:700; width:32px; }
-    em{ font-style: normal; color:#333; }
-    &:not(:last-child){ border-bottom: 1px dashed #eee; }
-  }
-`;
-
-/* +) 운영 시간 아래 링크 2개 스타일 */
 const LinkList = styled.ul`
   list-style: none; margin: 8px 0 0; padding: 0;
-  li{
-    display: flex; align-items: flex-start; gap: 10px; padding: 8px 0;
-  }
-  .icon{
-    width: 20px; height: 20px; border-radius: 50%;
-    background: #f1f1f1; display: grid; place-items: center; font-size: 12px;
-    flex: 0 0 20px;
-  }
-  .texts a{
-    font-size: 13px; color: #1f6feb; text-decoration: none;
-  }
-  .texts small{
-    display:block; margin-top: 2px; font-size: 10px; color: #9a9a9a; word-break: break-all;
-  }
+  li{ display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; }
+  .icon{ width:18px; height:18px; object-fit:contain; margin-top:2px; } /* >>> 변경 */
+  .texts a{ font-size: 13px; color: #1f6feb; text-decoration: none; }
+  .texts small{ display:block; margin-top: 2px; font-size: 10px; color: #9a9a9a; word-break: break-all; }
 `;
+
+/* 갤러리: 좌우 풀블리드 + 간격 7px */
+const PhotoStrip = styled.div`
+  margin: 6px -16px 16px;     /* >>> 변경: Inner 패딩 상쇄로 좌우 딱 붙게 */
+  padding: 0 16px 4px;        /* >>> 변경: 스크롤 여유/시각적 패딩 */
+  display: flex;
+  gap: 7px;                   /* >>> 변경: 요구 간격 고정 */
+  overflow-x: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+`;
+
+
+
 
 const Empty = styled.div` padding: 24px 0; color:#888; text-align:center; `;
