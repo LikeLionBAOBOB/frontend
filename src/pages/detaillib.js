@@ -30,7 +30,7 @@ const MOCK_BY_ID = {
       일: ["09:00-17:00"],
     },
     naver_map: "https://www.naver.com/?lib=111179",
-    site: "https://www.naver.com/?site=111179",
+    site: "https://lib.sdm.or.kr/sdmlib/menu/10053/contents/40018/contents.do",
   },
 
   "111086": {
@@ -50,7 +50,7 @@ const MOCK_BY_ID = {
       일: ["어린이자료실 09:00-18:00", "종합/디지털자료실 09:00-20:00"],
     },
     naver_map: "https://www.naver.com/?lib=111086",
-    site: "https://www.naver.com/?site=111086",
+    site: "https://mplib.mapo.go.kr/sglib/index.do",
   },
 
   "711596": {
@@ -70,7 +70,7 @@ const MOCK_BY_ID = {
       일: ["자율학습공간/북카페 09:00-22:00", "메타버스도서관자료실 09:00-18:00"],
     },
     naver_map: "https://www.naver.com/?lib=711596",
-    site: "https://www.naver.com/?site=711596",
+    site: "https://mplib.mapo.go.kr/metalib/index.do",
   },
 
   "111514": {
@@ -110,7 +110,7 @@ const MOCK_BY_ID = {
       일: ["종합자료실/디지털실 09:00-20:00", "어린이자료실 09:00-18:00", "상상나루 정기휴무(매주 일요일)"],
     },
     naver_map: "https://www.naver.com/?lib=111514",
-    site: "https://www.naver.com/?site=111514",
+    site: "https://mplib.mapo.go.kr/naru/index.do",
   },
 
   "111467": {
@@ -131,7 +131,7 @@ const MOCK_BY_ID = {
       _비고: ["자료열람실·어린이/유아자료실 — 법정 공휴일 휴관"],
     },
     naver_map: "https://www.naver.com/?lib=111467",
-    site: "https://www.naver.com/?site=111467",
+    site: "https://mplib.mapo.go.kr/mcl/index.do",
   },
 
   "111051": {
@@ -152,7 +152,7 @@ const MOCK_BY_ID = {
       _비고: ["평일 종합자료실 20시까지"],
     },
     naver_map: "https://www.naver.com/?lib=111051",
-    site: "https://www.naver.com/?site=111051",
+    site: "https://lib.sdm.or.kr/sdmlib/contents/40016/contents.do",
   },
 
   "111252": {
@@ -172,7 +172,7 @@ const MOCK_BY_ID = {
       일: ["09:00-17:00"],
     },
     naver_map: "https://www.naver.com/?lib=111252",
-    site: "https://www.naver.com/?site=111252",
+    site: "https://lib.sdm.or.kr/sdmlib/menu/10057/contents/40020/contents.do",
   },
 
   "111257": {
@@ -192,7 +192,7 @@ const MOCK_BY_ID = {
       일: ["정기휴무(매주 일요일)"],
     },
     naver_map: "https://www.naver.com/?lib=111257",
-    site: "https://www.naver.com/?site=111257",
+    site: "https://www.smalllibrary.org/library/detail/1102271",
   },
 };
 
