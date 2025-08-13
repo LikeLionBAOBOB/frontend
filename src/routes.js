@@ -6,6 +6,7 @@ import LoginPagead from './pages/LoginPage_book';
 import HomePageAdmin from './pages/HomePage_admin';
 import SeatPage from './pages/seatmap';
 import Mylib from './pages/mylib';
+import MapPage from './pages/map';
 
 const routes = [
     {
@@ -31,13 +32,17 @@ const routes = [
         path: '/home-ad',
         element: <HomePageAdmin />,
     },
-        {
+    {
         path: '/admin-seat',
         element: <SeatPage />,
     },
-            {
+    {
         path: '/mylib',
         element: <Mylib />,
+    },
+    {
+        path: '/map',
+        element: <MapPage />,
     },
 ];
 
