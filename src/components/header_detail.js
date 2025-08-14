@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 
 import backIcon from "../assets/icons/back.png";
-import hamburgerIcon from "../assets/icons/hamburger.png";
+import hamburgerIcon from "../assets/icons/star.png";
 import logoIcon from "../assets/icons/logo.png";
 import defaultBg from "../assets/images/해오름_배경.png";
 import bottomShadow from "../assets/icons/frame_shadow.png";

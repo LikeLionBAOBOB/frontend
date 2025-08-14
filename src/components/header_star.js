@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 import backIcon from '../assets/icons/back.png';
 import logoIcon from '../assets/icons/logo.png';
-import starIcon from '../assets/icons/star.png';
+import starIcon from '../assets/icons/star.svg';
 import StatusBar from '../assets/icons/StatusBar.png';
 
 const Header = () => {

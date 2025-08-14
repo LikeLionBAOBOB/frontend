@@ -7,6 +7,9 @@ import HomePageAdmin from './pages/HomePage_admin';
 import SeatPage from './pages/seatmap';
 import Mylib from './pages/mylib';
 import MapPage from './pages/map';
+import DetailLib from './pages/detaillib';
+import { Navigate } from "react-router-dom";
+
 
 const routes = [
     {
@@ -44,6 +47,14 @@ const routes = [
         path: '/map',
         element: <MapPage />,
     },
+    }, { path: '/detaillib/:libraryId',
+        element: <DetailLib /> },
+        { path: '/detaillib/:libraryId', 
+            element: <DetailLib /> },
+            { path: '/detaillib', 
+                element: <Navigate to="/detaillib/111179" replace /> },
+                { path: '*', 
+                    element: <div>404</div> },
 ];
 
 export default routes;
