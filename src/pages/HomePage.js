@@ -3,7 +3,7 @@ import React from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { createGlobalStyle } from 'styled-components';
-import HeaderProfile from '../components/header_profile.js'; //프로필있는 헤더 컴포넌트 
+import HeaderProfileHome from '../components/header_home.js'; //프로필있는 헤더 컴포넌트 
 import homelogoIcon from '../assets/icons/home_logo.png';
 import homebackground from '../assets/images/home_background.png';
 import bookIcon from '../assets/icons/book.png';
@@ -17,7 +17,7 @@ const HomePage = () => {
     return(
         <Wrapper>
             <img src={statusBar} alt="상태바"/>
-            <HeaderProfile/>
+            <HeaderProfileHome/>
             <Container>
                 <Main>
                     {/* 상단 */}

@@ -76,7 +76,7 @@ export default SitesPage;
 //상단 헤더 부분
 //상단바 
 const Wrapper = styled.div`
-    width: 100vw;
+    width: 100%;
     height: 852px;
     display: flex;
     flex-direction: column;
@@ -92,6 +92,7 @@ const Container = styled.div`
 const Header = styled.header`
     width: 393px;   
     height: 147px;
+    margin-bottom: 28px;
 `;
 
 //텍스트
@@ -102,7 +103,8 @@ const TitleText = styled.h1`
     font-weight: 600;
     line-height: 150%; 
     padding: 20px 0px 0px 0px;
-    margin: 0px;
+    margin-bottom: 4px;
+    margin-top: 0px;
     justify-content: center;
     align-items: center;
 `;

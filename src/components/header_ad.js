@@ -67,7 +67,12 @@ const HeaderBackHero = ({ title, address, isLoggedIn = false }) => {
     
         <IconBar>
           <IconBtn onClick={() => navigate("/")} aria-label="뒤로가기">
-            <img src={backIcon} alt="back" />
+            <img 
+            src={backIcon} 
+            alt="뒤로가기"
+            role="button"
+            onClick={() => (mount ? closeSidebar() : navigate(-1))} 
+            />
           </IconBtn>
           <Logo onClick={() => navigate("/")}>
             <img src={logoIcon} alt="logo" />

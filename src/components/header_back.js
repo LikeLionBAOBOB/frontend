@@ -29,7 +29,6 @@ const HeaderBack = ({ isLoggedIn = false }) => {
 
   const closeSidebar = () => {
     setOpen(false);
-
     setTimeout(() => setMount(false), 250);
   };
 
@@ -41,9 +40,9 @@ const HeaderBack = ({ isLoggedIn = false }) => {
   }, [navigate]);
 
   const topMenu = [
-    { label: "도서관 검색", to: "/search", color: "#222" },
+    { label: "도서관 검색", to: "/map", color: "#222" },
     ...(isLoggedIn ? [{ label: "나의 도서관", to: "/mylib", color: "#222" }] : []),
-    { label: "사이트 바로가기", to: "https://example.com", color: "#222" },
+    { label: "사이트 바로가기", to: "/sites", color: "#222" },
     
   ];
   const bottomMenu = [
@@ -147,7 +146,7 @@ const Scrim = styled.div`
   top: 60px;
   left: calc(50% - ${FRAME_W / 2}px);
   width: ${FRAME_W}px;
-  height: ${FRAME_H- 60}px;
+  height: ${FRAME_H- 52}px;
   background: rgba(0, 0, 0, 0.18);
   opacity: ${({ $open }) => ($open ? 1 : 0)};
   transition: opacity 0.25s ease;
@@ -159,11 +158,10 @@ const Sidebar = styled.aside`
   position: fixed;
   top: 60px;
   right: calc(50% - ${FRAME_W / 2}px);
-  width: 280px;
-  height: ${FRAME_H-60}px;
+  width: 281px;
+  height: ${FRAME_H-52}px;
   background: rgba(255, 255, 255, 0.80);
   backdrop-filter: blur(10px);
-  box-shadow: -4px 0 24px rgba(0,0,0,0.12);
   z-index: 999;
 
   animation: ${slideIn} 0.25s ease forwards;
@@ -210,7 +208,7 @@ const MenuItemRight = styled.button`
   border: 0;
   background: transparent;
   padding: 0;
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 600;
   cursor: pointer;
   text-align: right;       

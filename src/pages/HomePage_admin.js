@@ -1,59 +1,29 @@
 //일반모드 홈화면 
 import React, { useState } from "react";
 import styled, { createGlobalStyle, keyframes } from "styled-components";
+import { useNavigate } from "react-router-dom";
+import HeaderAdmin from '../components/header_home_admin.js'; // 헤더 컴포넌트
 import homelogoIcon from '../assets/icons/home_logo.png';
 import homebackground from '../assets/images/home_background.png';
 import statusBar from '../assets/images/StatusBar.png';
-import hamburgerIcon from '../assets/icons/hamburger.png';
-import profileimageIcon from '../assets/icons/proimg.png';
 import leftIcon from '../assets/icons/left.png';
 import bookIcon from '../assets/icons/book.png';
 import returnIcon from '../assets/icons/return.png';
 
-const slideInRight = keyframes`
-  from { transform: translateX(100%); }
-  to   { transform: translateX(0); }
-`;
-const slideInLeft = keyframes`
-  from { transform: translateX(-100%); }
-  to   { transform: translateX(0); }
-`;
 
 const HomePageAdmin = () => {
-  const [openLeft, setOpenLeft] = useState(false);
-  const [openRight, setOpenRight] = useState(false);
-
-
-  const closeAll = () => { setOpenLeft(false); setOpenRight(false); };
-
+  const navigate = useNavigate();
   return (
     <Wrapper>
       <img src={statusBar} alt="상태바" />
-      <Header>
-        <Nickname onClick={() => { setOpenLeft(true); setOpenRight(false); }}>
-          <Profileimg src={profileimageIcon} alt="프로필이미지" />
-          <Name>닉네임</Name>
-        </Nickname>
-
-
-        <img
-          src={hamburgerIcon}
-          alt="햄버거로고"
-          onClick={() => { setOpenRight(true); setOpenLeft(false); }}
-          style={{ cursor: 'pointer' }}
-        />
-      </Header>
-
+      <HeaderAdmin/>
       <Container>
         <Main>
-
           <LogoImage src={homelogoIcon} alt="홈로고" />
           <LogoText>열람:뜰</LogoText>
           <SubText>공공도서관 좌석 확인 · 관리 서비스</SubText>
-
-
           <ButtonsContainer>
-            <ActionButton>
+            <ActionButton onClick={() => navigate("/admin-seat")}>
               <Left>
                 <Icon src={bookIcon} alt="책아이콘" />
                 <BtnText>좌석 관리</BtnText>
@@ -63,60 +33,6 @@ const HomePageAdmin = () => {
           </ButtonsContainer>
         </Main>
       </Container>
-
-
-      {openLeft && (
-        <Overlay onClick={closeAll}>
-          <DrawerLeft onClick={(e) => e.stopPropagation()}>
-            <img src={statusBar} alt="상태바" />
-            <DrawerHeaderLeft>
-              <BackBtn onClick={closeAll}>
-                <img src={returnIcon} alt="뒤로가기" />
-              </BackBtn>
-            </DrawerHeaderLeft>
-
-
-            <DrawerNicknameLeft>
-              <Profileimg src={profileimageIcon} alt="프로필이미지" />
-              <Name>닉네임</Name>
-            </DrawerNicknameLeft>
-
-
-            <LogoutLeft>로그아웃</LogoutLeft>
-          </DrawerLeft>
-        </Overlay>
-      )}
-
-
-      {openRight && (
-        <Overlay onClick={closeAll}>
-          <DrawerRight onClick={(e) => e.stopPropagation()}>
-            <img src={statusBar} alt="상태바" />
-            <DrawerHeaderRight>
-              <BackBtn onClick={closeAll}>
-                <img src={returnIcon} alt="닫기" />
-              </BackBtn>
-            </DrawerHeaderRight>
-
-
-            <MenuList>
-              <MenuItemButton
-                type="button"
-                onClick={() => { /* navigate('/admin-seat') or window.location.href=... */ }}
-              >
-                좌석 관리 사이트 바로가기
-              </MenuItemButton>
-
-              <MenuItemButton
-                type="button"
-                onClick={() => { /* navigate('/about') or open modal */ }}
-              >
-                서비스 소개 / 문의
-              </MenuItemButton>
-            </MenuList>
-          </DrawerRight>
-        </Overlay>
-      )}
     </Wrapper>
   );
 };
@@ -152,7 +68,7 @@ const Profileimg = styled.img`
 `;
 
 const Wrapper = styled.div`
-  width: 100vw;
+  width: 100%;
   height: 852px;
   display: flex;
   flex-direction: column;
@@ -248,90 +164,8 @@ const Overlay = styled.div`
   background: rgba(255,255,255,0.8);
   backdrop-filter: blur(10px);
   display: flex;
-  justify-content: space-between; 
+  justify-content: center; 
   align-items: stretch;
   z-index: 999;
 `;
 
-
-const DrawerLeft = styled.aside`
-  width: 294px;
-  height: 100%;
-  background: rgba(255,255,255,0.8);
-  display: flex;
-  flex-direction: column;
-  animation: ${slideInLeft} 0.25s ease forwards;
-  transform: translateX(0);
-  padding-left: 12px;
-`;
-const DrawerHeaderLeft = styled.div`
-  display: flex;
-  width: 100%;
-  height: 44px;
-  align-items: center;
-  padding: 4px 0 4px 8px; 
-`;
-const DrawerNicknameLeft = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 8px 0 8px 8px; 
-`;
-const LogoutLeft = styled.span`
-  color: #0F0F0F;
-  font-family: "Pretendard GOV Variable";
-  font-size: 20px;
-  font-weight: 600;
-  padding: 12px 0 0 8px; 
-`;
-
-const BackBtn = styled.button`
-  width: 36px;
-  height: 36px;
-  cursor: pointer;
-  background: transparent;
-  border: none;
-`;
-
-const DrawerRight = styled.aside`
-  width: 294px;
-  height: 100%;
-  margin-left: auto;          
-  background: rgba(255,255,255,0.8);
-  display: flex;
-  flex-direction: column;
-  animation: ${slideInRight} 0.25s ease forwards;
-  transform: translateX(0);
-`;
-const DrawerHeaderRight = styled.div`
-  display: flex;
-  width: 100%;
-  height: 44px;
-  justify-content: flex-end;
-  align-items: center;
-  padding: 4px 20px 4px 0px; 
-`;
-
-
-const MenuList = styled.nav`
-  display: flex;
-  flex-direction: column;
-  padding: 12px 16px;
-  gap: 8px;
-`;
-const MenuItemButton = styled.button`
-  width: 100%;
-  height: 48px;
-  text-align: left;                
-  padding: 0 12px;
-  border-radius: 12px;
-  background: rgba(255,255,255,0.6);
-  box-shadow: 0 3px 6px rgba(0,0,0,.08);
-  backdrop-filter: blur(8px);
-  border: none;
-  font-family: "Pretendard GOV Variable";
-  font-weight: 600;
-  font-size: 16px;
-  color: #0F0F0F;
-  cursor: pointer;
-`;
