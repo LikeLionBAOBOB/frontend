@@ -1,4 +1,3 @@
-//일반모드 홈화면 
 import React, { useState } from "react";
 import styled, { createGlobalStyle, keyframes } from "styled-components";
 import { useNavigate } from "react-router-dom";
@@ -8,7 +7,6 @@ import homebackground from '../assets/images/home_background.png';
 import statusBar from '../assets/images/StatusBar.png';
 import leftIcon from '../assets/icons/left.png';
 import bookIcon from '../assets/icons/book.png';
-import returnIcon from '../assets/icons/return.png';
 
 
 const HomePageAdmin = () => {
@@ -24,10 +22,14 @@ const HomePageAdmin = () => {
           <SubText>공공도서관 좌석 확인 · 관리 서비스</SubText>
           <ButtonsContainer>
             <ActionButton onClick={() => navigate("/admin-seat")}>
-              <Left>
-                <Icon src={bookIcon} alt="책아이콘" />
-                <BtnText>좌석 관리</BtnText>
-              </Left>
+              <LeftCol>
+                <TitleRow>
+                  <Icon src={bookIcon} alt="책아이콘" />
+                  <BtnText>좌석 관리</BtnText>
+                </TitleRow>
+                <WorkLib>해오름 작은도서관</WorkLib>
+              </LeftCol>
+              
               <ArrowIcon src={leftIcon} alt="우화살표" />
             </ActionButton>
           </ButtonsContainer>
@@ -39,33 +41,6 @@ const HomePageAdmin = () => {
 
 export default HomePageAdmin;
 
-// ===== styled-components =====
-
-// 헤더
-const Header = styled.header`
-  width: 353px;
-  height: 44px;
-  padding: 0 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-const Nickname = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  cursor: pointer;
-`;
-const Name = styled.span`
-  color: #383838;
-  font-family: "Pretendard GOV Variable";
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 125%;
-`;
-const Profileimg = styled.img`
-  padding: 4px;
-`;
 
 const Wrapper = styled.div`
   width: 100%;
@@ -122,50 +97,55 @@ const ButtonsContainer = styled.div`
 `;
 const ActionButton = styled.div`
   width: 353px;
-  height: 56px;
+  height: 81px;
   flex-shrink: 0;
   border-radius: 15px;
   background: rgba(255, 255, 255, 0.60);
   box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.15);
   backdrop-filter: blur(10px);
   position: relative;
+
   display: flex;
   justify-content: space-between;
   align-items: center;
   box-sizing: border-box;
   white-space: nowrap;
 `;
-const Left = styled.div`
+const LeftCol = styled.div`
   display: flex;
+  flex-direction: column;
   align-items: center;
   padding: 16px 0px 16px 23px;
-  gap: 12px;
+  align-items: flex-start;
+  gap: 7px;
+`;
+const TitleRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px; 
 `;
 const BtnText = styled.div`
-  color: #383838;
+  color: var(--Tect--Lighter, #383838);
   font-family: "Pretendard GOV Variable";
   font-size: 20px;
   font-weight: 600;
   line-height: normal;
 `;
+const WorkLib = styled.p`
+  color: var(--Tect--Lighter, #383838);
+  font-size: 14px;
+  font-weight: 400;
+  margin: 0px;
+  margin-left: 36px;   
+`;
 const ArrowIcon = styled.img`
   flex-shrink: 0;
-  padding: 10px 16px 10px;
+  margin: 10px 16px 35px 0px;
 `;
 const Icon = styled.img`
+  margin-top: 2px;
   width: 24px;
   height: 24px;
 `;
 
-
-const Overlay = styled.div`
-  position: fixed;
-  inset: 0;
-  background: rgba(255,255,255,0.8);
-  backdrop-filter: blur(10px);
-  display: flex;
-  justify-content: center; 
-  align-items: stretch;
-  z-index: 999;
-`;
 

@@ -32,11 +32,6 @@ const HeaderAdmin = () => {
   const [lOpen, setLOpen] = useState(false);
   const [lMount, setLMount] = useState(false);
 
-  useEffect(() => {
-    setLMount(true);
-    requestAnimationFrame(() => setLOpen(true));
-  }, []);
-
   const closeLeft = () => { setLOpen(false); setTimeout(() => setLMount(false), 250); };
 
   const go = useCallback((pathOrUrl) => {
@@ -104,7 +99,7 @@ const HeaderAdmin = () => {
           {/* 오른쪽 드로어 */}
           {rMount && (
             <SidebarRight role="dialog" aria-modal="true" $open={rOpen}>
-              <SidebarTop align="flex-end">
+              <SidebarTop align="flex-end" $isLeft={false}>
                 <CloseBtn onClick={closeRight} aria-label="닫기">
                   <img src={closeArrow} alt="닫기" />
                 </CloseBtn>
@@ -132,7 +127,7 @@ const HeaderAdmin = () => {
           {/* 왼쪽 드로어 */}
           {lMount && (
             <SidebarLeft role="dialog" aria-modal="true" $open={lOpen}>
-              <SidebarTop align="flex-start">
+              <SidebarTop align="flex-start" $isLeft>
                 <CloseBtn onClick={closeLeft} aria-label="닫기">
                   <img src={closeArrow} alt="닫기" />
                 </CloseBtn>
@@ -156,7 +151,7 @@ const HeaderAdmin = () => {
 
 export default HeaderAdmin;
 
-/* ===== styled ===== */
+
 const HeaderWrapper = styled.header`
   width: ${FRAME_W}px;
   height: 44px;
@@ -223,31 +218,45 @@ const SidebarTop = styled.div`
   justify-content: ${({ align }) => align || "flex-end"};
   align-items: center;
   padding-top: 20px;
-  margin-bottom: 72px;
+  margin-bottom: ${({ $isLeft }) => ($isLeft ? "16px" : "72px")};
 `;
 
 const CloseBtn = styled.button`
-  border:0; background:transparent; width:36px; height:36px; cursor:pointer;
+  border: 0; 
+  background: transparent; 
+  width: 36px; 
+  height: 36px; 
+  cursor: pointer;
   img{ width:36px; height:36px; }
 `;
 
 const MenuGroupRight = styled.nav`
-  display: flex; flex-direction: column; align-items: flex-end;
-  gap: 18px; padding: 10px 0;
+  display: flex; 
+  flex-direction: column; 
+  align-items: flex-end;
+  gap: 18px; 
+  padding: 10px 0;
 `;
 const MenuItemRight = styled.button`
-  border:0; background:transparent; font-size:20px; font-weight:600;
-  text-align:right; cursor:pointer;
+  border: 0; 
+  background: transparent; 
+  font-size: 20px; 
+  font-weight: 600;
+  text-align: right; 
+  cursor: pointer;
 `;
 const Divider = styled.hr`
-  border:0; height:1px; background:rgba(0,0,0,.1); margin:14px 0;
+  border: 0; 
+  height: 1px; 
+  background: rgba(0,0,0,.1); 
+  margin: 14px 0;
 `;
 
 const ProfileRow = styled.div`
   display: flex; 
   align-items: center; 
   gap: 4px; 
-  padding: 8px 0;
+  padding: 8px 7px;
 `;
 const Avatar = styled.img`
   width:28px; height:28px;
@@ -269,4 +278,5 @@ const LogoutBtn = styled.button`
   padding-left: 15px;
   display: flex;
   flex-direction: column;
+  text-align: left;
 `;

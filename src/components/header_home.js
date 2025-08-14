@@ -125,7 +125,7 @@ const HeaderProfileHome = ({ isLoggedIn = false }) => {
           {/* 오른쪽 드로어 */}
           {rMount && (
             <SidebarRight role="dialog" aria-modal="true" $open={rOpen}>
-              <SidebarTop align="flex-end" $isLeft={false}>
+              <SidebarTop align="flex-end">
                 <CloseBtn onClick={closeRight} aria-label="닫기">
                   <img src={closeArrow} alt="닫기" />
                 </CloseBtn>
@@ -149,7 +149,7 @@ const HeaderProfileHome = ({ isLoggedIn = false }) => {
           {/* 왼쪽 드로어 (로그인/비로그인 분기) */}
           {lMount && (
             <SidebarLeft role="dialog" aria-modal="true" $open={lOpen}>
-              <SidebarTop align="flex-start" $isLeft>
+              <SidebarTop align="flex-start">
                 <CloseBtn onClick={closeLeft} aria-label="닫기"><img src={closeArrow} alt="닫기" /></CloseBtn>
               </SidebarTop>
 
@@ -251,7 +251,7 @@ const SidebarTop = styled.div`
   align-items: center;
   height: auto;
   padding-top: 20px;
-  margin-bottom: ${({ $isLeft }) => ($isLeft ? "16px" : "72px")};
+  margin-bottom: 72px;
 `;
 
 const CloseBtn = styled.button`
