@@ -33,13 +33,13 @@ const LoginPage = () => {
 export default LoginPage;
 
 const Wrapper = styled.div`
-  width: 100vw;
+  width: 100%;
   height: 852px;
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow: hidden;
+  overflow-x: hidden;
 `;
 
 const Container = styled.div`

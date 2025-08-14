@@ -1,6 +1,7 @@
 //일반모드 홈화면 
 import React from "react";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 import { createGlobalStyle } from 'styled-components';
 import HeaderProfile from '../components/header_profile.js'; //프로필있는 헤더 컴포넌트 
 import homelogoIcon from '../assets/icons/home_logo.png';
@@ -12,6 +13,7 @@ import statusBar from '../assets/images/StatusBar.png';
 
 
 const HomePage = () => {
+    const navigate = useNavigate();
     return(
         <Wrapper>
             <img src={statusBar} alt="상태바"/>
@@ -24,7 +26,7 @@ const HomePage = () => {
                     <SubText>공공도서관 좌석 확인 · 관리 서비스</SubText>
                     {/*하단 버튼 */}
                     <ButtonsContainer>
-                        <ActionButton>
+                        <ActionButton onClick={() => navigate("/map")}>
                             <Left>
                                 <Icon src={bookIcon} alt="책아이콘" />
                                 <BtnText>도서관 검색</BtnText>
@@ -32,7 +34,7 @@ const HomePage = () => {
                             <ArrowIcon src={leftIcon} alt="우화살표" />
                         </ActionButton>
 
-                        <ActionButton>
+                        <ActionButton onClick={() => navigate("/mylib")}>
                             <Left>
                                 <Icon src={starIcon} alt="별아이콘" />
                                 <BtnText>나의 도서관</BtnText>
@@ -51,12 +53,12 @@ export default HomePage;
 
 //styled-components 스타일 정의
 const Wrapper = styled.div`
-    width: 100vw;
+    width: 100%;
     height: 852px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    overflow: hidden;
+    overflow-x: hidden;
 `;
 const Container = styled.div`
     width: 393px;
@@ -70,9 +72,7 @@ const Container = styled.div`
 const Main = styled.div`
     width: 100%;
     height: 749px;
-
     position: relative;
-
 `;
 const LogoImage = styled.img`
     display: block;

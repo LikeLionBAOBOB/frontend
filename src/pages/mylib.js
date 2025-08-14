@@ -98,7 +98,6 @@ const StatusImg = styled.img`
 
 
 const TitleBox = styled.div`
-  width: 100%;
   margin-top: 20px;
   padding: 0 16px;
   display: flex;
@@ -127,6 +126,7 @@ const BeigeBand = styled.div`
 
 const ListWrap = styled.div`
   width: 100%;
+  height: 646px;
   background: #efefef;
   padding: 12px 20px 24px 20px;    
   display: flex;
