@@ -1,15 +1,75 @@
-// src/components/seatmaps/Map111257.jsx
 import React from "react";
-import TablesMap from "./common";
+import TablesMap, {
+  SEAT_SIZE,
+  SEAT_GAP,
+  SEAT_OFFSET,
+  seatsAboveBelowBar,
+} from "./common";
 
-const tables = [
-  { x: 24, y: 24, w: 120, h: 80, seats: 6 },
-  { x: 180, y: 20, w: 150, h: 90, seats: 8 },
-  { x: 40, y: 140, w: 140, h: 90, seats: 6 },
+// ── 테이블(모양만) ─────────────────────────────────────
+const topLeftBar  = { type: "bar",  x: 56,  y: 60,  w: 110, h: 26 };
+const topRightBar = { type: "bar",  x: 194, y: 60,  w: 110, h: 26 };
+const centerRound = { type: "round", cx: 170, cy: 160, r: 26 };
+const botLeftBar  = { type: "bar",  x: 56,  y: 230, w: 110, h: 26 };
+const botRightBar = { type: "bar",  x: 194, y: 230, w: 110, h: 26 };
+
+const shapes = [topLeftBar, topRightBar, centerRound, botLeftBar, botRightBar];
+
+// ── 의자(수동 배치) ────────────────────────────────────
+// 상단: 각 바 아래쪽으로 2개
+const topLeftChairs = seatsAboveBelowBar(topLeftBar, {
+  countTop: 0, countBottom: 2,
+  seatSize: SEAT_SIZE, offset: SEAT_OFFSET, spacing: SEAT_GAP,
+});
+const topRightChairs = seatsAboveBelowBar(topRightBar, {
+  countTop: 0, countBottom: 2,
+  seatSize: SEAT_SIZE, offset: SEAT_OFFSET, spacing: SEAT_GAP,
+});
+
+// 하단: 각 바 위쪽으로 2개
+const botLeftChairs = seatsAboveBelowBar(botLeftBar, {
+  countTop: 2, countBottom: 0,
+  seatSize: SEAT_SIZE, offset: SEAT_OFFSET, spacing: SEAT_GAP,
+});
+const botRightChairs = seatsAboveBelowBar(botRightBar, {
+  countTop: 2, countBottom: 0,
+  seatSize: SEAT_SIZE, offset: SEAT_OFFSET, spacing: SEAT_GAP,
+});
+
+// ✅ 원형 테이블 좌/우에 의자 1개씩
+const circleSideChairs = [
+  {
+    x: centerRound.cx - centerRound.r - SEAT_OFFSET - SEAT_SIZE, // 왼쪽
+    y: centerRound.cy - SEAT_SIZE / 2,
+    w: SEAT_SIZE,
+    h: SEAT_SIZE,
+  },
+  {
+    x: centerRound.cx + centerRound.r + SEAT_OFFSET, // 오른쪽
+    y: centerRound.cy - SEAT_SIZE / 2,
+    w: SEAT_SIZE,
+    h: SEAT_SIZE,
+  },
+];
+
+const chairs = [
+  ...topLeftChairs,
+  ...topRightChairs,
+  ...botLeftChairs,
+  ...botRightChairs,
+  ...circleSideChairs, // ← 추가된 원형 테이블 양옆 좌석
 ];
 
 const Map111257 = ({ available, total }) => {
-  return <TablesMap tables={tables} available={available} total={total} />;
+  const computedTotal = total || chairs.length; // 의자 개수로 총좌석 계산
+  return (
+    <TablesMap
+      shapes={shapes}
+      chairs={chairs}
+      available={available}
+      total={computedTotal}
+    />
+  );
 };
 
 export default Map111257;

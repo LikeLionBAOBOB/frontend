@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import backIcon from '../assets/icons/back.png';
 import logoIcon from '../assets/icons/logo.png';
-import starIcon from '../assets/icons/star.png';
+import starIcon from '../assets/icons/star.svg';
 import StatusBar from '../assets/icons/StatusBar.png';
 
 const Header = () => {

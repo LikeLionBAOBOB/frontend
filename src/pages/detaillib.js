@@ -324,11 +324,9 @@ const LibraryDetail = () => {
 
   return (
     <PageWrap>
-      {/* 헤더: 이름 + 주소(API) */}
       <HeaderBackHero title={data?.name || "도서관"} address={data?.address || ""} libraryId={libraryId} />
 
       <Inner>
-        {/* 탭: 정확히 좌/우 1/2 위치 */}
         <Tabs>
           <TabBtn $active={tab === "info"} onClick={() => setTab("info")}>
             도서관 정보
@@ -350,7 +348,6 @@ const LibraryDetail = () => {
           <>
             {tab === "info" ? (
               <InfoView>
-                {/* 갤러리 */}
                 {gallery.length > 0 && (
                   <PhotoStrip>
                     {gallery.map((src, i) => (
@@ -361,7 +358,6 @@ const LibraryDetail = () => {
                   </PhotoStrip>
                 )}
 
-                {/* 좌석 KPI */}
                 <KPIBlock>
                   <KPIHeading>실시간 혼잡도</KPIHeading>
                   <KPIInline>
@@ -373,11 +369,9 @@ const LibraryDetail = () => {
                   <Small>(현재 좌석 수 / 전체 좌석 수)</Small>
                 </KPIBlock>
 
-                {/* 시설 정보 */}
                 <Card>
                   <SectionTitle>시설 정보</SectionTitle>
 
-                  {/* 타이틀 10px 아래: 시계 + 운영 중 + 시간 */}
                   <Opener style={{ marginTop: 10 }}>
                     <img className="icon" src={clockIcon} alt="운영시간" />
                     <div className="texts">
@@ -442,13 +436,25 @@ const LibraryDetail = () => {
             ) : (
               <SeatView>
                 <KPIBlock>
-                  <KPIHeading>실시간 혼잡도</KPIHeading>
-                  <KPIInline>
-                    <Big>
-                      {available} / {total}
-                    </Big>
-                    <Badge $level={data.congestion}>{data.congestion || "-"}</Badge>
-                  </KPIInline>
+                  {/* 혼잡도 수치/배지와 범례를 같은 가로줄로 배치 */}
+                  <KPIRow>
+                    <KPIInline>
+                      <Big>{available} / {total}</Big>
+                      <Badge $level={data.congestion}>{data.congestion || "-"}</Badge>
+                    </KPIInline>
+
+                    {/* 범례 (위, 같은 줄) */}
+                    <LegendBar role="group" aria-label="좌석 범례">
+                      <LegendItem>
+                        <span>이용 가능한 좌석</span>
+                        <LegendDot aria-hidden="true" />
+                      </LegendItem>
+                      <LegendItem>
+                        <span>이용 중인 좌석</span>
+                        <LegendDot $filled aria-hidden="true" />
+                      </LegendItem>
+                    </LegendBar>
+                  </KPIRow>
                   <Small>(현재 좌석 수 / 전체 좌석 수)</Small>
                 </KPIBlock>
 
@@ -572,7 +578,7 @@ const Small = styled.div`
   font-size: 10px;
   font-weight: 300;
   line-height: normal;
-  margin-top: 4px;
+  margin-top: 2px;
   margin-bottom: 12px;
 `;
 
@@ -764,4 +770,40 @@ const Empty = styled.div`
   padding: 24px 0;
   color: #888;
   text-align: center;
+`;
+
+/* ===== 좌석 범례 ===== */
+const LegendBar = styled.div`
+  display: flex;
+  flex-direction: column;   /* 세로 배치 (가능/중인 두 줄) */
+  align-items: flex-end;    /* 우측 정렬 */
+  gap: 6px;
+  margin-top: 20px;                /* KPI와 같은 가로줄에 붙게 여백 제거 */
+`;
+
+const LegendItem = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;                 /* 텍스트 ↔ 동그라미 간격 */
+  color: #8e8e8e;
+  font-family: "Pretendard GOV Variable";
+  font-size: 12px;
+  line-height: 150%;
+`;
+
+const LegendDot = styled.i`
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1.2px solid #bdbdbd;                       /* 빈 원 = 이용 가능 */
+  background: ${(p) => (p.$filled ? "#bdbdbd" : "transparent")}; /* 채운 원 = 이용 중 */
+`;
+
+/* KPI 왼쪽(수치/배지) ↔ 오른쪽(범례) 같은 줄 */
+const KPIRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 `;

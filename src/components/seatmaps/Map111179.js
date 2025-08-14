@@ -1,12 +1,11 @@
-// src/components/seatmaps/Map111179.jsx
+// src/components/seatmaps/Map111179.js
 import React from "react";
-import TablesMap from "./common";
+import TablesMap, { STAGE_W, STAGE_H } from "./common"; // ← default + named 같이 사용 가능(필요시)
 
 const tables = [
-  { x: 16, y: 16, w: 120, h: 80, seats: 6 },
-  { x: 160, y: 24, w: 140, h: 90, seats: 8 },
-  { x: 24, y: 130, w: 120, h: 80, seats: 4 },
-  { x: 190, y: 150, w: 120, h: 80, seats: 4 },
+  { x: 48,  y: 32,  w: 70,  h: 110, seats: 4 }, // 위-왼쪽
+  { x: 200, y: 104, w: 70,  h: 110, seats: 4 }, // 가운데-오른쪽
+  { x: 48,  y: 196, w: 70,  h: 110, seats: 4 }, // 아래-왼쪽
 ];
 
 const Map111179 = ({ available, total }) => {
