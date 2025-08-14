@@ -29,7 +29,7 @@ const MOCK_BY_ID = {
       토: ["09:00-17:00"],
       일: ["09:00-17:00"],
     },
-    naver_map: "https://www.naver.com/?lib=111179",
+    naver_map: "https://naver.me/5CWgTj5D",
     site: "https://lib.sdm.or.kr/sdmlib/menu/10053/contents/40018/contents.do",
   },
 
@@ -49,7 +49,7 @@ const MOCK_BY_ID = {
       토: ["어린이자료실 09:00-18:00", "종합/디지털자료실 09:00-20:00"],
       일: ["어린이자료실 09:00-18:00", "종합/디지털자료실 09:00-20:00"],
     },
-    naver_map: "https://www.naver.com/?lib=111086",
+    naver_map: "https://naver.me/xTTAm2hs",
     site: "https://mplib.mapo.go.kr/sglib/index.do",
   },
 
@@ -69,7 +69,7 @@ const MOCK_BY_ID = {
       토: ["자율학습공간/북카페 09:00-22:00", "메타버스도서관자료실 09:00-18:00"],
       일: ["자율학습공간/북카페 09:00-22:00", "메타버스도서관자료실 09:00-18:00"],
     },
-    naver_map: "https://www.naver.com/?lib=711596",
+    naver_map: "https://naver.me/GEXPVxHK",
     site: "https://mplib.mapo.go.kr/metalib/index.do",
   },
 
@@ -109,7 +109,7 @@ const MOCK_BY_ID = {
       토: ["종합자료실/디지털실 09:00-20:00", "어린이자료실 09:00-18:00", "상상나루 09:00-17:00", "휴게시간 12:00-14:00"],
       일: ["종합자료실/디지털실 09:00-20:00", "어린이자료실 09:00-18:00", "상상나루 정기휴무(매주 일요일)"],
     },
-    naver_map: "https://www.naver.com/?lib=111514",
+    naver_map: "https://naver.me/GEXPVxHK",
     site: "https://mplib.mapo.go.kr/naru/index.do",
   },
 
@@ -130,7 +130,7 @@ const MOCK_BY_ID = {
       일: ["자료열람실 09:00-20:00", "어린이/유아자료실 09:00-18:00"],
       _비고: ["자료열람실·어린이/유아자료실 — 법정 공휴일 휴관"],
     },
-    naver_map: "https://www.naver.com/?lib=111467",
+    naver_map: "https://naver.me/xrSQ9Ydk",
     site: "https://mplib.mapo.go.kr/mcl/index.do",
   },
 
@@ -151,7 +151,7 @@ const MOCK_BY_ID = {
       일: ["09:00-17:00"],
       _비고: ["평일 종합자료실 20시까지"],
     },
-    naver_map: "https://www.naver.com/?lib=111051",
+    naver_map: "https://naver.me/xDJfgkMs",
     site: "https://lib.sdm.or.kr/sdmlib/contents/40016/contents.do",
   },
 
@@ -171,7 +171,7 @@ const MOCK_BY_ID = {
       토: ["09:00-17:00"],
       일: ["09:00-17:00"],
     },
-    naver_map: "https://www.naver.com/?lib=111252",
+    naver_map: "https://naver.me/GRoQAres",
     site: "https://lib.sdm.or.kr/sdmlib/menu/10057/contents/40020/contents.do",
   },
 
@@ -191,7 +191,7 @@ const MOCK_BY_ID = {
       토: ["정기휴무(매주 토요일)"],
       일: ["정기휴무(매주 일요일)"],
     },
-    naver_map: "https://www.naver.com/?lib=111257",
+    naver_map: "https://naver.me/G0DAtKWJ",
     site: "https://www.smalllibrary.org/library/detail/1102271",
   },
 };
