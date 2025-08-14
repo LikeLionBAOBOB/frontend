@@ -47,7 +47,7 @@ const routes = [
         path: '/map',
         element: <MapPage />,
     },
-    }, { path: '/detaillib/:libraryId',
+    { path: '/detaillib/:libraryId',
         element: <DetailLib /> },
         { path: '/detaillib/:libraryId', 
             element: <DetailLib /> },
