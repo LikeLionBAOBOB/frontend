@@ -1,6 +1,5 @@
-//일반모드 홈화면 
 import React from "react";
-import { useEffect, useRef  } from "react";
+import { useEffect, useRef, useState  } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { createGlobalStyle } from 'styled-components';
@@ -10,17 +9,23 @@ import searchIcon from '../assets/icons/search.png';
 import green from '../assets/icons/green_marker.png'
 import red from '../assets/icons/red_marker.png'
 import yellow from '../assets/icons/yellow_marker.png'
+import goIcon from '../assets/icons/go.png';
+import clockIcon from '../assets/icons/clock.png';
 
 
 const API_BASE = process.env.REACT_APP_API_BASE || 'https://baobob.pythonanywhere.com';
 
 const MapPage = () => {
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
     const mapDivRef = useRef(null);
     const mapRef = useRef(null);
+    const [selectedLib, setSelectedLib] = useState(null);
+
+    const resolveImageUrl = (path) =>
+        !path ? null : path.startsWith("http") ? path : `${API_BASE}${path}`;
 
     useEffect(() => {
-    const initMap = () => {
+        const initMap = () => {
         if (!window.naver || !window.naver.maps || !mapDivRef.current) return;
 
         // 현재 위치
@@ -33,63 +38,127 @@ const MapPage = () => {
             mapDataControl: false,
         });
 
-        // 마커
+        // 마커 목록(위도, 경도)
         const libraries = [
-            { id:"111514", name:"마포소금나루도서관", lat:37.5495159, lng:126.9462201, congestion:"보통", congestion_level:2 },
-            { id:"111252", name:"홍은도담도서관",   lat:37.6017769, lng:126.9489945, congestion:"보통", congestion_level:2 },
-            { id:"111051", name:"서대문구립이진아기념도서관", lat:37.5730502, lng:126.9555345, congestion:"보통", congestion_level:2 },
-            { id:"111257", name:"해오름작은도서관", lat:37.5557827, lng:126.9424619, congestion:"보통", congestion_level:2 },
-            { id:"111467", name:"마포중앙도서관",   lat:37.5637955, lng:126.9082019, congestion:"보통", congestion_level:2 },
-            { id:"711596", name:"마포나루메타버스도서관", lat:37.5373236, lng:126.9442549, congestion:"보통", congestion_level:2 },
-            { id:"111086", name:"마포서강도서관",   lat:37.5477444, lng:126.93206,   congestion:"보통", congestion_level:2 },
-            { id:"111179", name:"남가좌새롬어린이도서관", lat:37.5783377, lng:126.9240475, congestion:"보통", congestion_level:2 },
+            { id: "111514", name: "마포소금나루도서관", lat: 37.5495159, lng: 126.9462201 },
+            { id: "111252", name: "홍은도담도서관", lat: 37.6017769, lng: 126.9489945 },
+            { id: "111051", name: "이진아기념도서관", lat: 37.5730502, lng: 126.9555345 },
+            { id: "111257", name: "해오름 작은도서관", lat: 37.5557827, lng: 126.9424619 },
+            { id: "111467", name: "마포중앙도서관", lat: 37.5637955, lng: 126.9082019 },
+            { id: "711596", name: "마포나루 스페이스", lat: 37.5373236, lng: 126.9442549 },
+            { id: "111086", name: "마포구립서강도서관", lat: 37.5477444, lng: 126.93206 },
+            { id: "111179", name: "남가좌새롬도서관", lat: 37.5783377, lng: 126.9240475 },
         ];
 
-        // id(도서관)별로 혼잡도 레벨 지정 (여유: 1, 보통: 2, 혼잡: 3) -> 임시
-        const FIXED_CONGESTION = {
-            "111514": 2, // 마포소금나루도서관
-            "111252": 1, // 홍은도담도서관   
-            "111051": 3, // 서대문구립이진아기념도서관 
-            "111257": 2, // 해오름작은도서관
-            "111467": 1, // 마포중앙도서관
-            "711596": 2, // 마포나루메타버스도서관
-            "111086": 3, // 마포서강도서관
-            "111179": 2, // 남가좌새롬어린이도서관
+        // 혼잡도 레벨
+        const getIconByLevel = (level) => ({ 1: green, 2: yellow, 3: red }[level]);
+        const levelLabel = { 1: "여유", 2: "보통", 3: "혼잡" };
+        const toLevel = (cong) => {
+            if (cong === "여유") return 1;
+            if (cong === "보통") return 2;
+            if (cong === "혼잡") return 3;
+            return 2;
+        };
+        const toTag = (cong) => {
+            if (cong === "여유") return { tag: "여유", tagColor: "#33A14B" };
+            if (cong === "보통") return { tag: "보통", tagColor: "#FFB724" };
+            if (cong === "혼잡") return { tag: "혼잡", tagColor: "#FF474D" };
+            return { tag: cong || "", tagColor: "#C6C6C6" };
         };
 
-        const getIconByLevel = (level) => ({
-            1: green,   // 여유
-            2: yellow,  // 보통
-            3: red,     // 혼잡
-        }[level]);
-
+        // 마커 생성, 클릭 핸들러
         libraries.forEach((p) => {
-            const fixedLevel = FIXED_CONGESTION[p.id] ?? p.congestion_level;
+            // 백엔드 호출 전까지 초기 아이콘은 임시로 '보통' 사용
+            const initialLevel = 2;
 
-            new window.naver.maps.Marker({
-                position: new window.naver.maps.LatLng(p.lat, p.lng),
-                map: mapRef.current,
-                icon: {
-                url: getIconByLevel(fixedLevel),          
+            const marker = new window.naver.maps.Marker({
+            position: new window.naver.maps.LatLng(p.lat, p.lng),
+            map: mapRef.current,
+            icon: {
+                url: getIconByLevel(initialLevel),
                 size: new window.naver.maps.Size(32, 32),
                 origin: new window.naver.maps.Point(0, 0),
                 anchor: new window.naver.maps.Point(16, 32),
-                },
-                title: p.name,
+            },
+            title: p.name,
             });
-        });
-    }
+
+            // 마커 클릭 시 해당 도서관 카드 열기
+            window.naver.maps.Event.addListener(marker, "click", async () => {
+                mapRef.current.panTo(new window.naver.maps.LatLng(p.lat, p.lng));
+                // 로딩 상태
+                setSelectedLib({
+                    id: p.id,
+                    libraryName: p.name,
+                    level: initialLevel,
+                    loading: true,
+                });
+
+                try {
+                    const res = await fetch(`${API_BASE}/libraries/${p.id}/simple/`);
+                    const detail = await res.json();
+
+                    const imageUrl = resolveImageUrl(detail.image);
+
+                    const newLevel = toLevel(detail.congestion);
+                    const { tag, tagColor } = toTag(detail.congestion || levelLabel[newLevel]);
+
+                    marker.setIcon({
+                    url: getIconByLevel(newLevel),
+                    size: new window.naver.maps.Size(32, 32),
+                    origin: new window.naver.maps.Point(0, 0),
+                    anchor: new window.naver.maps.Point(16, 32),
+                    });
+
+                    setSelectedLib({
+                    id: p.id,
+                    libraryName: detail.name || p.name,
+                    imageUrl,
+                    currentSeats: detail.current_seats,
+                    totalSeats: detail.total_seats,
+                    libCongestion: detail.congestion, 
+                    operatingTime: detail.operating_time,
+                    isOpen: detail.is_open, 
+                    tag,                    
+                    tagColor,             
+                    level: newLevel,        
+                    });
+                } catch (e) {
+                    // 실패 시 임시 상태로 카드 표시 (보통)
+                    const { tag, tagColor } = toTag(levelLabel[initialLevel]);
+                    setSelectedLib({
+                        id: p.id,
+                        libraryName: p.name,
+                        imageUrl: null,
+                        currentSeats: 0,
+                        totalSeats: 0,
+                        libCongestion: levelLabel[initialLevel],
+                        operatingTime: "",
+                        isOpen: "정보 없음",
+                        tag,
+                        tagColor,
+                        level: initialLevel,
+                    });
+                }
+                });
+            });
+
+            // 지도 빈 곳 클릭 시 카드 닫기
+            window.naver.maps.Event.addListener(mapRef.current, "click", () => {
+                setSelectedLib(null);
+                });
+            };
+
         if (window.naver && window.naver.maps) {
         initMap();
         } else {
-
-        window.naver = window.naver || {};
-        window.naver.maps = window.naver.maps || {};
-        const prev = window.naver.maps.onJSContentLoaded;
-        window.naver.maps.onJSContentLoaded = function () {
-            if (typeof prev === "function") prev();
-            initMap();
-        };
+            window.naver = window.naver || {};
+            window.naver.maps = window.naver.maps || {};
+            const prev = window.naver.maps.onJSContentLoaded;
+            window.naver.maps.onJSContentLoaded = function () {
+                if (typeof prev === "function") prev();
+                initMap();
+            };
         }
 
         const handleResize = () => {
@@ -135,6 +204,42 @@ const MapPage = () => {
                                 <span>혼잡</span>
                             </LegendRow>
                         </Legend>
+                        {/* 하단 정보 카드 */}
+                        {selectedLib && (
+                            <BottomCard onClick={() => navigate(`/libraries/${selectedLib.id}/detail/`)}>
+                                {/* 썸네일 */}
+                                <Thumb
+                                src={selectedLib.imageUrl}
+                                alt={selectedLib.libraryName}
+                                />
+                                <CardMain>
+                                    <HeaderRow>
+                                        <Name>{selectedLib.libraryName}</Name>
+                                        <RightInline>
+                                        <Tag style={{ backgroundColor: selectedLib.tagColor }}>
+                                            {selectedLib.tag}
+                                        </Tag>
+                                        <GoIconImg src={goIcon} alt="정보이동아이콘" />
+                                        </RightInline>
+                                    </HeaderRow>
+
+                                    <Detail>
+                                        <SeatsInfo>
+                                            <SeatsNum>
+                                                {selectedLib.currentSeats}/{selectedLib.totalSeats}
+                                            </SeatsNum>
+                                            <Info>(현재 좌석 수 / 전체 좌석 수)</Info>
+                                        </SeatsInfo>
+                                        <OpenTime>
+                                            <ClockIcon src={clockIcon} alt="시계아이콘" />
+                                            {selectedLib.isOpen || ""}
+                                            {selectedLib.operatingTime ? ` ${selectedLib.operatingTime}` : ""}
+                                        </OpenTime>
+                                    </Detail>
+                                </CardMain>
+                            </BottomCard>
+                            )}
+                        {/*지도 */}
                         <MapCanvas ref={mapDivRef} />
                     </MapArea>
                 </Main>
@@ -152,11 +257,12 @@ export default MapPage;
 //상단 헤더 부분
 //상단바 
 const Wrapper = styled.div`
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 852px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    overflow: hidden;
 `;
 const Container = styled.div`
     width: 393px;
@@ -284,4 +390,103 @@ const LegendIcon = styled.img`
     height: 20px;
     display: block;
     border-radius: 50%;
+`;
+//하단 상세정보 간략 카드
+const BottomCard = styled.div`
+    width: 353px;
+    height: 122px;
+  position: absolute;
+  margin: 0px 20px 44px 20px;
+  bottom: 16px;
+  z-index: 20;
+  display: flex;
+  gap: 12px;
+  background: #fff;
+  border: 10px;
+  border-radius: 10px;
+  box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.20);
+  align-items: center;
+`;
+const Thumb = styled.img`
+    width: 80px; 
+    height: 122px;
+    border-radius: 10px;
+    object-fit: cover;
+    flex-shrink: 0;
+`;
+const CardMain = styled.div`
+    display: flex;
+    flex-direction: column;
+    padding: 16px 16px 17px 16px;
+    flex: 1;
+    gap: 12px;
+`;
+const HeaderRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+const RightInline = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+const Name = styled.h3`
+    color: #383838;
+    font-family: "Pretendard GOV Variable";
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 150%;
+    margin: 0;
+`;
+const Tag = styled.div`
+    display: flex;
+    padding: 4px 16px;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    color: #FFF;
+    border-radius: 20px;
+`;
+const GoIconImg = styled.img`
+    width: 24px;
+    height: 24px;
+`;
+const Detail = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+`;
+const SeatsInfo = styled.div`
+    display: flex;
+    flex-direction: column;
+`;
+const SeatsNum = styled.span`
+    color: #0f0f0f;
+    font-family: "Pretendard GOV Variable";
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 140%;
+`;
+const Info = styled.div`
+    color: #8e8e8e;
+    font-family: "Pretendard GOV Variable";
+    font-size: 8px;
+    font-weight: 300;
+    line-height: 140%;
+`;
+const OpenTime = styled.div`
+    color: #555;
+    font-family: "Pretendard GOV Variable";
+    font-size: 10px;
+    font-weight: 400;
+    line-height: 150%;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 2px;
+`;
+const ClockIcon = styled.img`
+    width: 16px;
+    height: 16px;
 `;

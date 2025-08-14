@@ -1,5 +1,6 @@
 //도서관 검색 화면 
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { createGlobalStyle } from 'styled-components';
 import HeaderBack from '../components/header_back.js'; // 헤더 컴포넌트
@@ -9,10 +10,11 @@ import searchIcon from '../assets/icons/search.png';
 import goIcon from '../assets/icons/go.png';
 import clockIcon from '../assets/icons/clock.png';
 
-const API_BASE = process.env.REACT_APP_API_BASE || 'http://127.0.0.1:8000';
+const API_BASE = process.env.REACT_APP_API_BASE || 'https://baobob.pythonanywhere.com';
 
 const SearchPage = () => {
     //검색 기능 구현
+    const navigate = useNavigate();
     const [keyword, setKeyword] = useState('');
     const [results, setResults] = useState([]);
     const [searched, setSearched] = useState(false); //검색 시도 여부 
@@ -30,7 +32,7 @@ const SearchPage = () => {
         setSearched(true); 
         
         try {
-            const url = `${API_BASE}/libraries/search?search_word=${encodeURIComponent(keyword)}`;
+            const url = `${API_BASE}/libraries/search/?q=${encodeURIComponent(keyword)}`;
 
             const response = await fetch(url, {
                 method: 'GET',
@@ -67,12 +69,11 @@ const SearchPage = () => {
                 const { tag, tagColor } = toTag(it.congestion);
                 return {
                     libraryName: it.name,
-                    imageUrl: '/images/library_example.jpg', // 임시
+                    imageUrl: it.image,
                     currentSeats: it.current_seats,
                     totalSeats: it.total_seats,
                     libCongestion: it.congestion,
-                    openTime: it.open_time,
-                    closeTime: it.close_time,
+                    operatingTime: it.operating_time,
                     isOpen: it.is_open,
                     tag,
                     tagColor,
@@ -112,36 +113,48 @@ const SearchPage = () => {
                         // 결과 리스트 렌더링 (results 배열의 원소를 순회하며 ResyltsCard로 렌더링)
                         <ResultsList>
                             {results.map((item, idx) => (
-                                <ResultCard key={idx}>
-                                    {/* 도서관 사진 썸네일 */}
-                                    <img src={item.imageUrl} alt={item.libraryName} />
-
+                                <BottomCard 
+                                key={idx} 
+                                onClick={() => navigate(`/libraries/${item.id}/detail/`)}>
+                                    {/* 썸네일 */}
+                                    <Thumb
+                                    src={item.imageUrl}
+                                    alt={item.libraryName}
+                                    />
                                     {/* 상단 (이름,혼잡도,아이콘) */}
-                                    <Name>{item.libraryName}</Name>
-                                    <Tag style={{ backgroundColor: item.tagColor }}>
-                                        {item.tag}
-                                    </Tag>
-                                    <GoIcon src={goIcon} alt="정보이동아이콘"/>
+                                    <CardMain>
+                                        <HeaderRow>
+                                            <Name>{item.libraryName}</Name>
+                                            <RightInline>
+                                            <Tag style={{ backgroundColor: item.tagColor }}>
+                                                {item.tag}
+                                            </Tag>
+                                            <GoIconImg src={goIcon} alt="정보이동아이콘"/>
+                                            </RightInline>
+                                        </HeaderRow>
 
-                                    {/* 도서관 정보 */}
-                                    <Detail>
-                                        <SeatsInfo>
-                                            <SeatsNum>{item.currentSeats}/{item.totalSeats}</SeatsNum>
-                                            <Info>(현재 좌석 수 / 전체 좌석 수)</Info>
-                                        </SeatsInfo>
-                                        <OpenTime>
-                                            운영중 {item.openTime}~{item.closeTime}
-                                            <ClockIcon src={clockIcon} alt="시계아이콘"/>
-                                        </OpenTime>
-                                    </Detail>
-                                </ResultCard>
+                                        {/* 도서관 정보 */}
+                                        <Detail>
+                                            <SeatsInfo>
+                                                <SeatsNum>
+                                                    {item.currentSeats}/{item.totalSeats}
+                                                </SeatsNum>
+                                                <Info>(현재 좌석 수 / 전체 좌석 수)</Info>
+                                            </SeatsInfo>
+                                            <OpenTime>
+                                                <ClockIcon src={clockIcon} alt="시계아이콘"/>
+                                                {item.isOpen || ""}
+                                                {item.operatingTime ? ` ${item.operatingTime}` : ""}
+                                            </OpenTime>
+                                        </Detail>
+                                    </CardMain>
+                                </BottomCard>
                             ))}
                         </ResultsList>
                     )}
                 </Main>
             </Container>
         </Wrapper>
-
     );
 };
 
@@ -226,50 +239,84 @@ const ResultsList = styled.div`
     flex-direction: column;
     gap: 12px;
 `;
-const ResultCard = styled.div`
+const BottomCard = styled.div`
     width: 353px;
     height: 122px;
+  position: absolute;
+  margin: 0px 20px 44px 20px;
+  bottom: 16px;
+  z-index: 20;
+  display: flex;
+  gap: 12px;
+  background: #fff;
+  border: 10px;
+  border-radius: 10px;
+  box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.20);
+  align-items: center;
+`;
+const Thumb = styled.img`
+    width: 80px; 
+    height: 122px;
     border-radius: 10px;
-    border: 1px solid #C6C6C6;
-    background: #FFF;
+    object-fit: cover;
+    flex-shrink: 0;
+`;
+const CardMain = styled.div`
+    display: flex;
+    flex-direction: column;
+    padding: 16px 16px 17px 16px;
+    flex: 1;
+    gap: 12px;
+`;
+const HeaderRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+const RightInline = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
 `;
 const Name = styled.h3`
-    color:  #383838;
+    color: #383838;
     font-family: "Pretendard GOV Variable";
     font-size: 16px;
     font-weight: 700;
-    line-height: 150%; 
-    margin: 0px;
+    line-height: 150%;
+    margin: 0;
 `;
 const Tag = styled.div`
     display: flex;
-    width: 48px;
     padding: 4px 16px;
     justify-content: center;
     align-items: center;
-    gap: 10px;
+    font-size: 12px;
+    color: #FFF;
+    border-radius: 20px;
 `;
-const GoIcon = styled.img`
+const GoIconImg = styled.img`
     width: 24px;
     height: 24px;
 `;
 const Detail = styled.div`
     display: flex;
     flex-direction: column;
+    gap: 9px;
 `;
 const SeatsInfo = styled.div`
     display: flex;
     flex-direction: column;
 `;
 const SeatsNum = styled.span`
-    color: #0F0F0F; 
+    color: #0f0f0f;
     font-family: "Pretendard GOV Variable";
     font-size: 14px;
     font-weight: 600;
-    line-height: 140%; 
+    line-height: 140%;
 `;
 const Info = styled.div`
-    color: #8E8E8E;
+    color: #8e8e8e;
     font-family: "Pretendard GOV Variable";
     font-size: 8px;
     font-weight: 300;
@@ -280,7 +327,11 @@ const OpenTime = styled.div`
     font-family: "Pretendard GOV Variable";
     font-size: 10px;
     font-weight: 400;
-    line-height: 150%; 
+    line-height: 150%;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 2px;
 `;
 const ClockIcon = styled.img`
     width: 16px;

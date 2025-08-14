@@ -52,10 +52,11 @@ export default HomePage;
 //styled-components 스타일 정의
 const Wrapper = styled.div`
     width: 100vw;
-    height: 100vh;
+    height: 852px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    overflow: hidden;
 `;
 const Container = styled.div`
     width: 393px;

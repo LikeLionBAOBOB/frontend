@@ -77,10 +77,11 @@ export default SitesPage;
 //상단바 
 const Wrapper = styled.div`
     width: 100vw;
-    height: 100vh;
+    height: 852px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    overflow: hidden;
 `;
 const Container = styled.div`
     width: 393px;
