@@ -5,8 +5,9 @@ import { useNavigate } from 'react-router-dom';
 import HeaderBack from '../components/header_back.js';
 import statusBar from '../assets/images/StatusBar.png';
 
-const LOGIN_URL = '/accounts/user/login/';
-const LOGOUT_URL = '/accounts/logout/';
+const API_BASE = process.env.REACT_APP_API_BASE || 'https://baobob.pythonanywhere.com'; 
+const LOGIN_URL = `${API_BASE}/accounts/user/login/`;
+const LOGOUT_URL = `${API_BASE}/accounts/logout/`;
 
 const LibrarianLoginPage = () => {
   const navigate = useNavigate();
@@ -39,7 +40,7 @@ const LibrarianLoginPage = () => {
       if (access_token) localStorage.setItem('access_token', access_token);
       if (refresh_token) localStorage.setItem('refresh_token', refresh_token);
       if (userData?.name) localStorage.setItem('user_name', userData.name);
-      navigate('/homepage');
+      navigate('/');
     } catch {
       setErrorMsg('네트워크 오류가 발생했습니다.');
       setSubmitting(false);

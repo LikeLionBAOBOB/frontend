@@ -1,4 +1,3 @@
-// src/pages/MyLibraries.js
 import React, { useEffect, useMemo, useState, useCallback } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
@@ -9,37 +8,49 @@ import arrowRight from "../assets/icons/arrow_rightup.png";
 import clockIcon from "../assets/icons/clock.png";
 import defaultImg from "../assets/images/lib/111051/1.jpg";
 
-const BASE_URL = "https://baobob.pythonanywhere.com/";
+const BASE_URL = "https://baobob.pythonanywhere.com";
 const FAVORITES_LIST_URL = `${BASE_URL}/libraries/favorites/`;
-const FAVORITE_ITEM_URL = (library_id) =>
-  `${BASE_URL}/libraries/${library_id}/favorites/`;
 
 const PILL_COLOR = {
-  혼잡: { bg: "#FF474D", color: "#fff" },
-  보통: { bg: "#FFB724", color: "#222" },
-  여유: { bg: "#33A14B", color: "#fff" },
+  혼잡: { bg: "#FF474D" },
+  보통: { bg: "#FFB724" },
+  여유: { bg: "#33A14B" },
 };
 
-/* ▼ 로컬 이미지 자동 로드 */
-const libImages = require.context(
-  "../assets/images/lib",
-  true,
-  /\.(png|jpe?g|webp)$/
-);
-const getLibraryImage = (id) => {
-  const candidates = [
-    `./${id}/1.jpg`,
-    `./${id}/1.jpeg`,
-    `./${id}/1.png`,
-    `./${id}/1.webp`,
-  ];
-  for (const p of candidates) {
+let libImages;
+try {
+  libImages = require.context("../assets/images/lib", true, /\.(png|jpe?g|webp)$/);
+} catch {}
+
+const fileExists = (loader, p) => {
+  try { return loader(p); } catch { return null; }
+};
+
+const getLocalImageById = (id) => {
+  if (!id) return null;
+  const candidates = [`./${id}/1.png`, `./${id}/1.jpg`, `./${id}/1.jpeg`, `./${id}/1.webp`];
+  if (libImages) {
+    for (const p of candidates) {
+      const hit = fileExists(libImages, p);
+      if (hit) return hit;
+    }
+  }
+  for (const p of ["1.png", "1.jpg", "1.jpeg", "1.webp"]) {
     try {
-      return libImages(p);
+      return new URL(`../assets/images/lib/${id}/${p}`, import.meta.url).href;
     } catch {}
   }
-  return defaultImg;
+  return null;
 };
+
+const extractIdFromImagePath = (imagePath) => {
+  if (!imagePath || typeof imagePath !== "string") return "";
+  const m = imagePath.match(/(\d{4,})/);
+  return m ? m[1] : "";
+};
+
+const getLibId = (lib) =>
+  String(lib.library_id ?? lib.id ?? extractIdFromImagePath(lib.image) ?? "") || "";
 
 const MyLibraries = () => {
   const navigate = useNavigate();
@@ -47,10 +58,7 @@ const MyLibraries = () => {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
 
-  const token = useMemo(
-    () => localStorage.getItem("access_token") || "",
-    []
-  );
+  const token = useMemo(() => localStorage.getItem("access_token") || "", []);
 
   const fetchFavorites = useCallback(async () => {
     setLoading(true);
@@ -62,13 +70,9 @@ const MyLibraries = () => {
       });
       const raw = await res.text();
       let data = [];
-      try {
-        data = raw ? JSON.parse(raw) : [];
-      } catch {}
+      try { data = raw ? JSON.parse(raw) : []; } catch {}
       if (!res.ok) {
-        if (res.status === 401)
-          setErr("인증이 필요합니다. 로그인 후 다시 시도해 주세요.");
-        else setErr(data?.message || `목록 조회 실패 (${res.status})`);
+        setErr(data?.message || `목록 조회 실패 (${res.status})`);
         setItems([]);
       } else {
         setItems(Array.isArray(data) ? data : []);
@@ -81,102 +85,12 @@ const MyLibraries = () => {
     }
   }, [token]);
 
-  useEffect(() => {
+  useEffect(() => { 
     fetchFavorites();
+    const onFavChanged = () => fetchFavorites();
+    window.addEventListener("favorites:changed", onFavChanged);
+    return () => window.removeEventListener("favorites:changed", onFavChanged);
   }, [fetchFavorites]);
-
-
-  useEffect(() => {
-    const onChanged = (e) => {
-      const { libraryId, fav } = e.detail || {};
-      if (!libraryId) return;
-
-      if (fav) {
-        fetchFavorites();
-      } else {
-        setItems((prev) =>
-          prev.filter(
-            (x) =>
-              String((x.library_id ?? x.id ?? x.code ?? x.name_id)) !==
-              String(libraryId)
-          )
-        );
-      }
-    };
-    window.addEventListener("favorites:changed", onChanged);
-    return () => window.removeEventListener("favorites:changed", onChanged);
-  }, [fetchFavorites]);
-
-  const getId = (lib) => lib.library_id ?? lib.id;
-
-  const isFavorited = useCallback(
-    (library_id) =>
-      items.some((x) => String(getId(x)) === String(library_id)),
-    [items]
-  );
-
-  const addFavorite = useCallback(
-    async (library_id) => {
-      const res = await fetch(FAVORITE_ITEM_URL(library_id), {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ library_id }),
-      });
-      if (res.ok || res.status === 400) return;
-      const raw = await res.text();
-      let data = {};
-      try {
-        data = raw ? JSON.parse(raw) : {};
-      } catch {}
-      throw new Error(data?.message || `추가 실패 (${res.status})`);
-    },
-    [token]
-  );
-
-  const removeFavorite = useCallback(
-    async (library_id) => {
-      const res = await fetch(FAVORITE_ITEM_URL(library_id), {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ library_id }),
-      });
-
-      if (res.ok || res.status === 400) return;
-      const raw = await res.text();
-      let data = {};
-      try {
-        data = raw ? JSON.parse(raw) : {};
-      } catch {}
-      throw new Error(data?.message || `삭제 실패 (${res.status})`);
-    },
-    [token]
-  );
-
-  const toggleFavorite = useCallback(
-    async (library_id) => {
-      try {
-        if (isFavorited(library_id)) {
-          setItems((prev) =>
-            prev.filter((x) => String(getId(x)) !== String(library_id))
-          );
-          await removeFavorite(library_id);
-        } else {
-          await addFavorite(library_id);
-          await fetchFavorites();
-        }
-      } catch (e) {
-        setErr(e.message || "처리 중 오류가 발생했습니다.");
-        fetchFavorites();
-      }
-    },
-    [isFavorited, addFavorite, removeFavorite, fetchFavorites]
-  );
 
   return (
     <Outer>
@@ -194,45 +108,48 @@ const MyLibraries = () => {
         <ListWrap>
           {loading && <Hint>불러오는 중…</Hint>}
           {!loading && err && <ErrorMsg>{err}</ErrorMsg>}
-          {!loading && !err && items.length === 0 && (
-            <Hint>즐겨찾기한 도서관이 없습니다.</Hint>
-          )}
+          {!loading && !err && items.length === 0 && <Hint>즐겨찾기한 도서관이 없습니다.</Hint>}
 
-          {!loading &&
-            !err &&
-            items.map((lib) => {
-              const id = getId(lib);
-              const imgSrc = getLibraryImage(id);
-              return (
-                <Card key={id}>
-                  <Thumb style={{ backgroundImage: `url(${imgSrc})` }} />
-                  <Info>
-                    <TopLine>
-                      <LibName title={lib.name}>{lib.name}</LibName>
-                      <Pill $level={lib.congestion}>{lib.congestion}</Pill>
-                      <Arrow src={arrowRight} alt="자세히" />
-                    </TopLine>
+          {!loading && !err && items.map((lib, idx) => {
+            const id = getLibId(lib);
 
-                    <Seats>
-                      <strong>{lib.current_seats}</strong> / {lib.total_seats}
-                    </Seats>
+            const apiImg =
+              lib.image ? (lib.image.startsWith("http") ? lib.image : `${BASE_URL}${lib.image}`) : null;
+            const localImg = getLocalImageById(id);
+            const imgSrc = apiImg || localImg || defaultImg;
 
-                    <MetaRow>
-                      <MetaIcon src={clockIcon} alt="" />
-                      <Meta>
-                        {lib.is_open} {lib.operating_time}
-                      </Meta>
-                    </MetaRow>
+            const level = lib.congestion || "-";
 
-                    <FavRow>
-                      <FavButton onClick={() => toggleFavorite(id)}>
-                        {isFavorited(id) ? "★ 즐겨찾기" : "☆ 즐겨찾기"}
-                      </FavButton>
-                    </FavRow>
-                  </Info>
-                </Card>
-              );
-            })}
+            return (
+              <Card key={`${id || "x"}_${idx}`}>
+                <Thumb style={{ backgroundImage: `url(${imgSrc})` }} />
+                <Info>
+                  <TopLine>
+                    <LibName title={lib.name}>{lib.name}</LibName>
+                    <Pill $level={level}><span>{level}</span></Pill>
+                    <ArrowButton
+                      aria-label="도서관 상세로 이동"
+                      onClick={() => id && navigate(`/detaillib/${id}`)}
+                      disabled={!id}
+                      title={id ? "상세로 이동" : "ID 없음"}
+                    >
+                      <Arrow src={arrowRight} alt="" />
+                    </ArrowButton>
+                  </TopLine>
+
+                  <Seats>
+                    <strong>{lib.current_seats ?? 0}</strong> / {lib.total_seats ?? 0}
+                  </Seats>
+                  <SeatsHint>(현재 좌석 수 / 전체 좌석 수)</SeatsHint>
+
+                  <MetaRow>
+                    <MetaIcon src={clockIcon} alt="" />
+                    <Meta>{lib.is_open} {lib.operating_time}</Meta>
+                  </MetaRow>
+                </Info>
+              </Card>
+            );
+          })}
         </ListWrap>
       </PhoneFrame>
     </Outer>
@@ -241,13 +158,13 @@ const MyLibraries = () => {
 
 export default MyLibraries;
 
-/* styles */
 const Outer = styled.div`
   min-height: 100dvh;
   background: #fff;
   display: flex;
   justify-content: center;
 `;
+
 const PhoneFrame = styled.div`
   width: 393px;
   height: 852px;
@@ -258,11 +175,13 @@ const PhoneFrame = styled.div`
   overflow-x: hidden;
   box-sizing: border-box;
 `;
+
 const StatusImg = styled.img`
   width: 100%;
   height: auto;
   display: block;
 `;
+
 const TitleBox = styled.div`
   margin-top: 20px;
   padding: 0 16px;
@@ -281,12 +200,14 @@ const Subtitle = styled.p`
   font-size: 12px;
   margin: 0;
 `;
+
 const BeigeBand = styled.div`
   width: 100%;
   height: 12px;
   background: #efefef;
   margin-top: 28px;
 `;
+
 const ListWrap = styled.div`
   width: 100%;
   height: 646px;
@@ -297,6 +218,7 @@ const ListWrap = styled.div`
   gap: 12px;
   box-sizing: border-box;
 `;
+
 const Hint = styled.div`
   color: #666;
   font-size: 14px;
@@ -309,105 +231,122 @@ const ErrorMsg = styled.div`
   text-align: center;
   padding: 16px 0;
 `;
+
 const Card = styled.div`
-  width: 100%;
+  width: 353px;
   height: 122px;
+  flex-shrink: 0;
   border-radius: 10px;
   background: #fff;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   display: grid;
   grid-template-columns: 100px 1fr;
   column-gap: 12px;
   overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
 `;
+
 const Thumb = styled.div`
   width: 100px;
   height: 122px;
   flex-shrink: 0;
   background: #ddd center/cover no-repeat;
+  border-radius: 10px 0 0 10px;
 `;
+
 const Info = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 10px 8px 10px 0;
+  padding: 10px 12px 10px 0;
   min-width: 0;
   gap: 6px;
   box-sizing: border-box;
 `;
+
 const TopLine = styled.div`
   display: grid;
   grid-template-columns: 1fr auto 24px;
   align-items: center;
   column-gap: 8px;
 `;
+
 const LibName = styled.div`
   color: #383838;
-  font-size: 16px;
+  font-family: "Pretendard GOV Variable";
   font-weight: 700;
   line-height: 150%;
-  overflow: hidden;
+  font-size: clamp(12px, 2.8vw, 16px);
   white-space: nowrap;
-  text-overflow: ellipsis;
+  overflow: hidden;
+  text-overflow: clip;
   min-width: 0;
 `;
+
 const Pill = styled.span`
   display: flex;
-  width: 48px;
+  width:30px;
   padding: 4px 16px;
   justify-content: center;
   align-items: center;
   gap: 10px;
   border-radius: 20px;
-  box-sizing: border-box;
   background: ${({ $level }) => PILL_COLOR[$level]?.bg || "#ccc"};
-  color: ${({ $level }) => PILL_COLOR[$level]?.color || "#222"};
+  color: #fff;
+  font-family: "Pretendard GOV Variable";
   font-size: 12px;
   font-weight: 700;
   line-height: 1;
-  overflow: hidden;
   white-space: nowrap;
+`;
+
+const ArrowButton = styled.button`
+  all: unset;
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  &[disabled] { opacity: .4; cursor: not-allowed; }
 `;
 const Arrow = styled.img`
   width: 24px;
   height: 24px;
-  aspect-ratio: 1 / 1;
+  flex-shrink: 0;
+  aspect-ratio: 1/1;
   object-fit: contain;
-  justify-self: end;
 `;
+
 const Seats = styled.div`
+  color: #0F0F0F;
+  font-family: "Pretendard GOV Variable";
   font-size: 14px;
-  color: #111;
-  strong {
-    font-weight: 800;
-  }
+  font-weight: 600;
+  line-height: 140%;
 `;
+const SeatsHint = styled.div`
+  color: #8E8E8E;
+  font-family: "Pretendard GOV Variable";
+  font-size: 8px;
+  font-weight: 300;
+  line-height: 140%;
+`;
+
 const MetaRow = styled.div`
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 `;
 const MetaIcon = styled.img`
-  width: 12px;
-  height: 12px;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  aspect-ratio: 1/1;
   object-fit: contain;
-  display: block;
 `;
 const Meta = styled.div`
-  font-size: 12px;
-  color: #666;
-  line-height: 1;
-`;
-const FavRow = styled.div`
-  margin-top: auto;
-  display: flex;
-  align-items: center;
-`;
-const FavButton = styled.button`
-  padding: 8px 10px;
-  border: 1px solid #e6e6e6;
-  background: #fff;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
+  color: #555;
+  font-family: "Pretendard GOV Variable";
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 150%;
 `;

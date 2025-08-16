@@ -51,6 +51,17 @@ const HeaderBackHero = ({ title, address, libraryId, bg }) => {
     };
   }, [libraryId]);
 
+useEffect(() => {
+  const onFavChanged = (e) => {
+    const { libraryId: changedId, fav: isFav } = e.detail || {};
+    if (String(changedId) === String(libraryId)) {
+      setFav(Boolean(isFav));
+    }
+  };
+  window.addEventListener("favorites:changed", onFavChanged);
+  return () => window.removeEventListener("favorites:changed", onFavChanged);
+  }, [libraryId]);
+
   // 토글: POST(추가) / DELETE(삭제)
   const toggleFavorite = async () => {
     if (busy) return;

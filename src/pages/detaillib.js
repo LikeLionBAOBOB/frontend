@@ -11,165 +11,32 @@ import linkIcon from "../assets/icons/link.png";
 
 const BASE_URL = "https://baobob.pythonanywhere.com";
 
-const MOCK_BY_ID = {
-  "111179": {
-    total_seats: 12,
-    current_seats: 6,
-    congestion: "보통",
-    is_open: "운영 중",
-    operating_time: "09:00-18:00",
-    detail_time: {
-      월: ["정기휴무(매주 월요일)"],
-      화: ["09:00-18:00"],
-      수: ["09:00-18:00"],
-      목: ["09:00-18:00"],
-      금: ["09:00-18:00"],
-      토: ["09:00-17:00"],
-      일: ["09:00-17:00"],
-    },
-    naver_map: "https://naver.me/5CWgTj5D",
-    site: "https://lib.sdm.or.kr/sdmlib/menu/10053/contents/40018/contents.do",
-  },
-  "111086": {
-    total_seats: 30,
-    current_seats: 24,
-    congestion: "혼잡",
-    is_open: "운영 중",
-    operating_time: "09:00-22:00",
-    detail_time: {
-      월: ["어린이자료실 09:00-18:00", "종합/디지털자료실 09:00-22:00"],
-      화: ["어린이자료실 정기휴무(매주 화요일)", "종합/디지털자료실 정기휴무(매주 화요일)"],
-      수: ["어린이자료실 09:00-18:00", "종합/디지털자료실 09:00-22:00"],
-      목: ["어린이자료실 09:00-18:00", "종합/디지털자료실 09:00-22:00"],
-      금: ["어린이자료실 09:00-18:00", "종합/디지털자료실 09:00-22:00"],
-      토: ["어린이자료실 09:00-18:00", "종합/디지털자료실 09:00-20:00"],
-      일: ["어린이자료실 09:00-18:00", "종합/디지털자료실 09:00-20:00"],
-    },
-    naver_map: "https://naver.me/xTTAm2hs",
-    site: "https://mplib.mapo.go.kr/sglib/index.do",
-  },
-  "711596": {
-    total_seats: 36,
-    current_seats: 31,
-    congestion: "혼잡",
-    is_open: "운영 중",
-    operating_time: "09:00-22:00",
-    detail_time: {
-      월: ["자율학습공간/북카페 09:00-22:00", "메타버스도서관자료실 09:00-18:00"],
-      화: ["자율학습공간/북카페 09:00-22:00", "메타버스도서관자료실 09:00-18:00"],
-      수: ["자율학습공간/북카페 09:00-22:00", "메타버스도서관자료실 09:00-18:00"],
-      목: ["자율학습공간/북카페 09:00-22:00", "메타버스도서관자료실 09:00-18:00"],
-      금: ["자율학습공간/북카페 09:00-22:00", "메타버스도서관자료실 09:00-18:00"],
-      토: ["자율학습공간/북카페 09:00-22:00", "메타버스도서관자료실 09:00-18:00"],
-      일: ["자율학습공간/북카페 09:00-22:00", "메타버스도서관자료실 09:00-18:00"],
-    },
-    naver_map: "https://naver.me/GEXPVxHK",
-    site: "https://mplib.mapo.go.kr/metalib/index.do",
-  },
-  "111514": {
-    total_seats: 20,
-    current_seats: 6,
-    congestion: "여유",
-    is_open: "운영 중",
-    operating_time: "09:00-22:00",
-    detail_time: {
-      월: ["종합자료실/디지털실 09:00-22:00", "어린이자료실 09:00-18:00", "상상나루 09:00-17:00", "휴게시간 12:00-14:00"],
-      화: ["종합자료실/디지털실 09:00-22:00", "어린이자료실 09:00-18:00", "상상나루 09:00-17:00", "휴게시간 12:00-14:00"],
-      수: ["종합자료실/디지털실 09:00-22:00", "어린이자료실 09:00-18:00", "상상나루 09:00-17:00", "휴게시간 12:00-14:00"],
-      목: ["종합자료실/디지털실 09:00-22:00", "어린이자료실 09:00-18:00", "상상나루 09:00-17:00", "휴게시간 12:00-14:00"],
-      금: ["종합자료실 정기휴무(매주 금요일)", "어린이자료실 정기휴무(매주 금요일)", "상상나루 정기휴무(매주 금요일)"],
-      토: ["종합자료실/디지털실 09:00-20:00", "어린이자료실 09:00-18:00", "상상나루 09:00-17:00", "휴게시간 12:00-14:00"],
-      일: ["종합자료실/디지털실 09:00-20:00", "어린이자료실 09:00-18:00", "상상나루 정기휴무(매주 일요일)"],
-    },
-    naver_map: "https://naver.me/GEXPVxHK",
-    site: "https://mplib.mapo.go.kr/naru/index.do",
-  },
-  "111467": {
-    total_seats: 30,
-    current_seats: 21,
-    congestion: "보통",
-    is_open: "운영 중",
-    operating_time: "09:00-22:00",
-    detail_time: {
-      월: ["자료열람실 정기휴무(매주 월요일)", "어린이/유아자료실 정기휴무(매주 월요일)"],
-      화: ["자료열람실 09:00-22:00", "어린이/유아자료실 09:00-18:00"],
-      수: ["자료열람실 09:00-22:00", "어린이/유아자료실 09:00-18:00"],
-      목: ["자료열람실 09:00-22:00", "어린이/유아자료실 09:00-18:00"],
-      금: ["자료열람실 09:00-22:00", "어린이/유아자료실 09:00-18:00"],
-      토: ["자료열람실 09:00-20:00", "어린이/유아자료실 09:00-18:00"],
-      일: ["자료열람실 09:00-20:00", "어린이/유아자료실 09:00-18:00"],
-      _비고: ["자료열람실·어린이/유아자료실 — 법정 공휴일 휴관"],
-    },
-    naver_map: "https://naver.me/xrSQ9Ydk",
-    site: "https://mplib.mapo.go.kr/mcl/index.do",
-  },
-  "111051": {
-    total_seats: 24,
-    current_seats: 7,
-    congestion: "여유",
-    is_open: "운영 중",
-    operating_time: "09:00-18:00",
-    detail_time: {
-      월: ["정기휴무(매주 월요일)"],
-      화: ["09:00-18:00"],
-      수: ["09:00-18:00"],
-      목: ["09:00-18:00"],
-      금: ["09:00-18:00"],
-      토: ["09:00-17:00"],
-      일: ["09:00-17:00"],
-      _비고: ["평일 종합자료실 20시까지"],
-    },
-    naver_map: "https://naver.me/xDJfgkMs",
-    site: "https://lib.sdm.or.kr/sdmlib/contents/40016/contents.do",
-  },
-  "111252": {
-    total_seats: 15,
-    current_seats: 7,
-    congestion: "보통",
-    is_open: "운영 중",
-    operating_time: "09:00-20:00",
-    detail_time: {
-      월: ["09:00-20:00"],
-      화: ["09:00-20:00"],
-      수: ["09:00-20:00"],
-      목: ["09:00-20:00"],
-      금: ["정기휴무(매주 금요일)"],
-      토: ["09:00-17:00"],
-      일: ["09:00-17:00"],
-    },
-    naver_map: "https://naver.me/GRoQAres",
-    site: "https://lib.sdm.or.kr/sdmlib/menu/10057/contents/40020/contents.do",
-  },
-  "111257": {
-    total_seats: 10,
-    current_seats: 3,
-    congestion: "여유",
-    is_open: "운영 중",
-    operating_time: "09:00-22:00",
-    detail_time: {
-      월: ["09:00-18:00", "휴게시간 13:00-14:00"],
-      화: ["09:00-18:00", "휴게시간 13:00-14:00"],
-      수: ["09:00-18:00", "휴게시간 13:00-14:00"],
-      목: ["09:00-18:00", "휴게시간 13:00-14:00"],
-      금: ["09:00-18:00", "휴게시간 13:00-14:00"],
-      토: ["정기휴무(매주 토요일)"],
-      일: ["정기휴무(매주 일요일)"],
-    },
-    naver_map: "https://naver.me/G0DAtKWJ",
-    site: "https://www.smalllibrary.org/library/detail/1102271",
-  },
+// 객체/배열/문자열 모두를 "표시 가능한 문자열 배열"로 정규화
+const toLines = (val) => {
+  if (val == null) return [];
+  if (Array.isArray(val)) return val.map((v) => String(v));
+  if (typeof val === "object") {
+    // 예: { "어린이자료실":"09:00-18:00", "종합/디지털자료실":"09:00-22:00" }
+    return Object.entries(val).map(([k, v]) => `${k} ${String(v)}`);
+  }
+  return [String(val)];
 };
 
-const LIB_META = {
-  "111179": { name: "남가좌새롬도서관", address: "서울 서대문구 증가로10길 16-15" },
-  "111051": { name: "이진아기념도서관", address: "서울 서대문구 독립문공원길 80" },
-  "111252": { name: "홍은도담도서관", address: "서울 서대문구 홍은중앙로 129" },
-  "111086": { name: "마포구립 서강도서관", address: "서울 마포구 독막로 165 서강동주민센터" },
-  "711596": { name: "마포나루 스페이스", address: "서울 마포구 마포대로 8 나루" },
-  "111514": { name: "마포소금나루도서관", address: "서울 마포구 숭문길 72" },
-  "111467": { name: "마포중앙도서관", address: "서울 마포구 성산로 128" },
-  "111257": { name: "해오름 작은도서관", address: "서울 마포구 신촌로26길 10 우리마포복지관 2층" },
+
+/* 어떤 타입이 와도 문자열로 */
+const toText = (v) => {
+  if (v == null) return "";
+  if (typeof v === "string" || typeof v === "number") return String(v);
+  if (Array.isArray(v)) return v.map(toText).filter(Boolean).join(" ");
+  if (typeof v === "object") return Object.values(v).map(toText).filter(Boolean).join(" ");
+  return String(v);
 };
+
+/* "09:00-18:00" → "09:00 - 18:00", "정기휴무(" → "정기휴무 (" */
+const formatDetail = (s) =>
+  toText(s)
+    .replace(/정기휴무\(/g, "정기휴무 (")
+    .replace(/(\d{2}:\d{2})-(\d{2}:\d{2})/g, "$1 - $2");
 
 const LibraryDetail = () => {
   const { libraryId } = useParams();
@@ -182,16 +49,8 @@ const LibraryDetail = () => {
 
   const displayOperatingTime = useMemo(() => {
     const src = data?.operating_time || "";
-    return src.replace(/(\d{2}:\d{2})-(\d{2}:\d{2})/g, "$1 - $2");
+    return formatDetail(src);
   }, [data]);
-
-  const formatDetail = (s) => {
-    if (!s) return "";
-    let out = String(s);
-    out = out.replace(/정기휴무\(/g, "정기휴무 (");
-    out = out.replace(/(\d{2}:\d{2})-(\d{2}:\d{2})/g, "$1 - $2");
-    return out;
-  };
 
   useEffect(() => {
     if (!libraryId) navigate("/detaillib/111179", { replace: true });
@@ -212,7 +71,9 @@ const LibraryDetail = () => {
       .then(async (r) => {
         const raw = await r.text().catch(() => "");
         let api = {};
-        try { api = raw ? JSON.parse(raw) : {}; } catch {}
+        try {
+          api = raw ? JSON.parse(raw) : {};
+        } catch {}
         if (!r.ok) {
           const m = api?.message || `HTTP ${r.status}`;
           throw new Error(m);
@@ -221,49 +82,26 @@ const LibraryDetail = () => {
       })
       .then((api) => {
         if (!alive) return;
-
-        const mock = MOCK_BY_ID[String(libraryId)] || {};
-        const meta = LIB_META[String(libraryId)] || {};
-
-        const apiOnly = {
-          name: api.name ?? meta.name ?? "도서관",
-          address: api.address ?? "",
-          congestion: api.congestion ?? "-",
-          is_open: api.is_open ?? "",
-          operating_time: api.operating_time ?? "",
-          detail_time: api.detail_time ?? null,
-        };
-
         setData({
-          ...apiOnly,
-          total_seats: mock.total_seats ?? 0,
-          current_seats: mock.current_seats ?? 0,
-          naver_map: mock.naver_map ?? "",
-          site: mock.site ?? "",
-          images: Array.isArray(api.images) ? api.images : [],
+          name: toText(api.name) || "도서관",
+          address: toText(api.address),
+          congestion: toText(api.congestion) || "-",
+          is_open: toText(api.is_open),
+          operating_time: toText(api.operating_time),
+          detail_time: api.detail_time ?? null,
+          naver_map: toText(api.naver_map),
+          site: toText(api.site),
+          total_seats: Number(api.total_seats ?? 0),
+          current_seats: Number(api.current_seats ?? 0),
+          images: Array.isArray(api.images) ? api.images : [], // gallery 계산에서 사용
         });
         setLoading(false);
       })
-      .catch(() => {
+      .catch((e) => {
         if (!alive) return;
-
-        const mock = MOCK_BY_ID[String(libraryId)] || {};
-        const meta = LIB_META[String(libraryId)] || {};
-        setData({
-          name: meta.name ?? "도서관",
-          address: "",
-          congestion: "-",
-          is_open: "",
-          operating_time: "",
-          detail_time: null,
-          total_seats: mock.total_seats ?? 0,
-          current_seats: mock.current_seats ?? 0,
-          naver_map: mock.naver_map ?? "",
-          site: mock.site ?? "",
-          images: [],
-        });
-        setErr("");
+        setErr(String(e?.message || ""));
         setLoading(false);
+        setData(null);
       });
 
     return () => {
@@ -271,33 +109,36 @@ const LibraryDetail = () => {
     };
   }, [libraryId]);
 
+  // 이미지: 프론트(GALLERY) 우선, 없으면 API 이미지(상대경로에는 BASE_URL 붙임)
   const gallery = useMemo(() => {
     const local = GALLERY[String(libraryId)] || [];
-    const apiList = (data?.images || []).map((p) => (p.startsWith("http") ? p : `${BASE_URL}${p}`));
+    const apiList = (data?.images || []).map((p) =>
+      /^https?:\/\//i.test(p) ? p : `${BASE_URL}${p}`
+    );
     return local.length ? local : apiList;
   }, [libraryId, data]);
 
-  const total = data?.total_seats ?? 0;
-  const available = data?.current_seats ?? 0;
-
-  const shortUrl = (url) => {
-    if (!url) return "";
-    try {
-      const u = new URL(url);
-      return u.href;
-    } catch {
-      return url;
-    }
-  };
+  // 좌석 계산 — UI(자리 그림)는 available=이용 가능 좌석 수를 기대
+  const total = Number(data?.total_seats ?? 0);
+  const occupied = Number(data?.current_seats ?? 0);     // 현재 좌석 수 = 이용 중
+  const free = Math.max(total - occupied, 0);            // 이용 가능
 
   return (
     <PageWrap>
-      <HeaderBackHero title={data?.name || "도서관"} address={data?.address || ""} libraryId={libraryId} />
+      <HeaderBackHero
+        title={data?.name || "도서관"}
+        address={data?.address || ""}
+        libraryId={libraryId}
+      />
 
       <Inner>
         <Tabs>
-          <TabBtn $active={tab === "info"} onClick={() => setTab("info")}>도서관 정보</TabBtn>
-          <TabBtn $active={tab === "seats"} onClick={() => setTab("seats")}>좌석 정보</TabBtn>
+          <TabBtn $active={tab === "info"} onClick={() => setTab("info")}>
+            도서관 정보
+          </TabBtn>
+          <TabBtn $active={tab === "seats"} onClick={() => setTab("seats")}>
+            좌석 정보
+          </TabBtn>
         </Tabs>
 
         {loading && <Loading>불러오는 중…</Loading>}
@@ -325,8 +166,11 @@ const LibraryDetail = () => {
                 <KPIBlock>
                   <KPIHeading>실시간 혼잡도</KPIHeading>
                   <KPIInline>
-                    <Big>{available} / {total}</Big>
-                    <Badge $level={data.congestion}>{data.congestion || "-"}</Badge>
+                    {/* 현재 / 전체 */}
+                    <Big>{occupied} / {total}</Big>
+                    <Badge $level={data.congestion}>
+                      {data.congestion || "-"}
+                    </Badge>
                   </KPIInline>
                   <Small>(현재 좌석 수 / 전체 좌석 수)</Small>
                 </KPIBlock>
@@ -346,8 +190,8 @@ const LibraryDetail = () => {
                     <TimeTable style={{ marginTop: 8 }}>
                       {["월", "화", "수", "목", "금", "토", "일"].map((d) => {
                         const v = data.detail_time[d];
-                        if (!v) return null;
-                        const lines = Array.isArray(v) ? v : [String(v)];
+                        if (v == null) return null;
+                        const lines = toLines(v);
                         return (
                           <li key={d}>
                             <span>{d}</span>
@@ -375,7 +219,6 @@ const LibraryDetail = () => {
                           <a href={data.naver_map} target="_blank" rel="noreferrer">
                             네이버 지도 — {data.name || ""}
                           </a>
-                          
                         </div>
                       </li>
                     )}
@@ -386,7 +229,6 @@ const LibraryDetail = () => {
                           <a href={data.site} target="_blank" rel="noreferrer">
                             도서관 사이트 — {data.name || ""}
                           </a>
-                          
                         </div>
                       </li>
                     )}
@@ -398,8 +240,11 @@ const LibraryDetail = () => {
                 <KPIBlock>
                   <KPIRow>
                     <KPIInline>
-                      <Big>{available} / {total}</Big>
-                      <Badge $level={data.congestion}>{data.congestion || "-"}</Badge>
+                      {/* 현재 / 전체 */}
+                      <Big>{occupied} / {total}</Big>
+                      <Badge $level={data.congestion}>
+                        {data.congestion || "-"}
+                      </Badge>
                     </KPIInline>
 
                     <LegendBar role="group" aria-label="좌석 범례">
@@ -419,7 +264,12 @@ const LibraryDetail = () => {
                 <Suspense fallback={<Loading>좌석 불러오는 중…</Loading>}>
                   {(() => {
                     const Comp = seatMapById[String(libraryId)];
-                    return Comp ? <Comp available={available} total={total} /> : <Empty>좌석 맵이 없습니다.</Empty>;
+                    return Comp ? (
+                      // 자리 그림은 available=이용 가능 좌석 수를 기대
+                      <Comp total={total} available={free} occupied={occupied} />
+                    ) : (
+                      <Empty>좌석 맵이 없습니다.</Empty>
+                    );
                   })()}
                 </Suspense>
               </SeatView>
@@ -433,6 +283,7 @@ const LibraryDetail = () => {
 
 export default LibraryDetail;
 
+/* styles (변경 없음) */
 const PageWrap = styled.div`
   width: 393px;
   margin: 0 auto;
@@ -484,7 +335,6 @@ const Photo = styled.div`
   flex: 0 0 auto;
   width: 184px;
   height: 112px;
-  border-radius: 0px;
   overflow: hidden;
   background: #f2f2f2;
   img {
@@ -502,9 +352,7 @@ const KPIBlock = styled.div`
 `;
 const KPIHeading = styled.div`
   color: #1d1d1d;
-  font-family: "Pretendard GOV Variable";
   font-size: 20px;
-  font-style: normal;
   font-weight: 600;
   line-height: 150%;
   margin-bottom: 4px;
@@ -517,7 +365,6 @@ const KPIInline = styled.div`
 
 const Big = styled.div`
   color: #555;
-  font-family: "Pretendard GOV Variable";
   font-size: 20px;
   font-weight: 400;
   line-height: normal;
@@ -525,7 +372,6 @@ const Big = styled.div`
 
 const Small = styled.div`
   color: #8e8e8e;
-  font-family: "Pretendard GOV Variable";
   font-size: 10px;
   font-weight: 300;
   line-height: normal;
@@ -534,24 +380,20 @@ const Small = styled.div`
 `;
 
 const Badge = styled.span`
-  font-family: "Pretendard GOV Variable";
   font-size: 14px;
   font-weight: 400;
-  line-height: normal;
   display: flex;
   width: 30px;
   padding: 3px 16px;
   justify-content: center;
   align-items: center;
-  gap: 10px;
   border-radius: 20px;
   color: #fff;
-  background: ${({ $level }) => {
-    if ($level === "여유") return "#33A14B";
-    if ($level === "보통") return "#FFB724";
-    if ($level === "혼잡") return "#FF474D";
-    return "#bbb";
-  }};
+  background: ${p =>
+    p.$level === "여유" ? "#33A14B" :
+    p.$level === "보통" ? "#FFB724" :
+    p.$level === "혼잡" ? "#FF474D" :
+    "#bbb"};
 `;
 
 const Card = styled.div`
@@ -572,15 +414,10 @@ const TimeTable = styled.ul`
     padding: 6px 0;
     align-items: flex-start;
   }
-  li + li {
-    border-top: none;
-  }
   span {
     width: 28px;
     color: #444444;
-    font-family: "Pretendard GOV Variable";
     font-size: 16px;
-    font-style: normal;
     font-weight: 400;
     line-height: 150%;
   }
@@ -592,7 +429,6 @@ const TimeTable = styled.ul`
   em {
     font-style: normal;
     color: #444444;
-    font-family: "Pretendard GOV Variable";
     font-size: 16px;
     font-weight: 400;
     line-height: 150%;
@@ -601,8 +437,7 @@ const TimeTable = styled.ul`
 `;
 
 const SectionTitle = styled.div`
-  color: var(--Text-Basic, #1d1d1d);
-  font-family: "Pretendard GOV Variable";
+  color: #1d1d1d;
   font-size: 20px;
   font-weight: 600;
   line-height: 150%;
@@ -626,9 +461,7 @@ const Opener = styled.div`
   .texts strong,
   .texts span {
     color: #444;
-    font-family: "Pretendard GOV Variable";
     font-size: 16px;
-    font-style: normal;
     font-weight: 400;
     line-height: 150%;
   }
@@ -651,20 +484,11 @@ const LinkList = styled.ul`
     margin-top: 2px;
   }
   .texts a {
-    color: var(--Text-Disabled, #8e8e8e);
-    font-family: "Pretendard GOV Variable";
+    color: #8e8e8e;
     font-size: 16px;
-    font-style: normal;
     font-weight: 400;
     line-height: 150%;
     text-decoration-line: underline;
-  }
-  .texts small {
-    display: block;
-    margin-top: 2px;
-    font-size: 10px;
-    color: #9a9a9a;
-    word-break: break-all;
   }
 `;
 
@@ -700,7 +524,6 @@ const LegendItem = styled.span`
   align-items: center;
   gap: 8px;
   color: #8e8e8e;
-  font-family: "Pretendard GOV Variable";
   font-size: 12px;
   line-height: 150%;
 `;
