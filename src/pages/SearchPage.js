@@ -12,14 +12,44 @@ import clockIcon from '../assets/icons/clock.png';
 
 const API_BASE = process.env.REACT_APP_API_BASE || 'https://baobob.pythonanywhere.com';
 
+function formatLibraryName(name) {
+    return name
+        .replace("소금나루", "소금나루\n")   
+        .replace("이진아", "이진아\n")
+        .replace("메타버스", "메타버스\n") 
+        .replace("어린이", "어린이\n");   
+}
+
+
 const SearchPage = () => {
     //검색 기능 구현
     const navigate = useNavigate();
     const [keyword, setKeyword] = useState('');
     const [results, setResults] = useState([]);
     const [searched, setSearched] = useState(false); //검색 시도 여부 
+    const [loading, setLoading] = useState(false);
 
-    const accessToken = localStorage.getItem('accessToken');
+    const accessToken = localStorage.getItem('access_token');
+
+    const LIBRARY_ID_MAP = {
+        "마포소금나루도서관": "111514",
+        "홍은도담도서관": "111252",
+        "서대문구립이진아기념도서관": "111051",
+        "해오름작은도서관": "111257",
+        "마포중앙도서관": "111467",
+        "마포나루메타버스도서관": "711596",
+        "마포서강도서관": "111086",
+        "남가좌새롬어린이도서관": "111179",
+    };
+
+    // 카드 디자인 따로 지정해 줄 도서관들
+        const SPECIAL_LIB_IDS = new Set([
+            "111514", // 마포소금나루도서관 
+            "111051", // 서대문구립이진아기념도서관 
+            "711596", // 마포나루메타버스도서관
+            "111179", // 남가좌새롬어린이도서관 
+        ]);
+
 
     const handleSearch = async() => {
         if (!keyword.trim()){ //검색어 비어있는 경우
@@ -30,15 +60,18 @@ const SearchPage = () => {
 
         //검색어 비어있지 않은 경우
         setSearched(true); 
-        
+        setLoading(true);
         try {
             const url = `${API_BASE}/libraries/search/?q=${encodeURIComponent(keyword)}`;
 
+            const headers = {};
+                if (accessToken) {
+                    headers['Authorization'] = `Bearer ${accessToken}`;
+            }
+
             const response = await fetch(url, {
                 method: 'GET',
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                },
+                headers,
             });
 
             if (response.status === 400) {
@@ -67,9 +100,13 @@ const SearchPage = () => {
 
             const mapped = list.map((it) => {
                 const { tag, tagColor } = toTag(it.congestion);
+                const mappedId = LIBRARY_ID_MAP[it.name] || it.id;
+
                 return {
-                    libraryName: it.name,
-                    imageUrl: it.image,
+                    id: mappedId,
+                    rawName: it.name,
+                    displayName: formatLibraryName(it.name),
+                    imageUrl: it.image ? `${API_BASE}${it.image}` : null,
                     currentSeats: it.current_seats,
                     totalSeats: it.total_seats,
                     libCongestion: it.congestion,
@@ -77,6 +114,7 @@ const SearchPage = () => {
                     isOpen: it.is_open,
                     tag,
                     tagColor,
+                    isSpecial: SPECIAL_LIB_IDS.has(mappedId),  
                 };
             });
 
@@ -84,7 +122,9 @@ const SearchPage = () => {
         } catch (error) {
             console.error("도서관 정보 조회 실패:", error);
             setResults([]);
-        }
+        } finally {
+            setLoading(false);   // 로딩 꺼줌
+}
     };
 
     return(
@@ -103,28 +143,37 @@ const SearchPage = () => {
                         />
                         <Icon src={searchIcon} alt="검색아이콘" onClick={handleSearch}/>
                     </SearchBox>
-                    {!searched && ( // 아직 검색 시도 전 -> 가이드 문구 표시
-                    <GuideText>공공도서관의 이름이나 지역을 검색해보세요!</GuideText>
+
+                    {loading && <LoadingText>검색 중...</LoadingText>}
+
+                    {!loading && !searched && ( 
+                        <GuideText>공공도서관의 이름이나 지역을 검색해보세요!</GuideText>
                     )}
-                    {searched && results.length === 0 && ( // 검색했는데 결과가 없는 경우
-                    <EmptyText>검색 결과가 존재하지 않습니다.</EmptyText>
+
+                    {!loading && searched && results.length === 0 && ( 
+                        <EmptyText>검색 결과가 존재하지 않습니다.</EmptyText>
                     )}
-                    {results.length > 0 && ( // 검색 결과 있는 경우
+
+                    {!loading && results.length > 0 && ( // 검색 결과 있는 경우
                         // 결과 리스트 렌더링 (results 배열의 원소를 순회하며 ResyltsCard로 렌더링)
                         <ResultsList>
                             {results.map((item, idx) => (
                                 <BottomCard 
                                 key={idx} 
-                                onClick={() => navigate(`/libraries/${item.id}/detail/`)}>
+                                onClick={() => navigate(`/detaillib/${item.id}`)}
+                                $tall={!!item.isSpecial}>
                                     {/* 썸네일 */}
                                     <Thumb
                                     src={item.imageUrl}
                                     alt={item.libraryName}
+                                    $tall={!!item.isSpecial}
                                     />
                                     {/* 상단 (이름,혼잡도,아이콘) */}
                                     <CardMain>
                                         <HeaderRow>
-                                            <Name>{item.libraryName}</Name>
+                                            <Name style={{ whiteSpace: "pre-line" }} $tall={!!item.isSpecial}>
+                                                {item.displayName}
+                                            </Name>
                                             <RightInline>
                                             <Tag style={{ backgroundColor: item.tagColor }}>
                                                 {item.tag}
@@ -171,7 +220,7 @@ const Wrapper = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    overflow: hidden;
+    overflow-x: hidden;
 `;
 const Container = styled.div`
     width: 393px;
@@ -195,7 +244,7 @@ const SearchBox = styled.div`
     border-radius: 8px;
     border: 1px solid #C6C6C6;
     background: #FFF;
-    margin: 12px 19.5px 0px 20.5px;
+    margin: 12px 19.5px 8px 20.5px;
 `;
 const SearchInput = styled.input`
     color: #1D1D1D;
@@ -227,6 +276,15 @@ const EmptyText = styled.h3`
     line-height: 125%;
     padding: 120px 97px 549px 97px;
 `;
+const LoadingText = styled.h3`
+    margin: 0px;
+    color: #8E8E8E;
+    font-family: "Pretendard GOV Variable";
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 125%;
+    padding: 120px 165px 549px 165px;
+`;
 const Icon = styled.img`
     width: 24px;
     height: 24px;
@@ -242,42 +300,38 @@ const ResultsList = styled.div`
 `;
 const BottomCard = styled.div`
     width: 353px;
-    height: 122px;
-  position: absolute;
-  margin: 0px 20px 44px 20px;
-  bottom: 16px;
-  z-index: 20;
-  display: flex;
-  gap: 12px;
-  background: #fff;
-  border: 10px;
-  border-radius: 10px;
-  box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.20);
-  align-items: center;
+    height: ${({ $tall }) => ($tall ? '150px' : '122px')};
+    margin: 12px 20px 0px 20px;
+    z-index: 20;
+    display: flex;
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid #C6C6C6;
+    align-items: center;
 `;
 const Thumb = styled.img`
     width: 80px; 
-    height: 122px;
-    border-radius: 10px;
+    height: ${({ $tall }) => ($tall ? '150px' : '122px')};
+    border-radius: 10px 0px 0px 10px;
     object-fit: cover;
     flex-shrink: 0;
 `;
 const CardMain = styled.div`
     display: flex;
     flex-direction: column;
-    padding: 16px 16px 17px 16px;
+    padding: ${({ $tall }) => ($tall ? '16px 16px 17px 8px' : '16px 16px 17px 16px')};
     flex: 1;
     gap: 12px;
 `;
 const HeaderRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 `;
 const RightInline = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 `;
 const Name = styled.h3`
     color: #383838;

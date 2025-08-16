@@ -6,14 +6,25 @@ import { createGlobalStyle } from 'styled-components';
 import HeaderBack from '../components/header_back.js'; // 헤더 컴포넌트
 import statusBar from '../assets/images/StatusBar.png';
 import searchIcon from '../assets/icons/search.png';
-import green from '../assets/icons/green_marker.png'
-import red from '../assets/icons/red_marker.png'
-import yellow from '../assets/icons/yellow_marker.png'
+import green from '../assets/icons/green_1.png'
+import red from '../assets/icons/red_1.png'
+import yellow from '../assets/icons/yellow_1.png'
+import green_2 from '../assets/icons/green_2.png'
+import red_2 from '../assets/icons/red_2.png'
+import yellow_2 from '../assets/icons/yellow_2.png'
 import goIcon from '../assets/icons/go.png';
 import clockIcon from '../assets/icons/clock.png';
 
 
 const API_BASE = process.env.REACT_APP_API_BASE || 'https://baobob.pythonanywhere.com';
+
+function formatLibraryName(name) {
+    return name
+        .replace("소금나루", "소금나루\n")   
+        .replace("이진아", "이진아\n")
+        .replace("메타버스", "메타버스\n") 
+        .replace("어린이", "어린이\n");   
+}
 
 const MapPage = () => {
     const navigate = useNavigate();
@@ -42,16 +53,25 @@ const MapPage = () => {
         const libraries = [
             { id: "111514", name: "마포소금나루도서관", lat: 37.5495159, lng: 126.9462201 },
             { id: "111252", name: "홍은도담도서관", lat: 37.6017769, lng: 126.9489945 },
-            { id: "111051", name: "이진아기념도서관", lat: 37.5730502, lng: 126.9555345 },
-            { id: "111257", name: "해오름 작은도서관", lat: 37.5557827, lng: 126.9424619 },
+            { id: "111051", name: "서대문구립이진아기념도서관", lat: 37.5730502, lng: 126.9555345 },
+            { id: "111257", name: "해오름작은도서관", lat: 37.5557827, lng: 126.9424619 },
             { id: "111467", name: "마포중앙도서관", lat: 37.5637955, lng: 126.9082019 },
-            { id: "711596", name: "마포나루 스페이스", lat: 37.5373236, lng: 126.9442549 },
-            { id: "111086", name: "마포구립서강도서관", lat: 37.5477444, lng: 126.93206 },
-            { id: "111179", name: "남가좌새롬도서관", lat: 37.5783377, lng: 126.9240475 },
+            { id: "711596", name: "마포나루메타버스도서관", lat: 37.5373236, lng: 126.9442549 },
+            { id: "111086", name: "마포서강도서관", lat: 37.5477444, lng: 126.93206 },
+            { id: "111179", name: "남가좌새롬어린이도서관", lat: 37.5783377, lng: 126.9240475 },
         ];
+
+        // 카드 디자인 따로 지정해 줄 도서관들
+        const SPECIAL_LIB_IDS = new Set([
+            "111514", // 마포소금나루도서관 
+            "111051", // 서대문구립이진아기념도서관 
+            "711596", // 마포나루메타버스도서관
+            "111179", // 남가좌새롬어린이도서관 
+        ]);
 
         // 혼잡도 레벨
         const getIconByLevel = (level) => ({ 1: green, 2: yellow, 3: red }[level]);
+        const getSelectedIconByLevel = (level) => ({ 1: green_2, 2: yellow_2, 3: red_2 }[level]);
         const levelLabel = { 1: "여유", 2: "보통", 3: "혼잡" };
         const toLevel = (cong) => {
             if (cong === "여유") return 1;
@@ -112,7 +132,8 @@ const MapPage = () => {
 
                     setSelectedLib({
                     id: p.id,
-                    libraryName: detail.name || p.name,
+                    rawName: detail.name,
+                    displayName: formatLibraryName(detail.name),
                     imageUrl,
                     currentSeats: detail.current_seats,
                     totalSeats: detail.total_seats,
@@ -121,7 +142,8 @@ const MapPage = () => {
                     isOpen: detail.is_open, 
                     tag,                    
                     tagColor,             
-                    level: newLevel,        
+                    level: newLevel,   
+                    isSpecial: SPECIAL_LIB_IDS.has(p.id),  
                     });
                 } catch (e) {
                     // 실패 시 임시 상태로 카드 표시 (보통)
@@ -138,6 +160,7 @@ const MapPage = () => {
                         tag,
                         tagColor,
                         level: initialLevel,
+                        isSpecial: SPECIAL_LIB_IDS.has(p.id),
                     });
                 }
                 });
@@ -206,15 +229,21 @@ const MapPage = () => {
                         </Legend>
                         {/* 하단 정보 카드 */}
                         {selectedLib && (
-                            <BottomCard onClick={() => navigate(`/libraries/${selectedLib.id}/detail/`)}>
+                            <BottomCard
+                                $tall={!!selectedLib.isSpecial}
+                                onClick={() => navigate(`/detaillib/${selectedLib.id}`)}
+                            >
                                 {/* 썸네일 */}
                                 <Thumb
                                 src={selectedLib.imageUrl}
                                 alt={selectedLib.libraryName}
+                                $tall={!!selectedLib.isSpecial}
                                 />
-                                <CardMain>
+                                <CardMain $tall={!!selectedLib.isSpecial}>
                                     <HeaderRow>
-                                        <Name>{selectedLib.libraryName}</Name>
+                                        <Name style={{ whiteSpace: "pre-line" }} $tall={!!selectedLib.isSpecial} >
+                                            {selectedLib.displayName}
+                                        </Name>
                                         <RightInline>
                                         <Tag style={{ backgroundColor: selectedLib.tagColor }}>
                                             {selectedLib.tag}
@@ -394,42 +423,42 @@ const LegendIcon = styled.img`
 //하단 상세정보 간략 카드
 const BottomCard = styled.div`
     width: 353px;
-    height: 122px;
-  position: absolute;
-  margin: 0px 20px 44px 20px;
-  bottom: 16px;
-  z-index: 20;
-  display: flex;
-  gap: 12px;
-  background: #fff;
-  border: 10px;
-  border-radius: 10px;
-  box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.20);
-  align-items: center;
+    height: ${({ $tall }) => ($tall ? '150px' : '122px')};
+    position: absolute;
+    margin: 0px 20px 44px 20px;
+    bottom: 16px;
+    z-index: 20;
+    display: flex;
+    gap: 12px;
+    background: #fff;
+    border: 10px;
+    border-radius: 10px;
+    box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.20);
+    align-items: center;
 `;
 const Thumb = styled.img`
-    width: 80px; 
-    height: 122px;
-    border-radius: 10px;
+    width: 100px; 
+    height: ${({ $tall }) => ($tall ? '150px' : '122px')};
+    border-radius: 10px 0 0 10px;
     object-fit: cover;
     flex-shrink: 0;
 `;
 const CardMain = styled.div`
     display: flex;
     flex-direction: column;
-    padding: 16px 16px 17px 16px;
+    padding: ${({ $tall }) => ($tall ? '16px 16px 17px 8px' : '16px 16px 17px 16px')};
     flex: 1;
     gap: 12px;
 `;
 const HeaderRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 `;
 const RightInline = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 `;
 const Name = styled.h3`
     color: #383838;

@@ -1,11 +1,9 @@
-// components/header_profile.js
 import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
 
 import hamburgerIcon from "../assets/icons/hamburger.png";
 import closeArrow from "../assets/icons/return.png";
-import profileIcon from "../assets/icons/profile.png";
 import smileProfile from "../assets/icons/proimg.png";
 
 const API_BASE = process.env.REACT_APP_API_BASE || "https://baobob.pythonanywhere.com";
