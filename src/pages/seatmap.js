@@ -1,36 +1,36 @@
-import React, { useState, useCallback, useEffect, useMemo } from "react";
+// src/pages/seatmap.js
+import React, { useState, useCallback, useEffect } from "react";
 import styled from "styled-components";
 import HeaderBackHero from "../components/header_ad";
 import SeatTable from "../components/seattable";
 
 const BASE_URL = "https://baobob.pythonanywhere.com";
 
-// API → UI 상태 매핑
 const mapStatus = (s) =>
   s === "이용 중" ? "occupied" :
   s === "사석화" ? "hogged_60" :
   "free";
 
 const SeatMapPage = () => {
-  const [seats, setSeats] = useState([]);                 // [{id, status}]
+  const [seats, setSeats] = useState([]);
   const [selectedSeatId, setSelectedSeatId] = useState(null);
   const [logs, setLogs] = useState([]);
+  const [logsLoading, setLogsLoading] = useState(false);
+  const [logsErr, setLogsErr] = useState("");
   const [err, setErr] = useState("");
 
-  // 상단 요약
   const [usingCount, setUsingCount] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
-  const [badge, setBadge] = useState("");                 // 여유/보통/혼잡
+  const [badge, setBadge] = useState("");
 
-  const token = useMemo(() => localStorage.getItem("access_token") || "", []);
-
-  // 혼잡도
   useEffect(() => {
     let alive = true;
     const fetchCongestion = async () => {
       try {
-        const r = await fetch(`${BASE_URL}/adminpanel/congestion/`, {
+        const token = localStorage.getItem("access_token") || "";
+        const r = await fetch(`${BASE_URL}/adminpanel/congestion/?_ts=${Date.now()}`, {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
+          cache: "no-store",
         });
         const raw = await r.text().catch(() => "");
         let js = {};
@@ -49,15 +49,16 @@ const SeatMapPage = () => {
     fetchCongestion();
     const t = setInterval(fetchCongestion, 10000);
     return () => { alive = false; clearInterval(t); };
-  }, [token]);
+  }, []);
 
-  // 전체 좌석
   useEffect(() => {
     let alive = true;
     const fetchSeats = async () => {
       try {
-        const r = await fetch(`${BASE_URL}/adminpanel/seats/`, {
+        const token = localStorage.getItem("access_token") || "";
+        const r = await fetch(`${BASE_URL}/adminpanel/seats/?_ts=${Date.now()}`, {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
+          cache: "no-store",
         });
         const raw = await r.text().catch(() => "");
         let js = {};
@@ -73,39 +74,45 @@ const SeatMapPage = () => {
       } catch (e) {
         if (!alive) return;
         setErr(String(e?.message || ""));
-        setSeats([]); // 폴백
+        setSeats([]);
       }
     };
     fetchSeats();
     const t = setInterval(fetchSeats, 10000);
     return () => { alive = false; clearInterval(t); };
-  }, [token]);
+  }, []);
 
-  // 좌석 클릭 → 로그 요청
   const onSeatClick = useCallback(async (id, status) => {
-    if (status !== "hogged_60") { setSelectedSeatId(null); setLogs([]); return; }
-    setSelectedSeatId(prev => (prev === id ? null : id));
+    if (status !== "hogged_60") {
+      setSelectedSeatId(null);
+      setLogs([]); setLogsErr(""); setLogsLoading(false);
+      return;
+    }
+    setSelectedSeatId(id);
+    setLogs([]); setLogsErr(""); setLogsLoading(true);
     try {
-      const r = await fetch(`${BASE_URL}/adminpanel/${id}/seats/`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      const token = localStorage.getItem("access_token") || "";
+      const r = await fetch(`${BASE_URL}/adminpanel/${id}/seats/?_ts=${Date.now()}`, {
+        headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}), Accept: "application/json" },
+        cache: "no-store",
       });
       const raw = await r.text().catch(() => "");
       let js = {};
       try { js = raw ? JSON.parse(raw) : {}; } catch {}
       if (!r.ok) throw new Error(js?.message || `HTTP ${r.status}`);
-      const list = (js.log || []).map((row, i, arr) => ({
-        time: String(row.time || ""),
-        text: String(row.status || ""),
+      const list = Array.isArray(js.log) ? js.log.map((row, i, arr) => ({
+        time: String(row.time ?? ""),
+        text: String(row.status ?? ""),
         ended: i < arr.length - 1,
-        over60: /60분/.test(String(row.status || "")),
-      }));
+        over60: /60분/.test(String(row.status ?? "")),
+      })) : [];
       setLogs(list);
-      setErr("");
     } catch (e) {
-      setLogs([]);
-      setErr(String(e?.message || ""));
+      setLogs([]); setLogsErr(String(e?.message || ""));
+    } finally {
+      setLogsLoading(false);
     }
-  }, [token]);
+  }, []);
 
   return (
     <Page>
@@ -121,7 +128,7 @@ const SeatMapPage = () => {
           <Left>
             <Line>
               <Count>{usingCount} / {totalCount}</Count>
-              <Badge>{badge || "-"}</Badge>
+              <Badge $level={badge}>{badge || "-"}</Badge>
             </Line>
             <Sub>(현재 좌석 수 / 전체 좌석 수)</Sub>
             {err && <Sub style={{color:"#C41E3A"}}>{err}</Sub>}
@@ -145,6 +152,9 @@ const SeatMapPage = () => {
         {selectedSeatId && (
           <LogCard>
             <LogTitle>{selectedSeatId}번 좌석 로그</LogTitle>
+            {logsLoading && <Sub>불러오는 중…</Sub>}
+            {logsErr && <Sub style={{color:"#C41E3A"}}>{logsErr}</Sub>}
+            {!logsLoading && !logsErr && logs.length === 0 && <Sub>표시할 로그가 없습니다.</Sub>}
             <LogList>
               {logs.map((r, i) => (
                 <LogRow key={i} $ended={r.ended} $over60={r.over60}>
@@ -162,7 +172,6 @@ const SeatMapPage = () => {
 
 export default SeatMapPage;
 
-/* styles — 원본 유지 */
 const Page = styled.div` width:393px; margin:0 auto; `;
 const Main = styled.div` padding: 0 12px 16px; `;
 const SectionTitle = styled.h3` margin: 5px 4px 8px; font-size: 18px; font-weight: 700; `;
@@ -170,16 +179,24 @@ const TopRow = styled.div` display:flex; justify-content:space-between; gap:12px
 const Left = styled.div``;
 const Line = styled.div` display:flex; align-items:center; gap:8px; `;
 const Count = styled.span` font-size:18px; `;
-const Badge = styled.span` border-radius:20px; background:#33A14B; color:#fff; font-size:12px; padding:4px 10px; `;
+const Badge = styled.span`
+  border-radius:20px;
+  font-size:12px;
+  padding:4px 10px;
+  color:#fff;
+  background:${p =>
+    p.$level === "여유" ? "#33A14B" :
+    p.$level === "보통" ? "#FFB724" :
+    p.$level === "혼잡" ? "#FF474D" :
+    "#bbb"};
+`;
 const Sub = styled.div` font-size:11px; color:#919191; margin-top:4px; `;
 const Right = styled.div` display:flex; flex-direction:column; align-items:flex-end; gap:6px; `;
 const LegendItem = styled.div` display:flex; align-items:center; gap:6px; font-size:12px; color:#666; `;
 const Dot = styled.span`
   width:10px; height:10px; border-radius:50%;
   border:1px solid var(--text-disabled,#8E8E8E);
-  background: ${p => p.$t==="free" ? "var(--bg-1,#F8F8F8)"
-                    : p.$t==="occ" ? "var(--border,#C6C6C6)"
-                    : "var(--red-soft, rgba(239,62,94,.5))"};
+  background:${p => p.$t==="free" ? "#FFFFFF" : p.$t==="occ" ? "var(--border,#C6C6C6)" : "var(--red-soft, rgba(239,62,94,.5))"};
 `;
 const Board = styled.div`
   margin-top: 28px; width: 353px; height: 439px; box-sizing: border-box;
@@ -198,6 +215,6 @@ const LogList = styled.div` display: grid; gap: 6px; `;
 const LogRow = styled.div`
   display: flex; gap: 10px; align-items: baseline; line-height: 1.45;
   opacity: ${p => (p.$ended ? .45 : 1)};
-  color: ${p => (p.$over60 ? "#C41E3A" : "#333")};
+  color: ${p => (p.$over60 ? "#C41E3A" : "#000000ff")};
   time { width: 44px; font-variant-numeric: tabular-nums; }
 `;

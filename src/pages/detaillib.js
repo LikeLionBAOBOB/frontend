@@ -1,3 +1,4 @@
+// src/pages/detaillib.js
 import React, { useEffect, useMemo, useState, Suspense } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -48,7 +49,7 @@ const LibraryDetail = () => {
     if (!libraryId) navigate("/detaillib/111179", { replace: true });
   }, [libraryId, navigate]);
 
-  // 도서관 상세
+  // 도서관 상세 (초기 로드)
   useEffect(() => {
     if (!libraryId) return;
     let alive = true;
@@ -86,9 +87,7 @@ const LibraryDetail = () => {
       })
       .catch((e) => {
         if (!alive) return;
-        setErr(String(e?.message || ""));
-        setLoading(false);
-        setData(null);
+        setErr(String(e?.message || "")); setLoading(false); setData(null);
       });
     return () => { alive = false; };
   }, [libraryId]);
@@ -118,15 +117,57 @@ const LibraryDetail = () => {
     return () => { alive = false; clearInterval(timer); };
   }, [libraryId]);
 
+  // ✅ 혼잡도만 주기적으로 갱신(백엔드 계산값 사용) — 캐시 우회 추가
+  useEffect(() => {
+    if (!libraryId) return;
+    let alive = true;
+
+    const tick = async () => {
+      try {
+        const token = localStorage.getItem("access_token") || "";
+        const url = `${BASE_URL}/libraries/${libraryId}/detail/?_ts=${Date.now()}`;
+        const r = await fetch(url, {
+          method: "GET",
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+          cache: "no-store",
+        });
+        const raw = await r.text().catch(() => "");
+        let js = {};
+        try { js = raw ? JSON.parse(raw) : {}; } catch {}
+        if (!r.ok) throw new Error(js?.message || `HTTP ${r.status}`);
+        if (!alive) return;
+        setData(prev => prev ? {
+          ...prev,
+          congestion: toText(js.congestion) || prev.congestion,
+        } : prev);
+      } catch {
+        /* 실패 시 조용히 무시(기존 배지 유지) */
+      }
+    };
+
+    tick(); // 최초 1회
+    const t = setInterval(tick, 10000); // 좌석 폴링 주기와 맞춤
+    return () => { alive = false; clearInterval(t); };
+  }, [libraryId]);
+
+  // 좌석 API 기준 숫자 재산출 (없으면 상세 API 값 폴백)
+  const liveCounts = useMemo(() => {
+    const statuses = Object.values(seatStates || {});
+    if (!statuses.length) return null;
+    const occupied = statuses.reduce((n, s) => n + (String(s).trim() === "이용 중" ? 1 : 0), 0);
+    const total = statuses.length;
+    return { total, occupied, free: Math.max(total - occupied, 0) };
+  }, [seatStates]);
+
+  const total = liveCounts?.total ?? Number(data?.total_seats ?? 0);
+  const occupied = liveCounts?.occupied ?? Number(data?.current_seats ?? 0);
+  const free = liveCounts?.free ?? Math.max(total - occupied, 0);
+
   const gallery = useMemo(() => {
     const local = GALLERY[String(libraryId)] || [];
     const apiList = (data?.images || []).map((p) => (/^https?:\/\//i.test(p) ? p : `${BASE_URL}${p}`));
     return local.length ? local : apiList;
   }, [libraryId, data]);
-
-  const total = Number(data?.total_seats ?? 0);
-  const occupied = Number(data?.current_seats ?? 0);
-  const free = Math.max(total - occupied, 0);
 
   return (
     <PageWrap>
@@ -239,7 +280,7 @@ const LibraryDetail = () => {
                   {(() => {
                     const Comp = seatMapById[String(libraryId)];
                     return Comp ? (
-                      <Comp total={total} available={free} occupied={occupied} seatStates={seatStates} />
+                      <Comp total={total} available={liveCounts?.free ?? free} occupied={occupied} seatStates={seatStates} />
                     ) : (
                       <Empty>좌석 맵이 없습니다.</Empty>
                     );
@@ -302,7 +343,11 @@ const Small = styled.div`color: #8e8e8e; font-size: 10px; font-weight: 300; line
 const Badge = styled.span`
   font-size: 14px; font-weight: 400; display: flex; width: 30px; padding: 3px 16px;
   justify-content: center; align-items: center; border-radius: 20px; color: #fff;
-  background: ${p => p.$level === "여유" ? "#33A14B" : p.$level === "보통" ? "#FFB724" : p.$level === "혼잡" ? "#FF474D" : "#bbb"};
+  background: ${p =>
+    p.$level === "여유" ? "#33A14B" :
+    p.$level === "보통" ? "#FFB724" :
+    p.$level === "혼잡" ? "#FF474D" :
+    "#bbb"};
 `;
 const Card = styled.div`border: none; border-radius: 0; padding: 0; margin-bottom: 12px; background: transparent;`;
 const TimeTable = styled.ul`
