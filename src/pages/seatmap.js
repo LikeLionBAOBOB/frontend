@@ -1,40 +1,111 @@
-
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect, useMemo } from "react";
 import styled from "styled-components";
 import HeaderBackHero from "../components/header_ad";
 import SeatTable from "../components/seattable";
 
-const SEATS = [
-  { id: 1, status: "free" }, { id: 2, status: "free" },
-  { id: 3, status: "free" }, { id: 4, status: "free" },
-  { id: 5, status: "free" }, { id: 6, status: "free" },
-  { id: 7, status: "free" }, { id: 8, status: "free" },
-  { id:12, status: "free" }, { id:13, status: "hogged_60" },
-];
+const BASE_URL = "https://baobob.pythonanywhere.com";
 
-/* 로그 목데이터 */
-const LOGS = {
-  13: [
-    { time: "14:00", text: "사석화가 시작되었습니다.", ended: true },
-    { time: "14:10", text: "사석화가 진행중입니다.", ended: true },
-    { time: "14:20", text: "사석화가 진행중입니다.", ended: true },
-    { time: "14:30", text: "사석화가 진행중입니다.", ended: true },
-    { time: "14:40", text: "사석화가 진행중입니다.", ended: true },
-    { time: "15:00", text: "사석화가 진행중입니다.", ended: false },
-    { time: "15:10", text: "사석화가 60분 경과했습니다.", over60: true },
-  ],
-};
+// API → UI 상태 매핑
+const mapStatus = (s) =>
+  s === "이용 중" ? "occupied" :
+  s === "사석화" ? "hogged_60" :
+  "free";
 
 const SeatMapPage = () => {
+  const [seats, setSeats] = useState([]);                 // [{id, status}]
   const [selectedSeatId, setSelectedSeatId] = useState(null);
-  const usingCount = 3, totalCount = 10;
+  const [logs, setLogs] = useState([]);
+  const [err, setErr] = useState("");
 
-  const onSeatClick = useCallback((id, status) => {
-    if (status !== "hogged_60") return;
+  // 상단 요약
+  const [usingCount, setUsingCount] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
+  const [badge, setBadge] = useState("");                 // 여유/보통/혼잡
+
+  const token = useMemo(() => localStorage.getItem("access_token") || "", []);
+
+  // 혼잡도
+  useEffect(() => {
+    let alive = true;
+    const fetchCongestion = async () => {
+      try {
+        const r = await fetch(`${BASE_URL}/adminpanel/congestion/`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        const raw = await r.text().catch(() => "");
+        let js = {};
+        try { js = raw ? JSON.parse(raw) : {}; } catch {}
+        if (!r.ok) throw new Error(js?.message || `HTTP ${r.status}`);
+        if (!alive) return;
+        setUsingCount(Number(js.current_seats ?? 0));
+        setTotalCount(Number(js.total_seats ?? 0));
+        setBadge(String(js.congestion || ""));
+        setErr("");
+      } catch (e) {
+        if (!alive) return;
+        setErr(String(e?.message || ""));
+      }
+    };
+    fetchCongestion();
+    const t = setInterval(fetchCongestion, 10000);
+    return () => { alive = false; clearInterval(t); };
+  }, [token]);
+
+  // 전체 좌석
+  useEffect(() => {
+    let alive = true;
+    const fetchSeats = async () => {
+      try {
+        const r = await fetch(`${BASE_URL}/adminpanel/seats/`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        const raw = await r.text().catch(() => "");
+        let js = {};
+        try { js = raw ? JSON.parse(raw) : {}; } catch {}
+        if (!r.ok) throw new Error(js?.message || `HTTP ${r.status}`);
+        if (!alive) return;
+        const arr = (js.seats || []).map(s => ({
+          id: Number(s.seat_id),
+          status: mapStatus(String(s.status)),
+        }));
+        setSeats(arr);
+        setErr("");
+      } catch (e) {
+        if (!alive) return;
+        setErr(String(e?.message || ""));
+        setSeats([]); // 폴백
+      }
+    };
+    fetchSeats();
+    const t = setInterval(fetchSeats, 10000);
+    return () => { alive = false; clearInterval(t); };
+  }, [token]);
+
+  // 좌석 클릭 → 로그 요청
+  const onSeatClick = useCallback(async (id, status) => {
+    if (status !== "hogged_60") { setSelectedSeatId(null); setLogs([]); return; }
     setSelectedSeatId(prev => (prev === id ? null : id));
-  }, []);
-
-  const logs = selectedSeatId ? (LOGS[selectedSeatId] || []) : [];
+    try {
+      const r = await fetch(`${BASE_URL}/adminpanel/${id}/seats/`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      const raw = await r.text().catch(() => "");
+      let js = {};
+      try { js = raw ? JSON.parse(raw) : {}; } catch {}
+      if (!r.ok) throw new Error(js?.message || `HTTP ${r.status}`);
+      const list = (js.log || []).map((row, i, arr) => ({
+        time: String(row.time || ""),
+        text: String(row.status || ""),
+        ended: i < arr.length - 1,
+        over60: /60분/.test(String(row.status || "")),
+      }));
+      setLogs(list);
+      setErr("");
+    } catch (e) {
+      setLogs([]);
+      setErr(String(e?.message || ""));
+    }
+  }, [token]);
 
   return (
     <Page>
@@ -50,9 +121,10 @@ const SeatMapPage = () => {
           <Left>
             <Line>
               <Count>{usingCount} / {totalCount}</Count>
-              <Badge>여유</Badge>
+              <Badge>{badge || "-"}</Badge>
             </Line>
             <Sub>(현재 좌석 수 / 전체 좌석 수)</Sub>
+            {err && <Sub style={{color:"#C41E3A"}}>{err}</Sub>}
           </Left>
 
           <Right>
@@ -63,10 +135,13 @@ const SeatMapPage = () => {
         </TopRow>
 
         <Board>
-          <SeatTable seats={SEATS} selectedSeatId={selectedSeatId} onSeatClick={onSeatClick} />
+          <SeatTable
+            seats={seats}
+            selectedSeatId={selectedSeatId}
+            onSeatClick={onSeatClick}
+          />
         </Board>
 
-        {/* ▼ 좌석 배치도 아래 로그 패널 (내용 길이에 맞게 자동 높이) */}
         {selectedSeatId && (
           <LogCard>
             <LogTitle>{selectedSeatId}번 좌석 로그</LogTitle>
@@ -87,31 +162,18 @@ const SeatMapPage = () => {
 
 export default SeatMapPage;
 
-/* styles */
+/* styles — 원본 유지 */
 const Page = styled.div` width:393px; margin:0 auto; `;
 const Main = styled.div` padding: 0 12px 16px; `;
-const SectionTitle = styled.h3`
-  margin: 5px 4px 8px;
-  font-size: 18px; font-weight: 700;
-`;
-const TopRow = styled.div`
-  display:flex; justify-content:space-between; gap:12px; padding:0 4px;
-`;
+const SectionTitle = styled.h3` margin: 5px 4px 8px; font-size: 18px; font-weight: 700; `;
+const TopRow = styled.div` display:flex; justify-content:space-between; gap:12px; padding:0 4px; `;
 const Left = styled.div``;
 const Line = styled.div` display:flex; align-items:center; gap:8px; `;
 const Count = styled.span` font-size:18px; `;
-const Badge = styled.span`
-  border-radius:20px; background:#33A14B; color:#fff; font-size:12px; padding:4px 10px;
-`;
+const Badge = styled.span` border-radius:20px; background:#33A14B; color:#fff; font-size:12px; padding:4px 10px; `;
 const Sub = styled.div` font-size:11px; color:#919191; margin-top:4px; `;
-
-const Right = styled.div`
-  display:flex; flex-direction:column; align-items:flex-end; gap:6px;
-`;
-const LegendItem = styled.div`
-  display:flex; align-items:center; gap:6px;
-  font-size:12px; color:#666;
-`;
+const Right = styled.div` display:flex; flex-direction:column; align-items:flex-end; gap:6px; `;
+const LegendItem = styled.div` display:flex; align-items:center; gap:6px; font-size:12px; color:#666; `;
 const Dot = styled.span`
   width:10px; height:10px; border-radius:50%;
   border:1px solid var(--text-disabled,#8E8E8E);
@@ -119,42 +181,23 @@ const Dot = styled.span`
                     : p.$t==="occ" ? "var(--border,#C6C6C6)"
                     : "var(--red-soft, rgba(239,62,94,.5))"};
 `;
-
-
 const Board = styled.div`
-  margin-top: 28px;
-  width: 353px;
-  height: 439px;
-  box-sizing: border-box;           
-  border-radius: 15px;
-  border: 1px solid var(--Disabled, #E4E4E4);
+  margin-top: 28px; width: 353px; height: 439px; box-sizing: border-box;
+  border-radius: 15px; border: 1px solid var(--Disabled, #E4E4E4);
   background: var(--Background-1, #F8F8F8);
   display:flex; justify-content:center; align-items:center;
   margin-left:auto; margin-right:auto;
 `;
-
-
 const LogCard = styled.div`
-  margin: 12px auto 0;
-  width: 353px;
-  box-sizing: border-box;            
-  background: #FFE3E6;               
-  border: 1px solid #FFD6DB;
-  border-radius: 15px;
-  padding: 20px 20px 24px;            
+  margin: 12px auto 0; width: 353px; box-sizing: border-box;
+  background: #FFE3E6; border: 1px solid #FFD6DB; border-radius: 15px;
+  padding: 20px 20px 24px;
 `;
-const LogTitle = styled.div`
-  font-weight: 700;
-  margin-bottom: 8px;
-`;
-const LogList = styled.div`
-  display: grid;
-  gap: 6px;                         
-`;
+const LogTitle = styled.div` font-weight: 700; margin-bottom: 8px; `;
+const LogList = styled.div` display: grid; gap: 6px; `;
 const LogRow = styled.div`
-  display: flex; gap: 10px; align-items: baseline;
-  line-height: 1.45;                 
-  opacity: ${p => (p.$ended ? .45 : 1)};           
-  color: ${p => (p.$over60 ? "#C41E3A" : "#333")}; 
+  display: flex; gap: 10px; align-items: baseline; line-height: 1.45;
+  opacity: ${p => (p.$ended ? .45 : 1)};
+  color: ${p => (p.$over60 ? "#C41E3A" : "#333")};
   time { width: 44px; font-variant-numeric: tabular-nums; }
 `;
