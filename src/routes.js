@@ -7,6 +7,8 @@ import HomePageAdmin from './pages/HomePage_admin';
 import SeatPage from './pages/seatmap';
 import Mylib from './pages/mylib';
 import MapPage from './pages/map';
+import AboutPage from './pages/AboutPage';
+import ContactPage from './pages/ContactPage';
 import DetailLib from './pages/detaillib';
 import { Navigate } from "react-router-dom";
 
@@ -55,6 +57,14 @@ const routes = [
                 element: <Navigate to="/detaillib/111179" replace /> },
                 { path: '*', 
                     element: <div>404</div> },
+    {
+        path: '/about',
+        element: <AboutPage />,
+    },
+    {
+        path: '/contact',
+        element: <ContactPage />,
+    },
 ];
 
 export default routes;

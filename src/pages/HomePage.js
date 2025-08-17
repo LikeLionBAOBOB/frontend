@@ -139,5 +139,5 @@ const ArrowIcon = styled.img`
 `;
 const Icon = styled.img`
     width: 24px;
-    heigth: 24px;
+    height: 24px;
 `;

@@ -1,4 +1,3 @@
-// components/header_profile.js
 import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
@@ -6,6 +5,7 @@ import styled, { keyframes } from "styled-components";
 import hamburgerIcon from "../assets/icons/hamburger.png";
 import closeArrow from "../assets/icons/return.png";
 import profileIcon from "../assets/icons/profile.png";
+import smileProfile from "../assets/icons/proimg.png";
 
 const API_BASE = process.env.REACT_APP_API_BASE || 'https://baobob.pythonanywhere.com';
 
@@ -32,16 +32,16 @@ const slideOutLeft = keyframes`
   to{transform:translateX(-100%)}
 `;
 
-const HeaderProfileHome = ({ isLoggedIn = false }) => {
+const HeaderProfileHome = () => {
   const navigate = useNavigate();
+  const isLoggedIn = !!localStorage.getItem("access_token");
 
   // 로그인 시 localStorage에서 닉네임 읽어오기 
-  const [nickname, setNickname] = useState("");
-  useEffect(() => {
-    if (!isLoggedIn) { setNickname(""); return; }
-    const saved = localStorage.getItem("nickname");
-    if (saved) setNickname(saved);
-  }, [isLoggedIn]);
+  const [nickname, setNickname] = useState(localStorage.getItem("nickname") || localStorage.getItem("user_name") || "");
+    useEffect(() => {
+      if (isLoggedIn) setNickname(localStorage.getItem("nickname") || localStorage.getItem("user_name") || "");
+      else setNickname("");
+    }, [isLoggedIn]);
 
   // 오른쪽 드로어
   const [rOpen, setROpen] = useState(false);
@@ -53,6 +53,9 @@ const HeaderProfileHome = ({ isLoggedIn = false }) => {
   const [lOpen, setLOpen] = useState(false);
   const [lMount, setLMount] = useState(false);
   const openLeft  = () => { 
+    if (!!localStorage.getItem("access_token")) {
+      setNickname(localStorage.getItem("nickname") || localStorage.getItem("user_name") || "");
+    }
     setLMount(true); 
     requestAnimationFrame(()=>setLOpen(true)); 
   };
@@ -125,7 +128,7 @@ const HeaderProfileHome = ({ isLoggedIn = false }) => {
           {/* 오른쪽 드로어 */}
           {rMount && (
             <SidebarRight role="dialog" aria-modal="true" $open={rOpen}>
-              <SidebarTop align="flex-end">
+              <SidebarTop align="flex-end" $isLeft={false}>
                 <CloseBtn onClick={closeRight} aria-label="닫기">
                   <img src={closeArrow} alt="닫기" />
                 </CloseBtn>
@@ -149,14 +152,14 @@ const HeaderProfileHome = ({ isLoggedIn = false }) => {
           {/* 왼쪽 드로어 (로그인/비로그인 분기) */}
           {lMount && (
             <SidebarLeft role="dialog" aria-modal="true" $open={lOpen}>
-              <SidebarTop align="flex-start">
+              <SidebarTop align="flex-start" $isLeft={true}>
                 <CloseBtn onClick={closeLeft} aria-label="닫기"><img src={closeArrow} alt="닫기" /></CloseBtn>
               </SidebarTop>
 
               {isLoggedIn ? (
                 <>
                   <ProfileRow>
-                    <Avatar src={profileIcon} alt="프로필" />
+                    <Avatar src={smileProfile} alt="프로필" />
                     <div>
                       <Nick>{nickname || "사용자"}</Nick>
                     </div>
@@ -251,7 +254,7 @@ const SidebarTop = styled.div`
   align-items: center;
   height: auto;
   padding-top: 20px;
-  margin-bottom: 72px;
+  margin-bottom: ${({ $isLeft }) => ($isLeft ? "16px" : "72px")};
 `;
 
 const CloseBtn = styled.button`
@@ -289,17 +292,19 @@ const Divider = styled.hr`
 const ProfileRow = styled.div`
   display: flex; 
   align-items: center; 
-  gap: 12px; 
-  padding: 8px 0;
+  gap: 4px; 
+  padding: 8px 7px;
 `;
 const Avatar = styled.img`
   width: 28px;
   height: 28px; 
 `;
 const Nick = styled.span`
-  font-size: 14px; 
-  font-weight: 600; 
-  color: #222;
+  color: var(--Tect--Lighter, #383838);
+  font-family: "Pretendard GOV Variable";
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 17.5px;
 `;
 const LogoutBtn = styled.button`
   margin-top: 16px; 
