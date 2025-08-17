@@ -7,7 +7,7 @@ import TablesMap, { seatsOnRectSides, seatsAboveBelowBar } from "./common";
  * - 3행 × 2열 세로 사각 테이블 (각 4좌석: 좌우 2+2)
  * - 테이블 세로 간격 최소 7px
  */
-const Map111086 = ({ available, total }) => {
+const Map111086 = ({ available, total, seatStates }) => {
   const bar = { type: "bar", x: 56, y: 32, w: 220, h: 28 };
 
   const rects = [
@@ -26,10 +26,17 @@ const Map111086 = ({ available, total }) => {
   ];
   const chairs = [...chairsRaw].sort(() => Math.random() - 0.5);
 
-  // 부모에서 내려오는 available = "현재 좌석 수(=사용 중)"
-  // TablesMap은 "이용 가능 수"를 기대하므로 변환
+  // 부모에서 내려온 available=사용 중 좌석 수 → 이용 가능 수로 보정
   const availableFree = Math.max((total || 30) - (available || 0), 0);
 
-  return <TablesMap shapes={shapes} chairs={chairs} total={total} available={availableFree} />;
+  return (
+    <TablesMap
+      shapes={shapes}
+      chairs={chairs}
+      total={total}
+      available={availableFree}
+      seatStates={seatStates}
+    />
+  );
 };
 export default Map111086;
