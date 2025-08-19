@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
 
@@ -32,16 +32,18 @@ const slideOutLeft = keyframes`
   to{transform:translateX(-100%)}
 `;
 
-const HeaderProfileHome = () => {
+const HeaderProfileHome = ({ isLoggedIn = false }) => {
   const navigate = useNavigate();
-  const isLoggedIn = !!localStorage.getItem("access_token");
 
   // 로그인 시 localStorage에서 닉네임 읽어오기 
   const [nickname, setNickname] = useState(localStorage.getItem("nickname") || localStorage.getItem("user_name") || "");
-    useEffect(() => {
-      if (isLoggedIn) setNickname(localStorage.getItem("nickname") || localStorage.getItem("user_name") || "");
-      else setNickname("");
-    }, [isLoggedIn]);
+  useEffect(() => {
+    if (isLoggedIn) setNickname(localStorage.getItem("nickname") || localStorage.getItem("user_name") || "");
+    else setNickname("");
+  }, [isLoggedIn]);
+
+  // 상단바에 표시할 이름
+  const headerName = isLoggedIn ? (nickname || "사용자") : "";
 
   // 오른쪽 드로어
   const [rOpen, setROpen] = useState(false);
@@ -107,16 +109,27 @@ const HeaderProfileHome = () => {
     <>
       <HeaderWrapper>
         <Icons>
+          {/* 로그인 전: profile.png 아이콘만 */}
+          {/* 로그인 후: 28px 아바타 + 이름 */}
+          {isLoggedIn ? (
+            <ProfileMini role="button" onClick={() => { openLeft(); setROpen(false); }}>
+              <MiniAvatar src={smileProfile} alt="프로필" />
+              <MiniName>{headerName}</MiniName>
+            </ProfileMini>
+          ) : (
+            <img 
+              src={profileIcon} 
+              alt="프로필" 
+              role="button" 
+              onClick={() => { openLeft(); setROpen(false); }} 
+            />
+          )}
+
           <img 
-            src={profileIcon} 
-            alt="프로필" 
+            src={hamburgerIcon} 
+            alt="메뉴" 
             role="button" 
-            onClick={() => { openLeft(); setROpen(false); }} 
-          />
-          <img src={hamburgerIcon} 
-          alt="메뉴" 
-          role="button" 
-          onClick={() => { openRight(); setLOpen(false); }} 
+            onClick={() => { openRight(); setLOpen(false); }} 
           />
         </Icons>
       </HeaderWrapper>
@@ -168,10 +181,10 @@ const HeaderProfileHome = () => {
                 </>
               ) : (
                 <>
-                <LoginBtns>
-                  <LoginBtn type="button" onClick={() => go("/login")}>일반 로그인</LoginBtn>
-                  <LoginBtn type="button" onClick={() => go("/login-ad")}>사서 로그인</LoginBtn>
-                </LoginBtns>
+                  <LoginBtns>
+                    <LoginBtn type="button" onClick={() => go("/login")}>일반 로그인</LoginBtn>
+                    <LoginBtn type="button" onClick={() => go("/login-ad")}>사서 로그인</LoginBtn>
+                  </LoginBtns>
                 </>
               )}
             </SidebarLeft>
@@ -200,6 +213,26 @@ const Icons = styled.div`
   justify-content: space-between; 
   align-items: center;
   img[role="button"]{cursor:pointer;}
+`;
+
+/* 상단바(로그인 후): 아바타(28px) + 이름 */
+const ProfileMini = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+`;
+const MiniAvatar = styled.img`
+  width: 28px;
+  height: 28px;
+`;
+const MiniName = styled.span`
+  color: var(--Tect--Lighter, #383838);
+  font-family: "Pretendard GOV Variable";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 125%;
 `;
 
 const Scrim = styled.div`
