@@ -159,12 +159,6 @@ const Button = styled.button`
   cursor: pointer;
   &:disabled { opacity: 0.6; cursor: not-allowed; }
 `;
-const Notice = styled.p`
-  font-size: 12px;
-  color: #8e8e8e;
-  margin-top: 20px;
-  text-align: center;
-`;
 const ErrorMsg = styled.p`
   margin-top: 12px;
   color: #d32f2f;
@@ -174,14 +168,14 @@ const ErrorMsg = styled.p`
 const Spacer = styled.div`
   height: 32px;
 `;
-const LogoutBtn = styled.button`
-  padding: 10px 14px;
-  background: #f0f0f0;
-  border: none;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  align-self: center;
-  &:disabled { opacity: .6; cursor: not-allowed; }
-`;
+// const LogoutBtn = styled.button`
+//   padding: 10px 14px;
+//   background: #f0f0f0;
+//   border: none;
+//   border-radius: 10px;
+//   font-size: 14px;
+//   font-weight: 600;
+//   cursor: pointer;
+//   align-self: center;
+//   &:disabled { opacity: .6; cursor: not-allowed; }
+// `;
