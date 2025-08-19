@@ -12,6 +12,9 @@ import yellow from '../assets/icons/yellow_1.png'
 import green_2 from '../assets/icons/green_2.png'
 import red_2 from '../assets/icons/red_2.png'
 import yellow_2 from '../assets/icons/yellow_2.png'
+import greenm from '../assets/icons/green_marker.png'
+import redm from '../assets/icons/red_marker.png'
+import yellowm from '../assets/icons/yellow_marker.png'
 import goIcon from '../assets/icons/go.png';
 import clockIcon from '../assets/icons/clock.png';
 
@@ -215,15 +218,15 @@ const MapPage = () => {
                         </SearchRow>
                         <Legend>
                             <LegendRow>
-                                <LegendIcon src={green} alt="여유" />
+                                <LegendIcon src={greenm} alt="여유" />
                                 <span>여유</span>
                             </LegendRow>
                             <LegendRow>
-                                <LegendIcon src={yellow} alt="보통" />
+                                <LegendIcon src={yellowm} alt="보통" />
                                 <span>보통</span>
                             </LegendRow>
                             <LegendRow>
-                                <LegendIcon src={red} alt="혼잡" />
+                                <LegendIcon src={redm} alt="혼잡" />
                                 <span>혼잡</span>
                             </LegendRow>
                         </Legend>
