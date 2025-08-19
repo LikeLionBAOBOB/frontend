@@ -1,52 +1,93 @@
 //일반모드 홈화면 
-import React from "react";
+import React, { useMemo } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import { createGlobalStyle } from 'styled-components';
-import HeaderProfileHome from '../components/header_home.js'; //프로필있는 헤더 컴포넌트 
-import homelogoIcon from '../assets/icons/home_logo.png';
-import homebackground from '../assets/images/home_background.png';
-import bookIcon from '../assets/icons/book.png';
-import starIcon from '../assets/icons/star.png';
-import leftIcon from '../assets/icons/left.png';
-import statusBar from '../assets/images/StatusBar.png';
+import { createGlobalStyle } from "styled-components";
+import HeaderProfileHome from "../components/header_home.js"; //프로필있는 헤더 컴포넌트 
+import homelogoIcon from "../assets/icons/home_logo.png";
+import homebackground from "../assets/images/home_background.png";
+import bookIcon from "../assets/icons/book.png";
+import starIcon from "../assets/icons/star.png";
+import leftIcon from "../assets/icons/left.png";
+import statusBar from "../assets/images/StatusBar.png";
 
+//로직 변경(토큰 여부 확인)
+function getToken() {
+  const keys = [
+    "accessToken",
+    "access_token",
+    "refreshToken",
+    "token",
+    "jwt",
+    "Authorization",
+    "authToken",
+    "sessionid",
+  ];
+  for (const k of keys) {
+    const v =
+      localStorage.getItem(k) ||
+      sessionStorage.getItem(k) ||
+      getCookie(k) ||
+      null;
+    if (v && String(v).trim() !== "") return v;
+  }
+  return null;
+}
+
+function getCookie(name) {
+  const m = document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)");
+  return m ? m.pop() : null;
+}
 
 const HomePage = () => {
-    const navigate = useNavigate();
-    return(
-        <Wrapper>
-            <img src={statusBar} alt="상태바"/>
-            <HeaderProfileHome/>
-            <Container>
-                <Main>
-                    {/* 상단 */}
-                    <LogoImage src={homelogoIcon} alt="홈로고"/>
-                    <LogoText>열람:뜰</LogoText>
-                    <SubText>공공도서관 좌석 확인 · 관리 서비스</SubText>
-                    {/*하단 버튼 */}
-                    <ButtonsContainer>
-                        <ActionButton onClick={() => navigate("/map")}>
-                            <Left>
-                                <Icon src={bookIcon} alt="책아이콘" />
-                                <BtnText>도서관 검색</BtnText>
-                            </Left>
-                            <ArrowIcon src={leftIcon} alt="우화살표" />
-                        </ActionButton>
+  const navigate = useNavigate();
+  //로직 변경(토큰 여부 확인)
+  const isLoggedIn = useMemo(() => !!getToken(), []);
 
-                        <ActionButton onClick={() => navigate("/mylib")}>
-                            <Left>
-                                <Icon src={starIcon} alt="별아이콘" />
-                                <BtnText>나의 도서관</BtnText>
-                            </Left>
-                            <ArrowIcon src={leftIcon} alt="우화살표" />
-                        </ActionButton>
-                    </ButtonsContainer>
-                </Main>
-            </Container>
-        </Wrapper>
+  //로직 변경(토큰 여부 확인)
+  const handleGoMyLib = () => {
+    if (!isLoggedIn) {
+      navigate("/login");
+      return;
+    }
+    navigate("/mylib");
+  };
 
-    );
+  return (
+    <Wrapper>
+      <img src={statusBar} alt="상태바" />
+      <HeaderProfileHome isLoggedIn={isLoggedIn} /> {/*로직 변경(토큰 여부 확인)*/}
+      <Container>
+        <Main>
+          {/* 상단 */}
+          <LogoImage src={homelogoIcon} alt="홈로고"/>
+          <LogoText>열람:뜰</LogoText>
+          <SubText>공공도서관 좌석 확인 · 관리 서비스</SubText>
+          {/*하단 버튼 */}
+          <ButtonsContainer>
+            <ActionButton onClick={() => navigate("/map")}>
+              <Left>
+                <Icon src={bookIcon} alt="책아이콘" />
+                <BtnText>도서관 검색</BtnText>
+              </Left>
+              <ArrowIcon src={leftIcon} alt="우화살표" />
+            </ActionButton>
+
+            {/*로직 변경(토큰 여부 확인)*/}
+            {isLoggedIn && (
+              <ActionButton onClick={handleGoMyLib}>
+                <Left>
+                  <Icon src={starIcon} alt="별아이콘" />
+                  <BtnText>나의 도서관</BtnText>
+                </Left>
+                <ArrowIcon src={leftIcon} alt="우화살표" />
+              </ActionButton>
+            )}
+          </ButtonsContainer>
+        </Main>
+      </Container>
+    </Wrapper>
+  );
 };
 
 export default HomePage;
