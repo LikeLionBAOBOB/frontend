@@ -59,7 +59,7 @@ const LibrarianLoginPage = () => {
           id="phone"
           type="tel"
           inputMode="numeric"
-          placeholder="000-0000-0000"
+          placeholder="00000000000"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           disabled={submitting}
