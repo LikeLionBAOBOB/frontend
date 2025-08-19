@@ -11,38 +11,10 @@ import starIcon from "../assets/icons/star.png";
 import leftIcon from "../assets/icons/left.png";
 import statusBar from "../assets/images/StatusBar.png";
 
-//로직 변경(토큰 여부 확인)
-function getToken() {
-  const keys = [
-    "accessToken",
-    "access_token",
-    "refreshToken",
-    "token",
-    "jwt",
-    "Authorization",
-    "authToken",
-    "sessionid",
-  ];
-  for (const k of keys) {
-    const v =
-      localStorage.getItem(k) ||
-      sessionStorage.getItem(k) ||
-      getCookie(k) ||
-      null;
-    if (v && String(v).trim() !== "") return v;
-  }
-  return null;
-}
-
-function getCookie(name) {
-  const m = document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)");
-  return m ? m.pop() : null;
-}
-
 const HomePage = () => {
   const navigate = useNavigate();
   //로직 변경(토큰 여부 확인)
-  const isLoggedIn = useMemo(() => !!getToken(), []);
+  const isLoggedIn = useMemo(() => !!localStorage.getItem("access_token"), []);
 
   //로직 변경(토큰 여부 확인)
   const handleGoMyLib = () => {

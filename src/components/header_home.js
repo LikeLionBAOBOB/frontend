@@ -32,9 +32,8 @@ const slideOutLeft = keyframes`
   to{transform:translateX(-100%)}
 `;
 
-const HeaderProfileHome = () => {
+const HeaderProfileHome = ({ isLoggedIn = false }) => {
   const navigate = useNavigate();
-  const isLoggedIn = !!localStorage.getItem("access_token");
 
   // 로그인 시 localStorage에서 닉네임 읽어오기 
   const [nickname, setNickname] = useState(localStorage.getItem("nickname") || localStorage.getItem("user_name") || "");
