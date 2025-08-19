@@ -12,6 +12,21 @@ import defaultImg from "../assets/images/lib/111051/1.jpg";
 const BASE_URL = "https://baobob.pythonanywhere.com";
 const FAVORITES_LIST_URL = `${BASE_URL}/libraries/favorites/`;
 
+const SPECIAL_LIB_IDS = new Set([
+            "111514", // 마포소금나루도서관 
+            "111051", // 서대문구립이진아기념도서관 
+            "711596", // 마포나루메타버스도서관
+            "111179", // 남가좌새롬어린이도서관 
+        ]);
+
+function formatLibraryName(name) {
+    return name
+        .replace("소금나루", "소금나루\n")   
+        .replace("이진아", "이진아\n")
+        .replace("메타버스", "메타버스\n") 
+        .replace("어린이", "어린이\n");   
+}
+
 const PILL_COLOR = { 혼잡:{bg:"#FF474D"}, 보통:{bg:"#FFB724"}, 여유:{bg:"#33A14B"} };
 
 let libImages;
@@ -218,35 +233,45 @@ const MyLibraries = () => {
             const level = lib.congestion || "-";
 
             return (
-              <Card key={`${id || "x"}_${idx}`}>
-                <Thumb style={{ backgroundImage: `url(${imgSrc})` }} />
-                <Info>
-                  <TopLine>
-                    <LibName title={lib.name}>{lib.name}</LibName>
-                    <Pill $level={level}><span>{level}</span></Pill>
-                    <ArrowButton
-                      aria-label="도서관 상세로 이동"
-                      onClick={() => id && navigate(`/detaillib/${id}`)}
-                      disabled={!id}
-                      title={id ? "상세로 이동" : "ID 없음"}
-                    >
-                      <Arrow src={arrowRight} alt="" />
-                    </ArrowButton>
-                  </TopLine>
+              <BottomCard 
+                key={`${id || "x"}_${idx}`}
+                $tall={SPECIAL_LIB_IDS.has(id)}
+                onClick={() => navigate(`/detaillib/${id}`)}
+              >
+                <Thumb 
+                  src={imgSrc}
+                  alt={lib.name}
+                  $tall={SPECIAL_LIB_IDS.has(id)}
+                />
+                <CardMain $tall={SPECIAL_LIB_IDS.has(id)}>
+                  <HeaderRow>
+                    <Name style={{ whiteSpace: "pre-line" }} $tall={SPECIAL_LIB_IDS.has(id)}>
+                      {formatLibraryName(lib.name)}
+                    </Name>
+                    <RightInline>
+                      <Tag style={{ backgroundColor: PILL_COLOR[level]?.bg || "#ccc" }}>
+                        {level}
+                      </Tag>
+                      <GoIconImg
+                        src={arrowRight}
+                        alt="상세 이동"
+                        onClick={() => id && navigate(`/detaillib/${id}`)}
+                      />
+                    </RightInline>
+                  </HeaderRow>
 
-                  <Seats title={(lib._live_error_seats ? `좌석 호출 오류 ${lib._live_error_seats}` : "")}>
-                    <strong>{lib.current_seats ?? 0}</strong> / {lib.total_seats ?? 0}
-                  </Seats>
-                  <SeatsHint>
-                    (현재 좌석 수 / 전체 좌석 수){lib._live_error_seats ? ` · 좌석 오류 ${lib._live_error_seats}` : ""}
-                  </SeatsHint>
-
-                  <MetaRow title={(lib._live_error_detail ? `상세 호출 오류 ${lib._live_error_detail}` : "")}>
-                    <MetaIcon src={clockIcon} alt="" />
-                    <Meta>{lib.is_open} {lib.operating_time}</Meta>
-                  </MetaRow>
-                </Info>
-              </Card>
+                  <Detail>
+                    <SeatsInfo>
+                      <SeatsNum>{lib.current_seats ?? 0}/{lib.total_seats ?? 0}</SeatsNum>
+                      <Info>(현재 좌석 수 / 전체 좌석 수)</Info>
+                    </SeatsInfo>
+                    <OpenTime>
+                      <ClockIcon src={clockIcon} alt="" />
+                      {lib.is_open} {lib.operating_time}
+                    </OpenTime>
+                  </Detail>
+                </CardMain>
+              </BottomCard>
             );
           })}
         </ListWrap>
@@ -258,44 +283,168 @@ const MyLibraries = () => {
 export default MyLibraries;
 
 /* styles */
-const Outer = styled.div`min-height:100dvh; background:#fff; display:flex; justify-content:center;`;
+const Outer = styled.div`
+  min-height:100dvh; 
+  background:#fff; 
+  display:flex; 
+  justify-content:center;
+`;
 const PhoneFrame = styled.div`
-  width:393px; height:852px; background:#fff; display:flex; flex-direction:column;
-  overflow-y:auto; overflow-x:hidden; box-sizing:border-box;
+  width:393px; 
+  height:852px; 
+  background:#fff; 
+  display:flex; 
+  flex-direction:column;
+  overflow-y:auto; 
+  overflow-x:hidden; 
+  box-sizing:border-box;
 `;
-const StatusImg = styled.img`width:100%; height:auto; display:block;`;
-const TitleBox = styled.div`margin-top:20px; padding:0 16px; display:flex; flex-direction:column; align-items:center;`;
-const H1 = styled.h1`color:#222; font-size:20px; font-weight:700; margin:0 0 6px 0;`;
-const Subtitle = styled.p`color:#777; font-size:12px; margin:0;`;
-const BeigeBand = styled.div`width:100%; height:12px; background:#efefef; margin-top:28px;`;
+const StatusImg = styled.img`
+  width:100%; 
+  height:auto; 
+  display:block;
+`;
+const TitleBox = styled.div`
+  margin-top:20px; 
+  padding:0 16px; 
+  display:flex; 
+  flex-direction:column; 
+  align-items:center;
+`;
+const H1 = styled.h1`
+  color:#222; 
+  font-size:20px; 
+  font-weight:700; 
+  margin:0 0 6px 0;
+`;
+const Subtitle = styled.p`
+  color:#777; 
+  font-size:12px; 
+  margin:0;
+`;
+const BeigeBand = styled.div`
+  width:100%; 
+  height:12px; 
+  background:#efefef; 
+  margin-top:28px;
+`;
 const ListWrap = styled.div`
-  width:100%; height:646px; background:#efefef; padding:12px 20px 24px; display:flex; flex-direction:column; gap:12px; box-sizing:border-box;
+  width:100%; 
+  height:646px; 
+  background:#efefef; 
+  padding:10px 20px 24px; 
+  display:flex; 
+  flex-direction:column; 
+  gap:12px; 
+  box-sizing:border-box;
 `;
-const Hint = styled.div`color:#666; font-size:14px; text-align:center; padding:20px 0;`;
-const ErrorMsg = styled.div`color:#d32f2f; font-size:14px; text-align:center; padding:16px 0;`;
-const Card = styled.div`
-  width:353px; height:122px; flex-shrink:0; border-radius:10px; background:#fff;
-  display:grid; grid-template-columns:100px 1fr; column-gap:12px; overflow:hidden;
-  box-shadow:0 4px 16px rgba(0,0,0,.08);
+const Hint = styled.div`
+  color:#666; 
+  font-size:14px; 
+  text-align:center; 
+  padding:20px 0;
 `;
-const Thumb = styled.div`width:100px; height:122px; flex-shrink:0; background:#ddd center/cover no-repeat; border-radius:10px 0 0 10px;`;
-const Info = styled.div`display:flex; flex-direction:column; padding:10px 12px 10px 0; min-width:0; gap:6px; box-sizing:border-box;`;
-const TopLine = styled.div`display:grid; grid-template-columns:1fr auto 24px; align-items:center; column-gap:8px;`;
-const LibName = styled.div`
-  color:#383838; font-weight:700; line-height:150%;
-  font-size:clamp(12px,2.8vw,16px); white-space:nowrap; overflow:hidden; text-overflow:clip; min-width:0;
+const ErrorMsg = styled.div`
+  color:#d32f2f; 
+  font-size:14px; 
+  text-align:center; 
+  padding:16px 0;
 `;
-const Pill = styled.span`
-  display:flex; width:30px; padding:4px 16px; justify-content:center; align-items:center; gap:10px; border-radius:20px;
-  background:${({$level})=>PILL_COLOR[$level]?.bg || "#ccc"}; color:#fff; font-size:12px; font-weight:700; line-height:1; white-space:nowrap;
+
+
+const BottomCard = styled.div`
+    width: 353px;
+    height: ${({ $tall }) => ($tall ? '150px' : '122px')};
+
+    bottom: 16px;
+    z-index: 20;
+    display: flex;
+    gap: 12px;
+    background: #fff;
+    border: 10px;
+    border-radius: 10px;
+    align-items: center;
 `;
-const ArrowButton = styled.button`
-  all:unset; cursor:pointer; width:24px; height:24px; flex-shrink:0; display:grid; place-items:center;
-  &[disabled]{ opacity:.4; cursor:not-allowed; }
+const Thumb = styled.img`
+    width: 100px; 
+    height: ${({ $tall }) => ($tall ? '150px' : '122px')};
+    border-radius: 10px 0 0 10px;
+    object-fit: cover;
+    flex-shrink: 0;
 `;
-const Arrow = styled.img`width:24px; height:24px; flex-shrink:0; aspect-ratio:1/1; object-fit:contain;`;
-const Seats = styled.div`color:#0F0F0F; font-size:14px; font-weight:600; line-height:140%;`;
-const SeatsHint = styled.div`color:#8E8E8E; font-size:8px; font-weight:300; line-height:140%;`;
-const MetaRow = styled.div`display:flex; align-items:center; gap:8px;`;
-const MetaIcon = styled.img`width:16px; height:16px; flex-shrink:0; aspect-ratio:1/1; object-fit:contain;`;
-const Meta = styled.div`color:#555; font-size:10px; font-weight:400; line-height:150%;`;
+const CardMain = styled.div`
+    display: flex;
+    flex-direction: column;
+    padding: ${({ $tall }) => ($tall ? '16px 16px 17px 8px' : '16px 16px 17px 16px')};
+    flex: 1;
+    gap: 12px;
+`;
+const HeaderRow = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+`;
+const RightInline = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 8px;
+`;
+const Name = styled.h3`
+    color: #383838;
+    font-family: "Pretendard GOV Variable";
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 150%;
+    margin: 0;
+`;
+const Tag = styled.div`
+    display: flex;
+    padding: 4px 16px;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    color: #FFF;
+    border-radius: 20px;
+`;
+const GoIconImg = styled.img`
+    width: 24px;
+    height: 24px;
+`;
+const Detail = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+`;
+const SeatsInfo = styled.div`
+    display: flex;
+    flex-direction: column;
+`;
+const SeatsNum = styled.span`
+    color: #0f0f0f;
+    font-family: "Pretendard GOV Variable";
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 140%;
+`;
+const Info = styled.div`
+    color: #8e8e8e;
+    font-family: "Pretendard GOV Variable";
+    font-size: 8px;
+    font-weight: 300;
+    line-height: 140%;
+`;
+const OpenTime = styled.div`
+    color: #555;
+    font-family: "Pretendard GOV Variable";
+    font-size: 10px;
+    font-weight: 400;
+    line-height: 150%;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 2px;
+`;
+const ClockIcon = styled.img`
+    width: 16px;
+    height: 16px;
+`;
