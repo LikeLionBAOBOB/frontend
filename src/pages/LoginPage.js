@@ -59,7 +59,7 @@ const LibrarianLoginPage = () => {
           id="phone"
           type="tel"
           inputMode="numeric"
-          placeholder="00000000000"
+          placeholder="하이픈(-)을 제외하고 입력해주세요"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           disabled={submitting}

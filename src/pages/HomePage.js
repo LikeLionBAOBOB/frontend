@@ -36,11 +36,11 @@ const HomePage = () => {
           <LogoText>열람:뜰</LogoText>
           <SubText>공공도서관 좌석 확인 · 관리 서비스</SubText>
           {/*하단 버튼 */}
-          <ButtonsContainer>
+          <ButtonsContainer $single={!isLoggedIn}>
             <ActionButton onClick={() => navigate("/map")}>
               <Left>
                 <Icon src={bookIcon} alt="책아이콘" />
-                <BtnText>도서관 검색</BtnText>
+                <BtnText>도서관 찾기</BtnText>
               </Left>
               <ArrowIcon src={leftIcon} alt="우화살표" />
             </ActionButton>
@@ -101,7 +101,7 @@ const LogoText = styled.h1`
     margin-top: 0px;
     margin-bottom: 0px;
 `;
-const SubText = styled.p`
+const SubText = styled.p`   
     color: #555;
     text-align: center;
     font-family: "Pretendard GOV Variable";
@@ -116,7 +116,7 @@ const ButtonsContainer = styled.div`
     display: flex;
     flex-direction: column;
     gap: 20px;
-    padding: 324px 20px 156px 20px;
+    padding: ${({ $single }) => $single ? "401px 20px 155px 20px" : "324px 20px 156px 20px"};
 `;
 const ActionButton = styled.div`
     width: 353px;
