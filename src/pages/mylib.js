@@ -375,7 +375,7 @@ const Thumb = styled.img`
 const CardMain = styled.div`
     display: flex;
     flex-direction: column;
-    padding: ${({ $tall }) => ($tall ? '16px 16px 17px 8px' : '16px 16px 17px 16px')};
+    padding: 16px 16px 17px 8px;
     flex: 1;
     gap: 12px;
 `;
