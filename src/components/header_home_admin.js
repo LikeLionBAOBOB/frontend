@@ -81,7 +81,7 @@ const HeaderAdmin = () => {
             />
             <Nick>김이화 사서</Nick>
           </ProfileRow>
-          <img
+          <HamIcon
             src={hamburgerIcon}
             alt="메뉴"
             role="button"
@@ -149,7 +149,10 @@ const HeaderAdmin = () => {
 
 export default HeaderAdmin;
 
-
+const HamIcon = styled.img`
+  width: 36px;
+  height: 36px;
+`
 const HeaderWrapper = styled.header`
   width: ${FRAME_W}px;
   height: 44px;

@@ -12,7 +12,7 @@ import goIcon from '../assets/icons/go.png';
 const SitesPage = () => {
     return(
         <Wrapper>
-            <img src={statusBar} alt="상태바"/>
+            <StatusBarImg src={statusBar} alt="상태바"/>
             <Header>
                 <HeaderBack/>
                 <TitleText>사이트 바로가기</TitleText>
@@ -75,6 +75,10 @@ export default SitesPage;
 
 //상단 헤더 부분
 //상단바 
+const StatusBarImg = styled.img`
+    width: 393px;
+    height: 59px;
+`
 const Wrapper = styled.div`
     width: 100%;
     height: 852px;

@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useState, useCallback } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 
-import StatusBar from "../assets/icons/StatusBar.png";
+import StatusBar from "../assets/images/StatusBar.png";
 import HeaderBack from "../components/header_back";
 import arrowRight from "../assets/icons/arrow_rightup.png";
 import clockIcon from "../assets/icons/clock.png";
@@ -111,7 +111,7 @@ const MyLibraries = () => {
   return (
     <Outer>
       <PhoneFrame>
-        <StatusImg src={StatusBar} alt="상태바" />
+        <StatusBarImg src={StatusBar} alt="상태바" />
         <HeaderBack />
 
         <TitleBox>
@@ -184,6 +184,10 @@ const MyLibraries = () => {
 export default MyLibraries;
 
 /* styles */
+const StatusBarImg = styled.img`
+  width: 393px;
+  height: 59px;
+`
 const Outer = styled.div`
   min-height:100dvh; 
   background:#fff; 

@@ -8,7 +8,7 @@ import statusBar from '../assets/images/StatusBar.png';
 const AboutPage = () => {
     return(
         <Wrapper>
-            <img src={statusBar} alt="상태바"/>
+            <StatusBarImg src={statusBar} alt="상태바"/>
             <HeaderBack/>
             <Container>
                 <Main>
@@ -39,7 +39,10 @@ const Container = styled.div`
     display: flex;
     flex-direction: column;
 `;
-
+const StatusBarImg = styled.img`
+    width: 393px;
+    height: 59px;
+`
 //메인
 const Main = styled.div`
     display: flex;

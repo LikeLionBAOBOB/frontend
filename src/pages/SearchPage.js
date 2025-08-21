@@ -129,7 +129,7 @@ const SearchPage = () => {
 
     return(
         <Wrapper>
-            <img src={statusBar} alt="상태바"/>
+            <StatusBarImg src={statusBar} alt="상태바"/>
             <HeaderBack/>
             <Container>
                 <Main>
@@ -214,6 +214,10 @@ export default SearchPage;
 
 //상단 헤더 부분
 //상단바 
+const StatusBarImg = styled.img`
+    width: 393px;
+    height: 59px;
+`
 const Wrapper = styled.div`
     width: 100%;
     height: 852px;

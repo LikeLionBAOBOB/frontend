@@ -117,7 +117,7 @@ const HeaderProfileHome = ({ isLoggedIn = false }) => {
               <MiniName>{headerName}</MiniName>
             </ProfileMini>
           ) : (
-            <img 
+            <ProfileIcon
               src={profileIcon} 
               alt="프로필" 
               role="button" 
@@ -125,7 +125,7 @@ const HeaderProfileHome = ({ isLoggedIn = false }) => {
             />
           )}
 
-          <img 
+          <HamIcon
             src={hamburgerIcon} 
             alt="메뉴" 
             role="button" 
@@ -197,6 +197,14 @@ const HeaderProfileHome = ({ isLoggedIn = false }) => {
 
 export default HeaderProfileHome;
 
+const HamIcon = styled.img`
+  width: 36px;
+  height: 36px;
+`
+const ProfileIcon = styled.img`
+  width: 36px;
+  height: 36px;
+`
 
 const HeaderWrapper = styled.header`
   width: ${FRAME_W}px; 

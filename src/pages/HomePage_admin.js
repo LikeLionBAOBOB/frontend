@@ -41,7 +41,6 @@ const HomePageAdmin = () => {
 
 export default HomePageAdmin;
 
-
 const Wrapper = styled.div`
   width: 100%;
   height: 852px;
@@ -67,8 +66,6 @@ const Main = styled.div`
 const StatusBarImg = styled.img`
   width: 393px;
   height: 59px;
-  object-fit: cover;
-  image-rendering: crisp-edges;
 `
 const LogoImage = styled.img`
   width: 60px;

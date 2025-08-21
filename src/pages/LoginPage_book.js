@@ -55,7 +55,7 @@ const LibrarianLoginPage = () => {
 
   return (
     <Wrapper>
-      <img src={statusBar} alt="상태바"/>
+      <StatusBarImg src={statusBar} alt="상태바"/>
       <HeaderBack />
       <Container>
         <Title>사서 로그인</Title>
@@ -93,6 +93,10 @@ const LibrarianLoginPage = () => {
 
 export default LibrarianLoginPage;
 
+const StatusBarImg = styled.img`
+  width: 393px;
+  height: 59px;
+  `
 const Wrapper = styled.div`
   width: 100%;
   height: 852px;

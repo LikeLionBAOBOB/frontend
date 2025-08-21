@@ -76,8 +76,7 @@ const Wrapper = styled.div`
 const StatusBarImg = styled.img`
   width: 393px;
   height: 59px;
-  object-fit: cover;
-  image-rendering: crisp-edges;
+
 `
 const Container = styled.div`
     width: 393px;

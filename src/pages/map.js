@@ -147,7 +147,7 @@ const MapPage = () => {
 
     return(
         <Wrapper>
-            <img src={statusBar} alt="상태바"/>
+            <StatusBarImg src={statusBar} alt="상태바"/>
             <Header>
                 <HeaderBack/>
                 <TitleText>도서관 찾기</TitleText>
@@ -237,6 +237,10 @@ export default MapPage;
 
 //상단 헤더 부분
 //상단바 
+const StatusBarImg = styled.img`
+    width: 393px;
+    height: 59px;
+`
 const Wrapper = styled.div`
     width: 100%;
     height: 852px;

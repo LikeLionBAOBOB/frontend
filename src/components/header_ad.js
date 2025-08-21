@@ -67,7 +67,7 @@ const HeaderBackHero = ({ title, address, isLoggedIn = false }) => {
     
         <IconBar>
           <IconBtn onClick={() => navigate("/")} aria-label="뒤로가기">
-            <img 
+            <BackIcon 
             src={backIcon} 
             alt="뒤로가기"
             role="button"
@@ -75,10 +75,10 @@ const HeaderBackHero = ({ title, address, isLoggedIn = false }) => {
             />
           </IconBtn>
           <Logo onClick={() => navigate("/")}>
-            <img src={logoIcon} alt="logo" />
+            <LogoIcon src={logoIcon} alt="logo" />
           </Logo>
           <IconBtn onClick={openSidebar} aria-label="메뉴">
-            <img src={hamburgerIcon} alt="menu" />
+            <HamIcon src={hamburgerIcon} alt="menu" />
           </IconBtn>
         </IconBar>
 
@@ -133,7 +133,10 @@ const HeaderBackHero = ({ title, address, isLoggedIn = false }) => {
 export default HeaderBackHero;
 
 
-
+const LogoIcon = styled.img`
+  width: 46px;
+  height: 24px;
+`
 const Wrap = styled.header`
   width: 393px;
   position: relative;
@@ -191,6 +194,14 @@ const IconBtn = styled.button`
     display: block;
   }
 `;
+const BackIcon = styled.img`
+  width: 36px;
+  height: 36px;
+`
+const HamIcon = styled.img`
+  width: 36px;
+  height: 36px;
+`
 const Logo = styled.div`
   img {
     height: 24px;

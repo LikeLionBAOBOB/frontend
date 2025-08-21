@@ -54,19 +54,19 @@ const HeaderBack = ({ isLoggedIn = false }) => {
     <>
       <HeaderWrapper>
         <Icons>
-          <img
+          <BackIcon
             src={backIcon}
             alt="뒤로가기"
             role="button"
             onClick={() => (mount ? closeSidebar() : navigate(-1))} 
           />
-          <img
+          <LogoIcon
             src={logoIcon}
             alt="로고"
             role="button"
             onClick={() => navigate("/")}
           />
-          <img
+          <HamIcon
             src={hamburgerIcon}
             alt="메뉴"
             role="button"
@@ -120,7 +120,18 @@ const HeaderBack = ({ isLoggedIn = false }) => {
 
 export default HeaderBack;
 
-
+const BackIcon = styled.img`
+  width: 36px;
+  height: 36px;
+`
+const HamIcon = styled.img`
+  width: 36px;
+  height: 36px;
+`
+const LogoIcon = styled.img`
+  width: 46px;
+  height: 24px;
+`
 const HeaderWrapper = styled.header`
   width: ${FRAME_W}px;
   height: 44px;
