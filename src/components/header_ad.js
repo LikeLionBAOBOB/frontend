@@ -74,7 +74,7 @@ const HeaderBackHero = ({ title, address, isLoggedIn = false }) => {
             onClick={() => (mount ? closeSidebar() : navigate(-1))} 
             />
           </IconBtn>
-          <Logo onClick={() => navigate("/")}>
+          <Logo onClick={() => navigate("/home-ad")}>
             <LogoIcon src={logoIcon} alt="logo" />
           </Logo>
           <IconBtn onClick={openSidebar} aria-label="메뉴">
