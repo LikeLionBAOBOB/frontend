@@ -13,7 +13,7 @@ const HomePageAdmin = () => {
   const navigate = useNavigate();
   return (
     <Wrapper>
-      <img src={statusBar} alt="상태바" />
+      <StatusBarImg src={statusBar} alt="상태바" />
       <HeaderAdmin/>
       <Container>
         <Main>
@@ -64,7 +64,15 @@ const Main = styled.div`
   height: 749px;
   position: relative;
 `;
+const StatusBarImg = styled.img`
+  width: 393px;
+  height: 59px;
+  object-fit: cover;
+  image-rendering: crisp-edges;
+`
 const LogoImage = styled.img`
+  width: 60px;
+  height: 31px;
   display: block;
   padding: 12px 166px 12px 167px;
 `;

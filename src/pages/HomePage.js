@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { createGlobalStyle } from "styled-components";
 import HeaderProfileHome from "../components/header_home.js"; //프로필있는 헤더 컴포넌트 
 import homelogoIcon from "../assets/icons/home_logo.png";
-import homebackground from "../assets/images/home_background.png";
+import homebackground from "../assets/images/home_background2.png";
 import bookIcon from "../assets/icons/book.png";
 import starIcon from "../assets/icons/star.png";
 import leftIcon from "../assets/icons/left.png";
@@ -27,7 +27,7 @@ const HomePage = () => {
 
   return (
     <Wrapper>
-      <img src={statusBar} alt="상태바" />
+      <StatusBarImg src={statusBar} alt="상태바" />
       <HeaderProfileHome isLoggedIn={isLoggedIn} /> {/*로직 변경(토큰 여부 확인)*/}
       <Container>
         <Main>
@@ -73,6 +73,12 @@ const Wrapper = styled.div`
     align-items: center;
     overflow-x: hidden;
 `;
+const StatusBarImg = styled.img`
+  width: 393px;
+  height: 59px;
+  object-fit: cover;
+  image-rendering: crisp-edges;
+`
 const Container = styled.div`
     width: 393px;
     box-sizing: border-box;
@@ -88,6 +94,8 @@ const Main = styled.div`
     position: relative;
 `;
 const LogoImage = styled.img`
+    width: 60px;
+    height: 31px;
     display: block;
     padding: 12px 166px 12px 167px;
 `;
