@@ -40,7 +40,7 @@ const HeaderBack = ({ isLoggedIn = false }) => {
   }, [navigate]);
 
   const topMenu = [
-    { label: "도서관 검색", to: "/map", color: "#222" },
+    { label: "도서관 찾기", to: "/map", color: "#222" },
     ...(isLoggedIn ? [{ label: "나의 도서관", to: "/mylib", color: "#222" }] : []),
     { label: "사이트 바로가기", to: "/sites", color: "#222" },
     

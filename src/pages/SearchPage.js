@@ -310,7 +310,7 @@ const BottomCard = styled.div`
     align-items: center;
 `;
 const Thumb = styled.img`
-    width: 80px; 
+    width: 100px; 
     height: ${({ $tall }) => ($tall ? '150px' : '122px')};
     border-radius: 10px 0px 0px 10px;
     object-fit: cover;

@@ -100,6 +100,7 @@ const LogoText = styled.h1`
     line-height: 150%;
     margin-top: 0px;
     margin-bottom: 0px;
+    letter-spacing: 1.8px;
 `;
 const SubText = styled.p`   
     color: #555;
