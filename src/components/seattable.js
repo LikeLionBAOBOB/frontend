@@ -34,32 +34,37 @@ const SeatTable = ({ seats = [], selectedSeatId, onSeatClick }) => {
 
   return (
     <Stage style={{ width: CANVAS_W, height: CANVAS_H }}>
+      {/* 상단 좌측 바: 좌석 1,2 (바 아래) */}
       <RectTable style={{ left:leftX,  top:topY }} />
       <SeatRow style={{ left:leftX,  top: topY + (TABLE_W/2 + GAP_TABLE_SEAT) }}>
         {Seat(get(1))}<Spacer style={{ width: SEAT_GAP }} />{Seat(get(2))}
       </SeatRow>
 
+      {/* 상단 우측 바: 좌석 3,4 (바 아래) */}
       <RectTable style={{ left:rightX, top:topY }} />
       <SeatRow style={{ left:rightX, top: topY + (TABLE_W/2 + GAP_TABLE_SEAT) }}>
         {Seat(get(3))}<Spacer style={{ width: SEAT_GAP }} />{Seat(get(4))}
       </SeatRow>
 
-      <Circle style={{ left:cx, top:cy }} />
-      <SeatRow style={{ left: cx - (CIRCLE/2 + GAP_CIRCLE_SEAT + SEAT/2), top: cy }}>
-        {Seat(get(5))}
-      </SeatRow>
-      <SeatRow style={{ left: cx + (CIRCLE/2 + GAP_CIRCLE_SEAT + SEAT/2), top: cy }}>
-        {Seat(get(6))}
-      </SeatRow>
-
+      {/* 하단 좌측 바: 좌석 5,6 (바 위) */}
       <RectTable style={{ left:leftX,  top:botY }} />
       <SeatRow style={{ left:leftX,  top: botY - (TABLE_W/2 + GAP_TABLE_SEAT) }}>
+        {Seat(get(5))}<Spacer style={{ width: SEAT_GAP }} />{Seat(get(6))}
+      </SeatRow>
+
+      {/* 하단 우측 바: 좌석 7,8 (바 위) */}
+      <RectTable style={{ left:rightX, top:botY }} />
+      <SeatRow style={{ left:rightX, top: botY - (TABLE_W/2 + GAP_TABLE_SEAT) }}>
         {Seat(get(7))}<Spacer style={{ width: SEAT_GAP }} />{Seat(get(8))}
       </SeatRow>
 
-      <RectTable style={{ left:rightX, top:botY }} />
-      <SeatRow style={{ left:rightX, top: botY - (TABLE_W/2 + GAP_TABLE_SEAT) }}>
-        {Seat(get(12))}<Spacer style={{ width: SEAT_GAP }} />{Seat(get(13))}
+      {/* 원형: 좌(9), 우(10) */}
+      <Circle style={{ left:cx, top:cy }} />
+      <SeatRow style={{ left: cx - (CIRCLE/2 + GAP_CIRCLE_SEAT + SEAT/2), top: cy }}>
+        {Seat(get(9))}
+      </SeatRow>
+      <SeatRow style={{ left: cx + (CIRCLE/2 + GAP_CIRCLE_SEAT + SEAT/2), top: cy }}>
+        {Seat(get(10))}
       </SeatRow>
     </Stage>
   );
@@ -93,7 +98,6 @@ const SeatDot = styled.button`
   transform: rotate(90deg);
   border: none; border-radius: 0;
 
-  /* ✅ 이용 가능 = 흰색 */
   background: #FFFFFF;
   border: 1px solid #cfcfcf;
 

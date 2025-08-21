@@ -13,18 +13,18 @@ const BASE_URL = "https://baobob.pythonanywhere.com";
 const FAVORITES_LIST_URL = `${BASE_URL}/libraries/favorites/`;
 
 const SPECIAL_LIB_IDS = new Set([
-            "111514", // 마포소금나루도서관 
-            "111051", // 서대문구립이진아기념도서관 
-            "711596", // 마포나루메타버스도서관
-            "111179", // 남가좌새롬어린이도서관 
-        ]);
+  "111514",
+  "111051",
+  "711596",
+  "111179",
+]);
 
 function formatLibraryName(name) {
-    return name
-        .replace("소금나루", "소금나루\n")   
-        .replace("이진아", "이진아\n")
-        .replace("메타버스", "메타버스\n") 
-        .replace("어린이", "어린이\n");   
+  return name
+    .replace("소금나루", "소금나루\n")
+    .replace("이진아", "이진아\n")
+    .replace("메타버스", "메타버스\n")
+    .replace("어린이", "어린이\n");
 }
 
 const PILL_COLOR = { 혼잡:{bg:"#FF474D"}, 보통:{bg:"#FFB724"}, 여유:{bg:"#33A14B"} };
@@ -49,7 +49,6 @@ const extractIdFromImagePath = (imagePath) => {
   return m ? m[1] : "";
 };
 
-// 즐겨찾기 응답 구조가 조금씩 달라도 최대한 ID를 얻도록 보강
 const getLibId = (lib) => {
   const nested = lib?.library || lib?.lib || {};
   const candidates = [
@@ -60,15 +59,6 @@ const getLibId = (lib) => {
   ];
   const hit = candidates.find(v => v !== undefined && v !== null && `${v}`.trim() !== "");
   return hit ? String(hit) : "";
-};
-
-// 좌석 비율로 혼잡도 산출(기본 규칙: 여유≥60%, 보통 20~60, 혼잡<20)
-const calcCongestion = (total, free) => {
-  if (!total) return "-";
-  const ratio = (free / total) * 100;
-  if (ratio >= 60) return "여유";
-  if (ratio >= 20) return "보통";
-  return "혼잡";
 };
 
 const MyLibraries = () => {
@@ -111,101 +101,12 @@ const MyLibraries = () => {
     }
   }, [token]);
 
-  // 좌석/상세 동시 갱신
-  const refreshLive = useCallback(async (ids) => {
-    if (!ids?.length) return;
-
-    const getJson = async (url, withAuth=false) => {
-      const headers = withAuth && token
-        ? { Accept: "application/json", Authorization: `Bearer ${token}` }
-        : { Accept: "application/json" };
-      const r = await fetch(url, { method: "GET", headers, cache: "no-store" });
-      const raw = await r.text().catch(() => "");
-      let js = {};
-      try { js = raw ? JSON.parse(raw) : {}; } catch {}
-      return { ok: r.ok, status: r.status, data: js, raw };
-    };
-
-    try {
-      const results = await Promise.all(ids.map(async (id) => {
-        const idStr = String(id);
-
-        // 1) 실시간 좌석
-        let seatRes = await getJson(`${BASE_URL}/seats/${idStr}/`, false);
-        if (!seatRes.ok && seatRes.status === 401) {
-          // 일부 환경에서 인증 필요 시 재시도
-          seatRes = await getJson(`${BASE_URL}/seats/${idStr}/`, true);
-        }
-
-        // 좌석 파싱
-        let total = 0, free = 0;
-        if (seatRes.ok && Array.isArray(seatRes.data?.seats)) {
-          const seats = seatRes.data.seats;
-          total = seats.length;
-          free  = seats.filter(s => String(s.status).includes("이용 가능")).length;
-        } else {
-          console.warn(`[mylib] seats ${idStr} failed:`, seatRes.status, seatRes.data || seatRes.raw);
-        }
-
-        // 2) 도서관 상세(운영여부/시간 보강)
-        let detRes = await getJson(`${BASE_URL}/libraries/${idStr}/detail/`, false);
-        if (!detRes.ok && detRes.status === 401) {
-          detRes = await getJson(`${BASE_URL}/libraries/${idStr}/detail/`, true);
-        }
-
-        const detail = detRes.ok ? detRes.data : {};
-        const levelFromDetail = detail?.congestion ? String(detail.congestion) : null;
-        const computedLevel = calcCongestion(total, free);
-
-        return {
-          id: idStr,
-          current_seats: free,
-          total_seats: total,
-          // 상세에 혼잡도가 오면 우선 사용, 없으면 계산값 사용
-          congestion: levelFromDetail || computedLevel,
-          is_open: String(detail?.is_open ?? ""),
-          operating_time: String(detail?.operating_time ?? ""),
-          _errs: {
-            seats: seatRes.ok ? 0 : seatRes.status,
-            detail: detRes.ok ? 0 : detRes.status,
-          },
-        };
-      }));
-
-      const map = new Map(results.map(x => [x.id, x]));
-      setItems(prev => prev.map(lib => {
-        const id = getLibId(lib);
-        const live = map.get(String(id));
-        if (!live) return lib;
-        return {
-          ...lib,
-          current_seats: live.current_seats ?? lib.current_seats ?? 0,
-          total_seats: live.total_seats ?? lib.total_seats ?? 0,
-          congestion: live.congestion ?? lib.congestion ?? "-",
-          is_open: live.is_open ?? lib.is_open ?? "",
-          operating_time: live.operating_time ?? lib.operating_time ?? "",
-          _live_error_seats: live._errs?.seats,
-          _live_error_detail: live._errs?.detail,
-        };
-      }));
-    } catch (e) {
-      console.error("[mylib] refreshLive error:", e);
-    }
-  }, [token]);
-
   useEffect(() => {
     fetchFavorites();
     const onFavChanged = () => fetchFavorites();
     window.addEventListener("favorites:changed", onFavChanged);
     return () => window.removeEventListener("favorites:changed", onFavChanged);
   }, [fetchFavorites]);
-
-  useEffect(() => {
-    if (!favIds.length) return;
-    refreshLive(favIds);
-    const t = setInterval(() => refreshLive(favIds), 10000);
-    return () => clearInterval(t);
-  }, [favIds, refreshLive]);
 
   return (
     <Outer>
@@ -351,100 +252,98 @@ const ErrorMsg = styled.div`
   padding:16px 0;
 `;
 
-
 const BottomCard = styled.div`
-    width: 353px;
-    height: ${({ $tall }) => ($tall ? '150px' : '122px')};
-
-    bottom: 16px;
-    z-index: 20;
-    display: flex;
-    gap: 12px;
-    background: #fff;
-    border: 10px;
-    border-radius: 10px;
-    align-items: center;
+  width: 353px;
+  height: ${({ $tall }) => ($tall ? '150px' : '122px')};
+  bottom: 16px;
+  z-index: 20;
+  display: flex;
+  gap: 12px;
+  background: #fff;
+  border: 10px;
+  border-radius: 10px;
+  align-items: center;
 `;
 const Thumb = styled.img`
-    width: 100px; 
-    height: ${({ $tall }) => ($tall ? '150px' : '122px')};
-    border-radius: 10px 0 0 10px;
-    object-fit: cover;
-    flex-shrink: 0;
+  width: 100px; 
+  height: ${({ $tall }) => ($tall ? '150px' : '122px')};
+  border-radius: 10px 0 0 10px;
+  object-fit: cover;
+  flex-shrink: 0;
 `;
 const CardMain = styled.div`
-    display: flex;
-    flex-direction: column;
-    padding: 16px 16px 17px 8px;
-    flex: 1;
-    gap: 12px;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 16px 17px 8px;
+  flex: 1;
+  gap: 12px;
 `;
 const HeaderRow = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 `;
 const RightInline = styled.div`
-    display: flex;
-    align-items: center;
-    gap: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 `;
 const Name = styled.h3`
-    color: #383838;
-    font-family: "Pretendard GOV Variable";
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 150%;
-    margin: 0;
+  color: #383838;
+  font-family: "Pretendard GOV Variable";
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 150%;
+  margin: 0;
 `;
 const Tag = styled.div`
-    display: flex;
-    padding: 4px 16px;
-    justify-content: center;
-    align-items: center;
-    font-size: 12px;
-    color: #FFF;
-    border-radius: 20px;
+  display: flex;
+  padding: 4px 16px;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  color: #FFF;
+  border-radius: 20px;
 `;
 const GoIconImg = styled.img`
-    width: 24px;
-    height: 24px;
+  width: 24px;
+  height: 24px;
 `;
 const Detail = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 9px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
 `;
 const SeatsInfo = styled.div`
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 `;
 const SeatsNum = styled.span`
-    color: #0f0f0f;
-    font-family: "Pretendard GOV Variable";
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 140%;
+  color: #0f0f0f;
+  font-family: "Pretendard GOV Variable";
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 140%;
 `;
 const Info = styled.div`
-    color: #8e8e8e;
-    font-family: "Pretendard GOV Variable";
-    font-size: 8px;
-    font-weight: 300;
-    line-height: 140%;
+  color: #8e8e8e;
+  font-family: "Pretendard GOV Variable";
+  font-size: 8px;
+  font-weight: 300;
+  line-height: 140%;
 `;
 const OpenTime = styled.div`
-    color: #555;
-    font-family: "Pretendard GOV Variable";
-    font-size: 10px;
-    font-weight: 400;
-    line-height: 150%;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-top: 2px;
+  color: #555;
+  font-family: "Pretendard GOV Variable";
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 150%;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
 `;
 const ClockIcon = styled.img`
-    width: 16px;
-    height: 16px;
+  width: 16px;
+  height: 16px;
 `;

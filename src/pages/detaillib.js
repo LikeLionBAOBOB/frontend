@@ -308,7 +308,7 @@ const Inner = styled.main`
 const Tabs = styled.div`
   display: flex;
   width: calc(100% + 32px);
-  margin: 8px -16px 16px;
+  margin: -70px -16px 16px;
   border-bottom: 1px solid #eee;
 `;
 const TabBtn = styled.button`

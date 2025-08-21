@@ -115,9 +115,9 @@ const HeaderBackHero = ({ title, address, libraryId, bg }) => {
         <Logo onClick={() => navigate("/")}>
           <img src={logoIcon} alt="logo" />
         </Logo>
-        <IconBtn aria-label="즐겨찾기" onClick={toggleFavorite} disabled={busy}>
+        <StarBtn aria-label="즐겨찾기" onClick={toggleFavorite} disabled={busy}>
           <img src={fav ? starCheckedIcon : starIcon} alt="favorite" />
-        </IconBtn>
+        </StarBtn>
       </IconBar>
 
       <TitleBox>
@@ -145,9 +145,12 @@ const IconBar = styled.div`
 `;
 const IconBtn = styled.button`
   all:unset; cursor:pointer;
-  img{ width:24px; height:24px; display:block; }
+  img{ width:36px; height:36px; display:block; }
   &[disabled]{ opacity:.6; pointer-events:none; }
 `;
+const StarBtn = styled(IconBtn)`
+  img{ width:28px; height:28px; } 
+`
 const Logo = styled.div`img{ height:24px; display:block; cursor:pointer; }`;
 const TitleBox = styled.div`
   position:absolute; top:127px; left:0; right:0; text-align:center;
