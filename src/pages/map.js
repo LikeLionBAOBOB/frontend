@@ -40,20 +40,18 @@ const MapPage = () => {
 
     useEffect(() => {
         const initMap = () => {
-        if (!window.naver || !window.naver.maps || !mapDivRef.current) return;
+            if (!window.naver || !window.naver.maps || !mapDivRef.current) return;
 
-        // 현재 위치
-        const center = new window.naver.maps.LatLng(37.559285765296, 126.94568079431);
+            const center = new window.naver.maps.LatLng(37.559285765296, 126.94568079431);
 
-        mapRef.current = new window.naver.maps.Map(mapDivRef.current, {
+            mapRef.current = new window.naver.maps.Map(mapDivRef.current, {
             center,
             zoom: 12,
             zoomControl: false,
             mapDataControl: false,
-        });
+            });
 
-        // 마커 목록(위도, 경도)
-        const libraries = [
+            const libraries = [
             { id: "111514", name: "마포소금나루도서관", lat: 37.5495159, lng: 126.9462201 },
             { id: "111252", name: "홍은도담도서관", lat: 37.6017769, lng: 126.9489945 },
             { id: "111051", name: "서대문구립이진아기념도서관", lat: 37.5730502, lng: 126.9555345 },
@@ -62,139 +60,90 @@ const MapPage = () => {
             { id: "711596", name: "마포나루메타버스도서관", lat: 37.5373236, lng: 126.9442549 },
             { id: "111086", name: "마포서강도서관", lat: 37.5477444, lng: 126.93206 },
             { id: "111179", name: "남가좌새롬어린이도서관", lat: 37.5783377, lng: 126.9240475 },
-        ];
+            ];
 
-        // 카드 디자인 따로 지정해 줄 도서관들
-        const SPECIAL_LIB_IDS = new Set([
-            "111514", // 마포소금나루도서관 
-            "111051", // 서대문구립이진아기념도서관 
-            "711596", // 마포나루메타버스도서관
-            "111179", // 남가좌새롬어린이도서관 
-        ]);
+            const getIconByLevel = (level) => ({ 1: green, 2: yellow, 3: red }[level]);
+            const levelLabel = { 1: "여유", 2: "보통", 3: "혼잡" };
+            const toTag = (level) => {
+            if (level === 1) return { tag: "여유", tagColor: "#33A14B" };
+            if (level === 2) return { tag: "보통", tagColor: "#FFB724" };
+            if (level === 3) return { tag: "혼잡", tagColor: "#FF474D" };
+            return { tag: "", tagColor: "#C6C6C6" };
+            };
 
-        // 혼잡도 레벨
-        const getIconByLevel = (level) => ({ 1: green, 2: yellow, 3: red }[level]);
-        const getSelectedIconByLevel = (level) => ({ 1: green_2, 2: yellow_2, 3: red_2 }[level]);
-        const levelLabel = { 1: "여유", 2: "보통", 3: "혼잡" };
-        const toLevel = (cong) => {
-            if (cong === "여유") return 1;
-            if (cong === "보통") return 2;
-            if (cong === "혼잡") return 3;
-            return 2;
-        };
-        const toTag = (cong) => {
-            if (cong === "여유") return { tag: "여유", tagColor: "#33A14B" };
-            if (cong === "보통") return { tag: "보통", tagColor: "#FFB724" };
-            if (cong === "혼잡") return { tag: "혼잡", tagColor: "#FF474D" };
-            return { tag: cong || "", tagColor: "#C6C6C6" };
-        };
+            libraries.forEach((p) => {
+            // 기본값 보통
+            let level = 2;
 
-        // 마커 생성, 클릭 핸들러
-        libraries.forEach((p) => {
-            // 백엔드 호출 전까지 초기 아이콘은 임시로 '보통' 사용
-            const initialLevel = 2;
+            // 조건 분기
+            if (p.id === "111051" || p.id === "711596") {
+                level = 1; // 여유
+            } else if (p.id === "111179") {
+                level = 3; // 혼잡
+            }
 
             const marker = new window.naver.maps.Marker({
-            position: new window.naver.maps.LatLng(p.lat, p.lng),
-            map: mapRef.current,
-            icon: {
-                url: getIconByLevel(initialLevel),
+                position: new window.naver.maps.LatLng(p.lat, p.lng),
+                map: mapRef.current,
+                icon: {
+                url: getIconByLevel(level),
                 size: new window.naver.maps.Size(32, 32),
                 origin: new window.naver.maps.Point(0, 0),
                 anchor: new window.naver.maps.Point(16, 32),
-            },
-            title: p.name,
+                },
+                title: p.name,
             });
 
-            // 마커 클릭 시 해당 도서관 카드 열기
-            window.naver.maps.Event.addListener(marker, "click", async () => {
+            // 마커 클릭 시 카드 열기
+            window.naver.maps.Event.addListener(marker, "click", () => {
                 mapRef.current.panTo(new window.naver.maps.LatLng(p.lat, p.lng));
-                // 로딩 상태
+                const { tag, tagColor } = toTag(level);
+
                 setSelectedLib({
-                    id: p.id,
-                    libraryName: p.name,
-                    level: initialLevel,
-                    loading: true,
+                id: p.id,
+                libraryName: p.name,
+                displayName: formatLibraryName(p.name),
+                imageUrl: null,
+                currentSeats: 0,
+                totalSeats: 0,
+                libCongestion: levelLabel[level],
+                operatingTime: "",
+                isOpen: "정보 없음",
+                tag,
+                tagColor,
+                level,
                 });
-
-                try {
-                    const res = await fetch(`${API_BASE}/libraries/${p.id}/simple/`);
-                    const detail = await res.json();
-
-                    const imageUrl = resolveImageUrl(detail.image);
-
-                    const newLevel = toLevel(detail.congestion);
-                    const { tag, tagColor } = toTag(detail.congestion || levelLabel[newLevel]);
-
-                    marker.setIcon({
-                    url: getIconByLevel(newLevel),
-                    size: new window.naver.maps.Size(32, 32),
-                    origin: new window.naver.maps.Point(0, 0),
-                    anchor: new window.naver.maps.Point(16, 32),
-                    });
-
-                    setSelectedLib({
-                    id: p.id,
-                    rawName: detail.name,
-                    displayName: formatLibraryName(detail.name),
-                    imageUrl,
-                    currentSeats: detail.current_seats,
-                    totalSeats: detail.total_seats,
-                    libCongestion: detail.congestion, 
-                    operatingTime: detail.operating_time,
-                    isOpen: detail.is_open, 
-                    tag,                    
-                    tagColor,             
-                    level: newLevel,   
-                    isSpecial: SPECIAL_LIB_IDS.has(p.id),  
-                    });
-                } catch (e) {
-                    // 실패 시 임시 상태로 카드 표시 (보통)
-                    const { tag, tagColor } = toTag(levelLabel[initialLevel]);
-                    setSelectedLib({
-                        id: p.id,
-                        libraryName: p.name,
-                        imageUrl: null,
-                        currentSeats: 0,
-                        totalSeats: 0,
-                        libCongestion: levelLabel[initialLevel],
-                        operatingTime: "",
-                        isOpen: "정보 없음",
-                        tag,
-                        tagColor,
-                        level: initialLevel,
-                        isSpecial: SPECIAL_LIB_IDS.has(p.id),
-                    });
-                }
-                });
+            });
             });
 
             // 지도 빈 곳 클릭 시 카드 닫기
             window.naver.maps.Event.addListener(mapRef.current, "click", () => {
-                setSelectedLib(null);
-                });
-            };
+            setSelectedLib(null);
+            });
+        };
 
         if (window.naver && window.naver.maps) {
-        initMap();
+            initMap();
         } else {
             window.naver = window.naver || {};
             window.naver.maps = window.naver.maps || {};
             const prev = window.naver.maps.onJSContentLoaded;
             window.naver.maps.onJSContentLoaded = function () {
-                if (typeof prev === "function") prev();
-                initMap();
+            if (typeof prev === "function") prev();
+            initMap();
             };
         }
 
         const handleResize = () => {
-        if (mapRef.current) {
+            if (mapRef.current) {
             window.naver.maps.Event.trigger(mapRef.current, "resize");
-        }
+            }
         };
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
-    }, []);
+        }, []);
+
+
 
     return(
         <Wrapper>
