@@ -137,6 +137,8 @@ export default HeaderBackHero;
 const Wrap = styled.header`
   width: 393px;
   position: relative;
+  height: 220px;
+  overflow: hidden;
   margin: 0 auto;
 `;
 const Bg = styled.img`

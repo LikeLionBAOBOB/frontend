@@ -173,7 +173,9 @@ const SeatMapPage = () => {
 export default SeatMapPage;
 
 const Page = styled.div` width:393px; margin:0 auto; `;
-const Main = styled.div` padding: 0 12px 16px; `;
+const Main = styled.div`
+  padding: 0 12px 16px;
+  `;
 const SectionTitle = styled.h3` margin: 5px 4px 8px; font-size: 18px; font-weight: 700; `;
 const TopRow = styled.div` display:flex; justify-content:space-between; gap:12px; padding:0 4px; `;
 const Left = styled.div``;
