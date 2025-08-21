@@ -155,6 +155,8 @@ const BtnText = styled.div`
     line-height: normal;
 `;
 const ArrowIcon = styled.img`
+    width: 36px;
+    height: 36px;
     flex-shrink: 0;
     padding: 10px 16px 10px;
 `;

@@ -40,7 +40,6 @@ const HomePageAdmin = () => {
 };
 
 export default HomePageAdmin;
-
 const Wrapper = styled.div`
   width: 100%;
   height: 852px;
@@ -143,9 +142,12 @@ const WorkLib = styled.p`
   margin: 0px;
   margin-left: 36px;   
 `;
+
 const ArrowIcon = styled.img`
-  flex-shrink: 0;
-  margin: 10px 16px 35px 0px;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    padding: 10px 16px 10px;
 `;
 const Icon = styled.img`
   margin-top: 2px;
