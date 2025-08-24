@@ -17,7 +17,7 @@ const AboutPage = () => {
                     <SubText>공정하고 편리한 도서관 이용을 위한 한걸음</SubText>
                     <IntroImg src={introimg}/>
                 </Main>
-                <Discriptions>
+                <Descriptions>
                     {/* Feature 1 */}
                     <FeatureLabel>Key feature 1</FeatureLabel>
                     <FeatureHeader>
@@ -50,7 +50,7 @@ const AboutPage = () => {
                         순찰 없이도 효율적이고 정확한 사석화 <br />로그를 제공합니다.
                     </FeatureBody>
 
-                </Discriptions>
+                </Descriptions>
             </Container>
         </Wrapper>
     );
@@ -114,7 +114,7 @@ const IntroImg = styled.img`
 `;
 
 //하단 설명
-const Discriptions = styled.section`
+const Descriptions = styled.section`
     display: flex;
     flex-direction: column;
     padding: 24px 20px 60px 20px;
