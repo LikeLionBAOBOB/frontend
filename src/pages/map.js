@@ -21,6 +21,7 @@ import clockIcon from '../assets/icons/clock.png';
 
 const API_BASE = process.env.REACT_APP_API_BASE || 'https://baobob.pythonanywhere.com';
 
+
 function formatLibraryName(name) {
     return name
         .replace("소금나루", "소금나루\n")   
@@ -62,6 +63,13 @@ const MapPage = () => {
             { id: "111179", name: "남가좌새롬어린이도서관", lat: 37.5783377, lng: 126.9240475 },
             ];
 
+            const SPECIAL_LIB_IDS = new Set([
+                "111514",
+                "111051",
+                "711596",
+                "111179",
+            ]);
+
             const getIconByLevel = (level) => ({ 1: green, 2: yellow, 3: red }[level]);
             const levelLabel = { 1: "여유", 2: "보통", 3: "혼잡" };
             const toTag = (level) => {
@@ -95,31 +103,61 @@ const MapPage = () => {
             });
 
             // 마커 클릭 시 카드 열기
-            window.naver.maps.Event.addListener(marker, "click", () => {
+            window.naver.maps.Event.addListener(marker, "click", async () => {
                 mapRef.current.panTo(new window.naver.maps.LatLng(p.lat, p.lng));
-                const { tag, tagColor } = toTag(level);
 
-                setSelectedLib({
-                id: p.id,
-                libraryName: p.name,
-                displayName: formatLibraryName(p.name),
-                imageUrl: null,
-                currentSeats: 0,
-                totalSeats: 0,
-                libCongestion: levelLabel[level],
-                operatingTime: "",
-                isOpen: "정보 없음",
-                tag,
-                tagColor,
-                level,
-                });
+                try {
+                    const res = await fetch(`${API_BASE}/libraries/${p.id}/simple/`);
+                    const detail = await res.json();
+
+                    const imageUrl = resolveImageUrl(detail.image);
+                    const newLevel =
+                        detail.congestion === "여유" ? 1 :
+                        detail.congestion === "혼잡" ? 3 : 2;
+                    const { tag, tagColor } = toTag(newLevel);
+
+                    setSelectedLib({
+                        id: p.id,
+                        libraryName: detail.name,
+                        displayName: formatLibraryName(detail.name),
+                        imageUrl,
+                        currentSeats: detail.current_seats,
+                        totalSeats: detail.total_seats,
+                        libCongestion: detail.congestion,
+                        operatingTime: detail.operating_time,
+                        isOpen: detail.is_open,
+                        tag,
+                        tagColor,
+                        level: newLevel,
+                        isSpecial: SPECIAL_LIB_IDS.has(p.id),
+                    });
+                } catch (e) {
+                    console.error("API 불러오기 실패:", e);
+                    const { tag, tagColor } = toTag(level);
+                    setSelectedLib({
+                        id: p.id,
+                        libraryName: p.name,
+                        displayName: formatLibraryName(p.name),
+                        imageUrl: null,
+                        currentSeats: 0,
+                        totalSeats: 0,
+                        libCongestion: levelLabel[level],
+                        operatingTime: "",
+                        isOpen: "정보 없음",
+                        tag,
+                        tagColor,
+                        level,
+                        isSpecial: SPECIAL_LIB_IDS.has(p.id),
+                    });
+                }
             });
-            });
+
 
             // 지도 빈 곳 클릭 시 카드 닫기
             window.naver.maps.Event.addListener(mapRef.current, "click", () => {
             setSelectedLib(null);
             });
+        });
         };
 
         if (window.naver && window.naver.maps) {
@@ -387,7 +425,6 @@ const BottomCard = styled.div`
     display: flex;
     gap: 12px;
     background: #fff;
-    border: 10px;
     border-radius: 10px;
     box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.20);
     align-items: center;
