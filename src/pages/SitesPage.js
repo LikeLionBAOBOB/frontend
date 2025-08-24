@@ -28,7 +28,7 @@ const SitesPage = () => {
                                     <Name>마포구립도서관</Name>
                                     <GoBtn src={goIcon} alt="바로가기아이콘"/>
                                 </LibName>
-                                <Desc>마포구에서 운영하는 구립도서관 정보를 ㅤ한데 모아 제공하는 통합 사이트입니다.</Desc>
+                                <Desc>마포구에서 운영하는 구립도서관 정보를 한데 모아 제공하는 통합 사이트입니다.</Desc>
                                 <LinkText>https://mplib.mapo.go.kr/intro/index.do</LinkText>
                             </Info>
                         </Card>
