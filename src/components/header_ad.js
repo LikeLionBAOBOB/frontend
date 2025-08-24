@@ -45,8 +45,8 @@ const HeaderBackHero = ({ title, address, isLoggedIn = false }) => {
   );
 
   const topMenu = [
-    { label: "좌석 관리", to: "/search", color: "#222" },
-    { label: "사이트 바로가기", to: "/search", color: "#222" },
+    { label: "좌석 관리", to: "/admin-seat", color: "#222" },
+    { label: "사이트 바로가기", to: "/sites", color: "#222" },
 
   ];
   const bottomMenu = [
@@ -188,15 +188,11 @@ const IconBar = styled.div`
 const IconBtn = styled.button`
   all: unset;
   cursor: pointer;
-  img {
-    width: 24px;
-    height: 24px;
-    display: block;
-  }
 `;
 const BackIcon = styled.img`
   width: 36px;
   height: 36px;
+  
 `
 const HamIcon = styled.img`
   width: 36px;
@@ -204,6 +200,7 @@ const HamIcon = styled.img`
 `
 const Logo = styled.div`
   img {
+    width: 46px;
     height: 24px;
     display: block;
     cursor: pointer;
@@ -241,26 +238,6 @@ const Scrim = styled.div`
   z-index: 998;
 `;
 
-const Sidebar = styled.aside`
-  position: fixed;
-  top: ${STATUSBAR_H}px;
-  right: calc(50% - ${FRAME_W / 2}px);
-  width: 280px;
-  height: ${FRAME_H - STATUSBAR_H}px;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10px);
-  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.12);
-  z-index: 999;
-
-  animation: ${slideIn} 0.25s ease forwards;
-  transform: ${({ $open }) => ($open ? "translateX(0)" : "translateX(100%)")};
-
-  display: flex;
-  flex-direction: column;
-  padding: 12px 20px 24px;
-  box-sizing: border-box;
-`;
-
 const SidebarTop = styled.div`
   display: flex;
   justify-content: flex-end;
@@ -285,25 +262,46 @@ const CloseBtn = styled.button`
   }
 `;
 
+const Sidebar = styled.aside`
+  position: fixed;
+  top: 60px;  
+  right: calc(50% - ${FRAME_W / 2}px);
+  width: 281px; 
+  height: ${FRAME_H - 52}px;
+  background: rgba(255, 255, 255, 0.80);
+  backdrop-filter: blur(10px);
+  z-index: 999;
+
+  animation: ${slideIn} 0.25s ease forwards;
+  transform: ${({ $open }) => ($open ? "translateX(0)" : "translateX(100%)")};
+
+  display: flex;
+  flex-direction: column;
+  padding: 12px 20px 24px;
+  box-sizing: border-box;
+`;
+
 const MenuGroupRight = styled.nav`
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  gap: 18px;
+  align-items: flex-end;   
+  gap: 18px;        
   padding: 10px 0;
 `;
+
 const MenuItemRight = styled.button`
   border: 0;
   background: transparent;
   padding: 0;
-  font-size: 16px;
+  font-size: 20px;  
   font-weight: 600;
-  text-align: right;
   cursor: pointer;
+  text-align: right;
 `;
+
 const Divider = styled.hr`
   border: 0;
   height: 1px;
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(0,0,0,0.1);
   margin: 14px 0;
 `;
