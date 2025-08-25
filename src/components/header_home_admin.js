@@ -59,11 +59,11 @@ const HeaderAdmin = () => {
 
   const topMenu = [
     { label: "좌석 관리", to: "/admin-seat", color: "#222" },
-    { label: "사이트 바로가기", to: "/sites", color: "#222" },
+    { label: "사이트 바로가기", to: "/sites-ad", color: "#222" },
   ];
   const bottomMenu = [
-    { label: "서비스 소개", to: "/about", color: "#555" },
-    { label: "문의", to: "/contact", color: "#555" },
+    { label: "서비스 소개", to: "/about-ad", color: "#555" },
+    { label: "문의", to: "/contact-ad", color: "#555" },
   ];
 
   const anyMount = rMount || lMount;

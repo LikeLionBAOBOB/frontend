@@ -1,5 +1,6 @@
 import HomePage from './pages/HomePage';
 import SitesPage from './pages/SitesPage';
+import SitesPageAd from './pages/SitesPage_ad';
 import SearchPage from './pages/SearchPage';
 import LoginPage from './pages/LoginPage';
 import LoginPagead from './pages/LoginPage_book';
@@ -8,7 +9,9 @@ import SeatPage from './pages/seatmap';
 import Mylib from './pages/mylib';
 import MapPage from './pages/map';
 import AboutPage from './pages/AboutPage';
+import AboutPageAd from './pages/AboutPage_ad';
 import ContactPage from './pages/ContactPage';
+import ContactPageAd from './pages/ContactPage_ad';
 import DetailLib from './pages/detaillib';
 import { Navigate } from "react-router-dom";
 
@@ -21,6 +24,10 @@ const routes = [
     {
         path: '/sites',
         element: <SitesPage />,
+    },
+    {
+        path: '/sites-ad',
+        element: <SitesPageAd />,
     },
     {
         path: '/search',
@@ -62,8 +69,16 @@ const routes = [
         element: <AboutPage />,
     },
     {
+        path: '/about-ad',
+        element: <AboutPageAd />,
+    },
+    {
         path: '/contact',
         element: <ContactPage />,
+    },
+    {
+        path: '/contact-ad',
+        element: <ContactPageAd />,
     },
 ];
 

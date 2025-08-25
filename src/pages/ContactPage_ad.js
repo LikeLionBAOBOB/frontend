@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { createGlobalStyle } from 'styled-components';
-import HeaderBack from '../components/header_back.js'; // 헤더 컴포넌트
+import HeaderBack from '../components/header_back_ad.js'; // 헤더 컴포넌트
 import statusBar from '../assets/images/StatusBar.png';
 
-const ContactPage = () => {
+const ContactPageAd = () => {
     return(
         <Wrapper>
             <StatusBarImg src={statusBar} alt="상태바"/>
@@ -32,7 +32,7 @@ const ContactPage = () => {
     );
 };
 
-export default ContactPage;
+export default ContactPageAd;
 
 //styled-components 스타일 정의
 
